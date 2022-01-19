@@ -21,4 +21,5 @@ public class BillController {
     public List<Bill> findAll() {
         return billService.findAll();
     }
+
 }

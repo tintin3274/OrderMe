@@ -19,6 +19,6 @@ public class Table implements Serializable {
     private boolean available;
 
     @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="BILL_ID")
+    @JoinColumn(name="bill_id")
     private Bill bill;
 }

@@ -25,11 +25,11 @@ public class Optional implements Serializable {
     private int min;
     private int max;
 
-    @org.hibernate.annotations.OrderBy(clause="NUMBER, OPTIONAL_ID, ITEM_ID ASC")
+    @org.hibernate.annotations.OrderBy(clause="number, optional_id, item_id ASC")
     @ManyToMany
     @JoinTable(
             name="OPTIONAL_ITEM",
-            joinColumns=@JoinColumn(name="OPTIONAL_ID", referencedColumnName="ID"),
-            inverseJoinColumns=@JoinColumn(name="ITEM_ID", referencedColumnName="ID"))
+            joinColumns=@JoinColumn(name="optional_id", referencedColumnName="id"),
+            inverseJoinColumns=@JoinColumn(name="item_id", referencedColumnName="id"))
     private List<Item> itemList;
 }

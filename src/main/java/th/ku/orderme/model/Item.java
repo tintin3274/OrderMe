@@ -1,5 +1,6 @@
 package th.ku.orderme.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
@@ -24,7 +25,6 @@ public class Item implements Serializable {
 
     private String name;
     private String description;
-    private String unit;
     private String category;
     private String image;
     private double price;
@@ -32,11 +32,12 @@ public class Item implements Serializable {
     private boolean checkQuantity;
     private boolean display;
 
-    @org.hibernate.annotations.OrderBy(clause="NUMBER, OPTIONAL_ID, ITEM_ID ASC")
+    @JsonIgnore
+    @org.hibernate.annotations.OrderBy(clause="number, optional_id, item_id ASC")
     @ManyToMany
     @JoinTable(
             name="ITEM_OPTIONAL",
-            joinColumns=@JoinColumn(name="ITEM_ID", referencedColumnName="ID"),
-            inverseJoinColumns=@JoinColumn(name="OPTIONAL_ID", referencedColumnName="ID"))
+            joinColumns=@JoinColumn(name="item_id", referencedColumnName="id"),
+            inverseJoinColumns=@JoinColumn(name="optional_id", referencedColumnName="id"))
     private List<Optional> optionalList;
 }

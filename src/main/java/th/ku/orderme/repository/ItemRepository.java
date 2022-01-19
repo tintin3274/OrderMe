@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Integer> {
     List<Item> findItemByCategoryEquals(String category);
+    List<Item> findItemByCategoryNot(String category);
 }

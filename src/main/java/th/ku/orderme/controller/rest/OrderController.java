@@ -1,8 +1,7 @@
 package th.ku.orderme.controller.rest;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import th.ku.orderme.dto.CartDTO;
 import th.ku.orderme.model.Order;
 import th.ku.orderme.service.OrderService;
 
@@ -21,4 +20,11 @@ public class OrderController {
     public List<Order> findAll() {
         return orderService.findAll();
     }
+
+    @PostMapping
+    public String order(@RequestBody CartDTO cartDTO) {
+        return orderService.order(cartDTO);
+    }
+
+
 }

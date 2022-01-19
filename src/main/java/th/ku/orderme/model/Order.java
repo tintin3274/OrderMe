@@ -27,11 +27,11 @@ public class Order implements Serializable {
 
     @JsonBackReference
     @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="BILL_ID")
+    @JoinColumn(name="bill_id")
     private Bill bill;
 
     @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="ITEM_ID")
+    @JoinColumn(name="item_id")
     private Item item;
 
     private int quantity;
@@ -39,10 +39,10 @@ public class Order implements Serializable {
     private String status;
     private LocalDateTime timestamp;
 
-    @ManyToMany
-    @JoinTable(
-            name="SELECT_ITEM",
-            joinColumns=@JoinColumn(name="ORDER_ID", referencedColumnName="ID"),
-            inverseJoinColumns=@JoinColumn(name="ITEM_ID", referencedColumnName="ID"))
-    private List<Item> selectItemList;
+//    @ManyToMany
+//    @JoinTable(
+//            name="SELECT_ITEM",
+//            joinColumns=@JoinColumn(name="order_id", referencedColumnName="id"),
+//            inverseJoinColumns=@JoinColumn(name="item_id", referencedColumnName="id"))
+//    private List<Item> selectItemList;
 }
