@@ -8,7 +8,7 @@ import th.ku.orderme.service.OrderService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/order-me/order")
+@RequestMapping("/api/order")
 public class OrderController {
     private final OrderService orderService;
 
@@ -22,9 +22,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public String order(@RequestBody CartDTO cartDTO) {
-        return orderService.order(cartDTO);
+    public String order(@RequestBody CartDTO cartDTO, @CookieValue(name = "uid", defaultValue = "default-uid") String uid) {
+        return orderService.order(cartDTO, uid);
     }
-
-
 }

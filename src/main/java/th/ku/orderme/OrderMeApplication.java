@@ -5,20 +5,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
-import th.ku.orderme.scb.Authentication;
 
 @SpringBootApplication
 public class OrderMeApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(OrderMeApplication.class, args);
-
-        //new Authentication().authorize();
     }
 
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder){
         return builder.build();
     }
-
 }

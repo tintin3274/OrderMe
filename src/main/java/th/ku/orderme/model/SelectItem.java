@@ -14,7 +14,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SelectItem implements Serializable {
-
     @Data
     @AllArgsConstructor
     @NoArgsConstructor

@@ -1,19 +1,26 @@
 package th.ku.orderme.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Service;
 import th.ku.orderme.model.Item;
 import th.ku.orderme.model.Optional;
+import th.ku.orderme.repository.ItemRepository;
 import th.ku.orderme.repository.OptionalRepository;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.util.*;
 
 
 @Service
 @AllArgsConstructor
 public class OptionalService {
+    @PersistenceContext
+    private final EntityManager entityManager;
     private final OptionalRepository optionalRepository;
+    private final ItemRepository itemRepository;
 
     public Optional findById(int id) {
         return optionalRepository.findById(id).orElse(null);
@@ -28,5 +35,32 @@ public class OptionalService {
             }
         }
         return itemIdList;
+    }
+
+    public List<Optional> findAll() {
+        return optionalRepository.findAll();
+    }
+
+    public Map<Integer, Integer> optionalUsingCount() {
+        Map<Integer, Integer> map = new HashMap<>();
+        String query = "SELECT a.id, COUNT(b.optional_id) AS number FROM optional a LEFT JOIN item_optional b ON b.optional_id = a.id GROUP BY a.id";
+        return getIntegerIntegerMap(map, query);
+    }
+
+    public Map<Integer, Integer> itemOptionUsingCount() {
+        Map<Integer, Integer> map = new HashMap<>();
+        String query = "SELECT a.id, COUNT(b.optional_id) AS number FROM item a LEFT JOIN optional_item b ON b.item_id = a.id WHERE category='OPTION' GROUP BY a.id";
+        return getIntegerIntegerMap(map, query);
+    }
+
+    private Map<Integer, Integer> getIntegerIntegerMap(Map<Integer, Integer> map, String query) {
+        @SuppressWarnings("unchecked")
+        List<Object[]> resultList = entityManager.createNativeQuery(query).getResultList();
+        for(Object[] o : resultList){
+            int id = Integer.parseInt(o[0].toString());
+            int number = Integer.parseInt(o[1].toString());
+            map.put(id, number);
+        }
+        return map;
     }
 }

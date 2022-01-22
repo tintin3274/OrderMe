@@ -8,7 +8,7 @@ import th.ku.orderme.service.ItemService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/order-me/item")
+@RequestMapping("/api/item")
 public class ItemController {
     private final ItemService itemService;
 

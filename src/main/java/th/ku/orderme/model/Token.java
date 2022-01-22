@@ -5,19 +5,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.io.Serializable;
+import javax.persistence.Table;
 
 @Entity
-@javax.persistence.Table(name="TABLE_INFO")
+@Table(name="TOKEN")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Table implements Serializable {
+public class Token {
     @Id
-    private int id;
-    private boolean available;
+    private String id;
 
-    @ManyToOne(fetch=FetchType.LAZY)
+    @OneToOne(fetch= FetchType.LAZY)
     @JoinColumn(name="bill_id")
     private Bill bill;
 }

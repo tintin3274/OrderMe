@@ -54,7 +54,7 @@ public class ItemService {
         return itemRepository.saveAndFlush(item);
     }
 
-    public List<Item> findAllFood(){
+    public List<Item> findAllFood() {
         return itemRepository.findItemByCategoryNot("OPTION");
     }
 }
