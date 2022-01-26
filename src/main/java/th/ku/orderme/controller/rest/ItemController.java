@@ -27,6 +27,11 @@ public class ItemController {
         return itemService.findAllFood();
     }
 
+    @GetMapping("/category")
+    public List<String> findAllFoodCategory() {
+        return itemService.findAllFoodCategory();
+    }
+
     @PostMapping("/add")
     public Item addItem(@RequestBody AddItemDTO addItemDTO, @RequestParam(value = "image", required = false) MultipartFile multipartFile) {
         try {
