@@ -3,7 +3,9 @@ package th.ku.orderme.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import th.ku.orderme.model.Item;
+import th.ku.orderme.model.ItemOptional;
 import th.ku.orderme.model.Optional;
+import th.ku.orderme.repository.ItemOptionalRepository;
 import th.ku.orderme.repository.ItemRepository;
 
 import java.util.*;
@@ -12,12 +14,27 @@ import java.util.*;
 @AllArgsConstructor
 public class ItemService {
     private final ItemRepository itemRepository;
+    private final ItemOptionalRepository itemOptionalRepository;
 
     public Item findById(int id) {
         return itemRepository.findById(id).orElse(null);
     }
 
-    public Item addItem(Item item) {
+    public Item addItem(Item item, List<Integer> optionGroupId) {
+        item = saveAndFlush(item);
+
+        for(int i=0; i<optionGroupId.size(); i++) {
+            ItemOptional.ItemOptionalId itemOptionalId = new ItemOptional.ItemOptionalId();
+            itemOptionalId.setItemId(item.getId());
+            itemOptionalId.setOptionalId(optionGroupId.get(i));
+
+            ItemOptional itemOptional = new ItemOptional();
+            itemOptional.setItemOptionalId(itemOptionalId);
+            itemOptional.setNumber(i+1);
+
+            itemOptionalRepository.saveAndFlush(itemOptional);
+        }
+
         return item;
     }
 

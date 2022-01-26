@@ -9,23 +9,23 @@ import javax.persistence.Table;
 import java.io.Serializable;
 
 @Entity
-@Table(name="SELECT_ITEM")
+@Table(name="ITEM_OPTIONAL")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SelectItem implements Serializable {
+public class ItemOptional {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
     @Embeddable
-    public static class SelectItemId implements Serializable {
-        @Column(name = "order_id")
-        private int orderId;
+    public static class ItemOptionalId implements Serializable {
         @Column(name = "item_id")
         private int itemId;
+        @Column(name = "optional_id")
+        private int optionalId;
     }
 
     @EmbeddedId
-    private SelectItemId selectItemId;
-    private int optionalId;
+    private ItemOptionalId itemOptionalId;
+    private int number;
 }

@@ -91,7 +91,7 @@ public class OrderService {
             stringBuilder.append("Total: "+total);
             return stringBuilder.toString();
         } catch (IllegalArgumentException | AuthenticationException e) {
-            System.err.println(e);
+            e.printStackTrace();
             return e.getMessage();
         }
     }
