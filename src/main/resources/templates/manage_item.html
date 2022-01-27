@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="https://www.thymeleaf.org"
+      layout:decorate="~{fragments/header.html}">
+<head>
+    <script src="/js/manage_item.js" type = "text/javascript"></script>
+    <link rel="stylesheet" href="/styles/manage_item.css">
+
+</head>
+<body >
+<section layout:fragment="content">
+    <div class="d-flex">
+        <div class="d-flex flex-column flex-shrink-0 text-white  slideBar" >
+            <button type="button" class="btn m-md-2 btn-bar active" id="btnFood" onclick="selectFood()" >Menu</button>
+            <button type="button" class="btn m-md-2 btn-bar" id="btnOpGr" onclick="selectOpGr()">Option Group</button>
+            <button type="button" class="btn m-md-2 btn-bar" id="btnOption" onclick="selectOption()">Option</button>
+        </div>
+    <div style="width: 100%">
+    <div class="p-3 bg-white" id="content">
+            <button type="button" class="btn btn-secondary" id="btn-toggle" onclick="tog()">Toggle</button>
+
+        <div class="toolbar" id="toolbarFood">
+            <a class="m-md-2 btn-bar btn btn-secondary" href="http://localhost:8080/create_item" type="button">Create</a>
+        </div>
+        <div id="pageFood">
+        <table id="tableFood"
+               data-toggle="table"
+               data-pagination="true"
+               data-pagination-h-align="left"
+               data-pagination-detail-h-align="right"
+               data-search="true"
+               data-toolbar="#toolbarFood"
+               data-url="http://localhost:8080/api/item/"
+        >
+            <thead >
+            <tr>
+                <th data-field="image" >Picture</th>
+                <th data-field="name" data-sortable="true" >Name</th>
+                <th data-field="category" data-sortable="true" >Category</th>
+                <th data-field="price" data-sortable="true" >Price</th>
+                <th data-field="quantity" data-sortable="true" >Quantity</th>
+            </tr>
+            </thead>
+                <tbody>
+            </tbody>
+        </table>
+        </div>
+    </div>
+    </div>
+    </div>
+
+</section>
+</body>
+
+</html>

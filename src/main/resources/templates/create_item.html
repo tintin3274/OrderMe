@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="https://www.thymeleaf.org"
+      layout:decorate="~{fragments/header.html}">
+<head>
+    <link rel="stylesheet" href="/styles/create_item.css">
+    <link href="https://unpkg.com/bootstrap-table@1.19.1/dist/extensions/reorder-rows/bootstrap-table-reorder-rows.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/tablednd@1.0.5/dist/jquery.tablednd.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/extensions/reorder-rows/bootstrap-table-reorder-rows.min.js"></script>
+    <script src="/js/create_item.js" type = "text/javascript"></script>
+
+</head>
+<body>
+
+<section layout:fragment="content" id="bg">
+    <div class="container mt-3 shadow bg-body rounded px-4" style="width: 60%;" id="layout">
+    <form class="row g-3">
+<!--        name & des-->
+        <div class="col-md-12">
+            <h5 for="inputName" class="form-label">Name</h5>
+            <input type="text" class="form-control" id="inputName" required>
+        </div>
+        <div class="col-12">
+            <h5 for="inputDescription" class="form-label">Description</h5>
+            <textarea type="text" class="form-control" id="inputDescription" rows="4"></textarea>
+        </div>
+<!-----Category------->
+        <div class="col-6">
+            <h5 for="inputCategory" class="form-label">Category</h5>
+            <div class="input-group">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#category">Select...</button>
+                <input type="text" class="form-control" id="inputCategory" disabled>
+            </div>
+        </div>
+        <!-----CategoryModal------->
+        <div class="modal fade" id="category"  tabindex="-1" role="dialog" aria-labelledby="categoryLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="categoryLabel">Select Option Group</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <table id="categoryTable"
+                               data-toggle="table"
+                               data-show-header="false"
+                               class="table-borderless"
+                        >
+                            <thead>
+                            <tr>
+                                <th data-field="name" data-align="center"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer" type="button">
+                        <div class="col-md-12">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingOne">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                                        + new category
+                                    </button>
+                                </h2>
+                                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                    <div class="accordion-body">
+                                        <h5 for="inputNewCategory" class="form-label">Category Name</h5>
+                                        <input type="text" class="form-control" id="inputNewCategory" >
+                                        <button class="btn btn-primary" type="button" onclick="createNewCategory()">Create</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+<!--        picture-->
+        <div class="col-12">
+            <div class="card mb-3" style="max-width: 100%;">
+                <div class="row g-0">
+                    <div class="col-md-7">
+                        <div class="card-body">
+                            <h5 class="card-title">Picture</h5>
+                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                            <div class="input-group">
+                                <input class="form-control" type="file" id="formFile" onchange="preview()">
+                                <button class="btn btn-outline-secondary" type="button" onclick="clearImage()">Clear</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5 center" >
+                        <img class="rounded" id="picPreview" src="images/default.png">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Button trigger modal -->
+        <div class="col-12">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#backdropOption">Option Group</button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="backdropOption" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">Select Option Group</h5>
+<!--                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+                        </div>
+                        <div class="modal-body">
+                            <table id="optionGroup"
+                                   data-toggle="table"
+                                   data-pagination="true"
+                                   data-pagination-h-align="left"
+                                   data-pagination-detail-h-align="right"
+                                   data-search="true"
+                                   data-click-to-select="true"
+                                   data-url="http://localhost:8080/api/optional"
+                            >
+                                <thead >
+                                <tr>
+                                    <th data-field="state" data-checkbox="true"></th>
+                                    <th data-field="id" >Id</th>
+                                    <th data-field="name" >Group Name</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+<!--                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>-->
+                            <button type="button" class="btn btn-primary" onclick="selectedOptionGroup() " data-bs-dismiss="modal">Selected</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Modal -->
+
+<!--table            -->
+        </div>
+        <table id="selectedOption"
+               data-toggle="table"
+               data-use-row-attr-func="true"
+               data-reorderable-rows="true"
+        >
+            <thead >
+            <tr>
+                <th data-field="id" >Id</th>
+                <th data-field="name" >Group Name</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <!--table            -->
+
+<!-- QTY       -->
+        <div class="col-md-12">
+            <label class="form-label">Quantity</label>
+            <div class="row g-2 align-items-center col-auto">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="radioNo" onclick="quantitySelect()" checked>
+                    <label class="form-check-label" for="radioNo">
+                        No
+                    </label>
+                </div>
+                <div class="form-check col-auto">
+                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="radioYes" onclick="quantitySelect()">
+                    <label class="form-check-label" for="radioYes">
+                        Yes
+                    </label>
+                </div>
+                <div class="col-auto">
+                    <input type="number"  class="form-control" id="qtyNum" min="0" disabled >
+                </div>
+            </div>
+        </div>
+<!-- price       -->
+        <div class="col-md-5">
+            <label for="inputPrice" class="form-label">Price</label>
+            <input type="number" class="form-control" id="inputPrice" min="0" required>
+        </div>
+        <div class="col-8"></div>
+<!--footer-->
+        <footer  style="display: flex; justify-content: space-between">
+            <div class="mb-3">
+                <a class="btn btn-secondary" href="http://localhost:8080/manage_item" type="button" id="btnBack">Back</a>
+            </div>
+            <div class="mb-3">
+                <button type="submit" class="btn btn-outline-primary" style="margin-right: 10px" id="createNoDisplay">Create & hide</button>
+                <button type="submit" class="btn btn-primary" id="createDisplay">Create & Publish</button>
+            </div>
+        </footer>
+    </form>
+    </div>
+
+</section>
+
+</body>
+
+
+
+</html>

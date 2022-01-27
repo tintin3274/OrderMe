@@ -1,0 +1,51 @@
+body{
+    height: 100vh;
+}
+#btn-toggle{
+    color: cyan;
+}
+#content{
+    transition: 0.5s all;
+}
+
+.slideBar{
+    background: #0c7d5b;
+    width: 15%;
+    min-height: 100vh;
+    margin-left: 0px;
+    transition: 0.5s all;
+}
+
+.slideHide{
+    margin-left: -15%;
+}
+@media (max-width:900px) {
+    .slideBar{
+        margin-left: -15%;
+    }
+    .slideHide{
+        margin-left: 0px;
+    }
+
+}
+
+.btn-bar{
+    position: relative;
+    top: 20%;
+    background: #0c7d5b;
+    color: white;
+    border-width: 0px 0px 1px 0px;
+    border-color: #12a176;
+}
+ .btn-bar:hover{
+    background: #aaff33;
+    color: black;
+}
+button.btn-bar.active{
+    background: white; !important;
+    color: black; !important;
+}
+
+
+
+
