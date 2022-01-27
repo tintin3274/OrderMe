@@ -1,7 +1,6 @@
 package th.ku.orderme.service;
 
 import lombok.AllArgsConstructor;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import th.ku.orderme.model.Item;
 import th.ku.orderme.model.ItemOptional;

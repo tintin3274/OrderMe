@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/manage_item")
+@RequestMapping("/admin/manage-item")
 public class ManageItemController {
     @GetMapping
     public String getPage(){

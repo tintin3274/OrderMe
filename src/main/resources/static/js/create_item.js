@@ -6,7 +6,7 @@ $(document).ready(function() {
         $('#category').modal('hide');
     });
 
-    $.get( 'http://localhost:8080/api/item/category', function( data ) {
+    $.get( '/api/item/category', function( data ) {
         arrCategory = data;
         var i;
 
@@ -39,7 +39,7 @@ function preview() {
 }
 function clearImage() {
     document.getElementById('formFile').value = null;
-    picPreview.src = 'images/default.png';
+    picPreview.src = '/images/default.png';
 }
 
 function quantitySelect() {
