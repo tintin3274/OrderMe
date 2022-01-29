@@ -35,7 +35,7 @@ public class OrderService {
     public String order(CartDTO cartDTO, String uid) {
         try {
             Token token = tokenService.findById(uid);
-            if(token == null) throw new AuthenticationException("Invalid Token");
+            if(token == null) throw new AuthenticationException("Invalid Token: "+uid);
 
             Bill bill = token.getBill();
 //            if(cartDTO.getBillId() < 1) throw new IllegalArgumentException("Invalid billId");

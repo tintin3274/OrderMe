@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import th.ku.orderme.model.Item;
 import th.ku.orderme.model.Optional;
-import th.ku.orderme.repository.ItemRepository;
 import th.ku.orderme.repository.OptionalRepository;
 
 import javax.persistence.EntityManager;
@@ -18,7 +17,6 @@ public class OptionalService {
     @PersistenceContext
     private final EntityManager entityManager;
     private final OptionalRepository optionalRepository;
-    private final ItemRepository itemRepository;
 
     public Optional findById(int id) {
         return optionalRepository.findById(id).orElse(null);
@@ -37,6 +35,10 @@ public class OptionalService {
 
     public List<Optional> findAll() {
         return optionalRepository.findAll();
+    }
+
+    public boolean existsById(int id) {
+        return optionalRepository.existsById(id);
     }
 
     public Map<Integer, Integer> optionalUsingCount() {

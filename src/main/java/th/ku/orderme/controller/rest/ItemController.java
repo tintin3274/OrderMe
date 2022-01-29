@@ -1,5 +1,6 @@
 package th.ku.orderme.controller.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,20 +34,18 @@ public class ItemController {
     }
 
     @PostMapping("/add")
-    public Item addItem(@RequestBody AddItemDTO addItemDTO, @RequestParam(value = "image", required = false) MultipartFile multipartFile) {
+    public Item addItem(@RequestBody AddItemDTO addItemDTO) {
+        Item item = convertItemDTOToItem(addItemDTO.getItem());
+        item = itemService.addItem(item, addItemDTO.getOptionGroupId());
+        return item;
+    }
+
+    @PostMapping("/add-with-image")
+    public Item addItemWithImage(@RequestParam String addItemDTO, @RequestParam(value = "image", required = false) MultipartFile multipartFile) {
         try {
-            System.out.println(addItemDTO.toString());
-
-            ItemDTO itemDTO = addItemDTO.getItem();
-
-            Item item = new Item();
-            item.setName(itemDTO.getName());
-            item.setDescription(itemDTO.getDescription());
-            item.setCategory(itemDTO.getCategory());
-            item.setPrice(itemDTO.getPrice());
-            item.setQuantity(itemDTO.getQuantity());
-            item.setCheckQuantity(itemDTO.isCheckQuantity());
-            item.setDisplay(itemDTO.isDisplay());
+            ObjectMapper objectMapper = new ObjectMapper();
+            AddItemDTO addItemDTOObj = objectMapper.readValue(addItemDTO, AddItemDTO.class);
+            Item item = convertItemDTOToItem(addItemDTOObj.getItem());
 
             if(multipartFile != null) {
                 String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
@@ -55,16 +54,25 @@ public class ItemController {
                 String uploadDir = "images";
                 FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
             }
-            else {
-                item.setImage("default.png");
-            }
 
-            item = itemService.addItem(item, addItemDTO.getOptionGroupId());
+            item = itemService.addItem(item, addItemDTOObj.getOptionGroupId());
             return item;
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private Item convertItemDTOToItem(ItemDTO itemDTO) {
+        Item item = new Item();
+        item.setName(itemDTO.getName());
+        item.setDescription(itemDTO.getDescription());
+        item.setCategory(itemDTO.getCategory());
+        item.setPrice(itemDTO.getPrice());
+        item.setQuantity(itemDTO.getQuantity());
+        item.setCheckQuantity(itemDTO.isCheckQuantity());
+        item.setDisplay(itemDTO.isDisplay());
+        return item;
     }
 
 //    @GetMapping

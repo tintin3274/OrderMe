@@ -15,27 +15,37 @@ import java.util.*;
 public class ItemService {
     private final ItemRepository itemRepository;
     private final ItemOptionalRepository itemOptionalRepository;
+    private final OptionalService optionalService;
 
     public Item findById(int id) {
         return itemRepository.findById(id).orElse(null);
     }
 
     public Item addItem(Item item, List<Integer> optionGroupId) {
-        item = saveAndFlush(item);
+        try {
+            for(int id : optionGroupId) {
+                if(!optionalService.existsById(id)) throw new IllegalArgumentException("Invalid Optional ID: "+id);
+            }
 
-        for(int i=0; i<optionGroupId.size(); i++) {
-            ItemOptional.ItemOptionalId itemOptionalId = new ItemOptional.ItemOptionalId();
-            itemOptionalId.setItemId(item.getId());
-            itemOptionalId.setOptionalId(optionGroupId.get(i));
+            item = saveAndFlush(item);
 
-            ItemOptional itemOptional = new ItemOptional();
-            itemOptional.setItemOptionalId(itemOptionalId);
-            itemOptional.setNumber(i+1);
+            for(int i=0; i<optionGroupId.size(); i++) {
+                ItemOptional.ItemOptionalId itemOptionalId = new ItemOptional.ItemOptionalId();
+                itemOptionalId.setItemId(item.getId());
+                itemOptionalId.setOptionalId(optionGroupId.get(i));
 
-            itemOptionalRepository.saveAndFlush(itemOptional);
+                ItemOptional itemOptional = new ItemOptional();
+                itemOptional.setItemOptionalId(itemOptionalId);
+                itemOptional.setNumber(i+1);
+
+                itemOptionalRepository.saveAndFlush(itemOptional);
+            }
+
+            return item;
+        } catch (IllegalArgumentException e) {
+            System.err.println(e.getMessage());
+            return null;
         }
-
-        return item;
     }
 
     public Map<Integer,Item> getMapAllItemOfItemId(int itemId) {
