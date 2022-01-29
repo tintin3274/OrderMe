@@ -23,6 +23,7 @@ public class ItemService {
 
     public Item addItem(Item item, List<Integer> optionGroupId) {
         try {
+            if(optionGroupId == null) optionGroupId = new ArrayList<>();
             for(int id : optionGroupId) {
                 if(!optionalService.existsById(id)) throw new IllegalArgumentException("Invalid Optional ID: "+id);
             }
@@ -40,7 +41,6 @@ public class ItemService {
 
                 itemOptionalRepository.saveAndFlush(itemOptional);
             }
-
             return item;
         } catch (IllegalArgumentException e) {
             System.err.println(e.getMessage());
