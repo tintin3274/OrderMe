@@ -22,3 +22,11 @@ function selectOpGr(){
 function selectOption(){
     $('#pageFood').hide();
 }
+
+
+function imageFormatter(value) {
+    if (value != null){
+        return '<img src="/images/'+value+'" onerror="this.onerror=null;this.src=\'/images/default.png\';" />';
+    }
+    return '<img src="/images/default.png"/>';
+}

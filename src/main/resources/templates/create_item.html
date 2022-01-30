@@ -15,7 +15,7 @@
 
 <section layout:fragment="content" id="bg">
     <div class="container mt-3 shadow bg-body rounded px-4" style="width: 60%;" id="layout">
-    <form class="row g-3">
+    <form class="row g-3"  onsubmit="create()" action="/admin/manage-item">
 <!--        name & des-->
         <div class="col-md-12">
             <h5 for="inputName" class="form-label">Name</h5>
@@ -30,7 +30,7 @@
             <h5 for="inputCategory" class="form-label">Category</h5>
             <div class="input-group">
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#category">Select...</button>
-                <input type="text" class="form-control" id="inputCategory" disabled>
+                <input type="text" class="form-control" id="inputCategory" disabled required>
             </div>
         </div>
         <!-----CategoryModal------->
@@ -86,7 +86,7 @@
                             <h5 class="card-title">Picture</h5>
                             <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
                             <div class="input-group">
-                                <input class="form-control" type="file" id="formFile" onchange="preview()">
+                                <input class="form-control" type="file" id="formFile" onchange="preview()" name="image" accept="image/png, image/jpeg">
                                 <button class="btn btn-outline-secondary" type="button" onclick="clearImage()">Clear</button>
                             </div>
                         </div>
@@ -182,7 +182,7 @@
 <!-- price       -->
         <div class="col-md-5">
             <label for="inputPrice" class="form-label">Price</label>
-            <input type="number" class="form-control" id="inputPrice" min="0" required>
+            <input type="number" class="form-control" id="inputPrice" min="0" step="0.01" required>
         </div>
         <div class="col-8"></div>
 <!--footer-->
@@ -191,8 +191,8 @@
                 <a class="btn btn-secondary" href="/admin/manage-item" type="button" id="btnBack">Back</a>
             </div>
             <div class="mb-3">
-                <button type="submit" class="btn btn-outline-primary" style="margin-right: 10px" id="createNoDisplay">Create & Hide</button>
-                <button type="submit" class="btn btn-primary" id="createDisplay">Create & Publish</button>
+                <button type="submit" class="btn btn-outline-primary" style="margin-right: 10px" id="createNoDisplay" onclick="clicked = 0">Create & Hide</button>
+                <button class="btn btn-primary" type="submit" id="createDisplay" onclick="clicked = 1">Create & Publish</button>
             </div>
         </footer>
     </form>

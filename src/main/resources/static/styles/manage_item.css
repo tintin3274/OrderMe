@@ -46,6 +46,12 @@ button.btn-bar.active{
     color: black; !important;
 }
 
+img{
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+}
+
 
 
 
