@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.view.RedirectView;
 import th.ku.orderme.dto.AddItemDTO;
 import th.ku.orderme.dto.ItemDTO;
 import th.ku.orderme.model.Item;
@@ -74,11 +73,4 @@ public class ItemController {
         item.setDisplay(itemDTO.isDisplay());
         return item;
     }
-
-//    @GetMapping
-//    public RedirectView test() {
-//        RedirectView redirectView = new RedirectView();
-//        redirectView.setUrl("scbeasysim://purchase/783d69e5-fc45-4076-9f9e-bbbbe7aa4741");
-//        return redirectView;
-//    }
 }
