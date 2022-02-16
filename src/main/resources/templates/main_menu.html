@@ -1,13 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="https://www.thymeleaf.org"
+      layout:decorate="~{fragments/header.html}">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Title</title>
+    <script src="/js/main_menu.js" type = "text/javascript"></script>
+    <link rel="stylesheet" href="/styles/main_menu.css">
 </head>
 <body>
-    <h1>main_menu</h1>
-    <a href="/admin/bill" role="button">bill</a>
-    <a href="/admin/cart" role="button">cart</a>
-    <a href="/admin/option-menu" role="button">Food option</a>
+<div layout:fragment="content">
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container-fluid">
+            <form class="d-flex">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+                <a href="/admin/cart" role="button" class="btn btn-primary">Cart</a>
+                <a href="/admin/bill" role="button" class="btn btn-primary">Bill</a>
+            </form>
+        </div>
+    </nav>
+    <div class="px-3">
+        <h1>main_menu</h1>
+        <div class="cardScroll">
+            <div class="row" id="cardContainer" >
+                <!-- card-->
+                <div class="col-md-6 card d-flex" >
+                    <div class="row my-1">
+                        <!--img-->
+                        <div class="columnImage col-auto " >
+                            <img src="/images/default.png" class="picture" >
+                        </div>
+
+                        <!--text-->
+                        <div class="col-7 card-body" >
+                            <h5 class="card-title">มัทฉะนมสด (ชาเขียวนมสด)</h5>
+                            <p class="card-text"><small class="text-muted hide-text">เมนูสุดฮิตของฟุกุ รสชาติเป็นเอกลักษณ์หอมเด่นไม่เหมือนใคร มัทฉะแท้คุณภาพดีนำเข้าจากประเทศญี่ปุ่น เรียกว่ายิ่งกว่าอร่อย สามารถเลือกรูปแบบ ระดับความหวานและท็อปปิ้งได้</small></p>
+                        </div>
+                    </div>
+                    <a type="button"class="stretched-link" data-bs-toggle="modal" data-bs-target="#staticBackdrop"></a>
+                </div>
+            </div>
+
+            <!-- Button trigger modal -->
+            <!--        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">-->
+            <!--            Launch static backdrop modal-->
+            <!--        </button>-->
+
+            <!-- Modal -->
+            <div class="modal fade" id="staticBackdrop"  tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <h4>มัทฉะนมสด (ชาเขียวนมสด)</h4>
+                            <p class="card-text"><small >เมนูสุดฮิตของฟุกุ รสชาติเป็นเอกลักษณ์หอมเด่นไม่เหมือนใคร มัทฉะแท้คุณภาพดีนำเข้าจากประเทศญี่ปุ่น เรียกว่ายิ่งกว่าอร่อย สามารถเลือกรูปแบบ ระดับความหวานและท็อปปิ้งได้</small></p>
+                            <hr>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary">Understood</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
