@@ -1,4 +1,4 @@
-package th.ku.orderme.service;
+package th.ku.orderme.util;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -11,10 +11,10 @@ import java.time.Instant;
 import java.time.ZoneId;
 
 @Service
-public class SCBSimulatorPayment implements Payment {
+public class SCBSimulatorPayment {
 
-    private static String accessToken = "a849f3f0-ed7d-4f93-bd4a-160c01ab1f7e";
-    private static Long accessTokenExpiresAt = Long.valueOf(1643557575);
+    private static String accessToken;
+    private static Long accessTokenExpiresAt;
 
     @Value("${scb.simulator.orderme.apiKey}")
     private String apiKey;
@@ -41,7 +41,6 @@ public class SCBSimulatorPayment implements Payment {
     private String terminalId;
 
 
-    @Override
     public String generateAccessToken() {
         try {
             OkHttpClient client = new OkHttpClient();
@@ -92,7 +91,6 @@ public class SCBSimulatorPayment implements Payment {
         return true;
     }
 
-    @Override
     public String generateDeeplink(Double amount) {
         try {
             if(!validateToken()) throw new AuthenticationException("Can't Generate SCB Token");
@@ -165,7 +163,6 @@ public class SCBSimulatorPayment implements Payment {
         return null;
     }
 
-    @Override
     public String generateQrCode(Double amount) {
         try {
             if(!validateToken()) throw new AuthenticationException("Can't Generate SCB Token");

@@ -10,7 +10,6 @@ import th.ku.orderme.model.Optional;
 import th.ku.orderme.repository.OrderRepository;
 import th.ku.orderme.repository.SelectItemRepository;
 
-import javax.naming.AuthenticationException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -22,7 +21,6 @@ public class OrderService {
     private final BillService billService;
     private final ItemService itemService;
     private final OptionalService optionalService;
-    private final TokenService tokenService;
 
     public List<Order> findAll() {
         return orderRepository.findAll();
@@ -32,16 +30,8 @@ public class OrderService {
         return orderRepository.findById(id).orElse(null);
     }
 
-    public String order(CartDTO cartDTO, String uid) {
+    public String order(CartDTO cartDTO, Bill bill) {
         try {
-            Token token = tokenService.findById(uid);
-            if(token == null) throw new AuthenticationException("Invalid Token: "+uid);
-
-            Bill bill = token.getBill();
-//            if(cartDTO.getBillId() < 1) throw new IllegalArgumentException("Invalid billId");
-//            Bill bill = billService.findById(cartDTO.getBillId());
-//            if(bill == null) throw new IllegalArgumentException("billId not found");
-
             if(!bill.getStatus().equalsIgnoreCase("OPEN")) throw new IllegalArgumentException("Bill is CLOSE");
 
             if(!validateAndUpdateItemQuantity(cartDTO.getOrderRequests())) throw new IllegalArgumentException("Something wrong! Cannot order");
@@ -90,7 +80,7 @@ public class OrderService {
             stringBuilder.append("--------------------\n");
             stringBuilder.append("Total: "+total);
             return stringBuilder.toString();
-        } catch (IllegalArgumentException | AuthenticationException e) {
+        } catch (IllegalArgumentException e) {
             e.printStackTrace();
             return e.getMessage();
         }

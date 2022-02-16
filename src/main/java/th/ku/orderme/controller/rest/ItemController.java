@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import th.ku.orderme.dto.AddItemDTO;
 import th.ku.orderme.dto.ItemDTO;
 import th.ku.orderme.model.Item;
+import th.ku.orderme.model.Optional;
 import th.ku.orderme.service.ItemService;
 import th.ku.orderme.util.FileUploadUtil;
 
@@ -25,6 +26,18 @@ public class ItemController {
     @GetMapping
     public List<Item> findAllFood() {
         return itemService.findAllFood();
+    }
+
+    @GetMapping("/{id}")
+    public Item findItem(@PathVariable int id) {
+        return itemService.findById(id);
+    }
+
+    @GetMapping("/optional-of-id/{id}")
+    public List<Optional> findOptionalOfItem(@PathVariable int id) {
+        Item item = itemService.findById(id);
+        if(item == null) return null;
+        return item.getOptionalList();
     }
 
     @GetMapping("/category")
