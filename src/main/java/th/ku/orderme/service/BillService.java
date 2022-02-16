@@ -38,14 +38,14 @@ public class BillService {
         Bill bill = findById(id);
         if(bill == null) return null;
 
-        double total = 0;
+        double subTotal = 0;
         List<OrderDTO> orderDTOList = new ArrayList<>();
 
         for(Order order : bill.getOrderList()) {
             if(order.getStatus().equals("CANCEL")) continue;
 
             Item item = order.getItem();
-            double price = item.getPrice()*order.getQuantity();
+            double price = item.getPrice();
 
             Map<Integer, Item> itemMap = itemService.getMapAllItemOfItemId(item.getId());
             List<String> option = new ArrayList<>();
@@ -54,7 +54,7 @@ public class BillService {
             for(SelectItem selectItem : selectItemList) {
                 Item itemOption = itemMap.get(selectItem.getSelectItemId().getItemId());
                 option.add(itemOption.getName());
-                price += itemOption.getPrice()*order.getQuantity();
+                price += itemOption.getPrice();
             }
 
             OrderDTO orderDTO = new OrderDTO();
@@ -62,22 +62,22 @@ public class BillService {
             orderDTO.setOption(String.join(", ", option));
             orderDTO.setQuantity(order.getQuantity());
             orderDTO.setPrice(price);
+            orderDTO.setAmount(price*order.getQuantity());
             orderDTO.setComment(order.getComment());
             orderDTO.setStatus(order.getStatus());
-            orderDTO.setTimestamp(order.getTimestamp());
 
-            total += price;
+            subTotal += price*order.getQuantity();
             orderDTOList.add(orderDTO);
         }
 
         BillDTO billDTO = new BillDTO();
-        billDTO.setId(bill.getId());
+        billDTO.setBillId(bill.getId());
         billDTO.setPerson(bill.getPerson());
         billDTO.setType(bill.getType());
         billDTO.setStatus(bill.getStatus());
         billDTO.setTimestamp(bill.getTimestamp());
         billDTO.setOrders(orderDTOList);
-        billDTO.setTotal(total);
+        billDTO.setSubTotal(subTotal);
         return billDTO;
     }
 }

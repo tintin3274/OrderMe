@@ -14,7 +14,7 @@ public class OrderDTO {
     private String option;
     private int quantity;
     private double price;
+    private double amount;
     private String comment;
     private String status;
-    private LocalDateTime timestamp;
 }

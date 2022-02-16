@@ -52,7 +52,7 @@ public class OrderService {
                 order.setTimestamp(timestamp);
                 order = orderRepository.saveAndFlush(order);
 
-                double price = order.getItem().getPrice()*order.getQuantity();
+                double amount = order.getItem().getPrice()*order.getQuantity();
 
                 Map<Integer,Item> itemMap = itemService.getMapAllItemOfItemId(orderRequestDTO.getItemId());
                 List<String> optionalItemName = new ArrayList<>();
@@ -67,15 +67,15 @@ public class OrderService {
                         selectItem.setOptionalId(optionalId);
                         selectItem = selectItemRepository.saveAndFlush(selectItem);
 
-                        price += itemMap.get(selectItem.getSelectItemId().getItemId()).getPrice()*order.getQuantity();
+                        amount += itemMap.get(selectItem.getSelectItemId().getItemId()).getPrice()*order.getQuantity();
                         optionalItemName.add(itemMap.get(selectItem.getSelectItemId().getItemId()).getName());
                     }
                 }
 
-                stringBuilder.append(order.getQuantity()+"x "+order.getItem().getName()+" "+price+"\n");
+                stringBuilder.append(order.getQuantity()+"x "+order.getItem().getName()+" "+amount+"\n");
                 if(!optionalItemName.isEmpty()) stringBuilder.append("   "+String.join(", ", optionalItemName)+"\n");
                 if(order.getComment() != null) stringBuilder.append("   "+order.getComment()+"\n");
-                total += price;
+                total += amount;
             }
             stringBuilder.append("--------------------\n");
             stringBuilder.append("Total: "+total);
@@ -86,7 +86,7 @@ public class OrderService {
         }
     }
 
-    public boolean validateAndUpdateItemQuantity(List<OrderRequestDTO> orderRequestsDTO){
+    private boolean validateAndUpdateItemQuantity(List<OrderRequestDTO> orderRequestsDTO){
         try {
             Map<Integer,Integer> itemIdAndQuantity = new HashMap<>();
             Map<Integer,Item> itemMap = new HashMap<>();

@@ -45,6 +45,11 @@ public class ItemController {
         return itemService.findAllFoodCategory();
     }
 
+    @GetMapping("/category/{category}")
+    public List<Item> findItemByCategory(@PathVariable String category) {
+        return itemService.findItemByCategory(category);
+    }
+
     @PostMapping("/add")
     public Item addItem(@RequestBody AddItemDTO addItemDTO) {
         Item item = convertItemDTOToItem(addItemDTO.getItem());

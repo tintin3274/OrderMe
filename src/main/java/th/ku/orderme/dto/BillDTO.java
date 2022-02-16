@@ -11,11 +11,11 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BillDTO {
-    private int id;
+    private int billId;
     private int person;
     private String type;
     private String status;
     private LocalDateTime timestamp;
     private List<OrderDTO> orders;
-    private double total;
+    private double subTotal;
 }

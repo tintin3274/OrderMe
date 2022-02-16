@@ -88,4 +88,8 @@ public class ItemService {
     public List<String> findAllFoodCategory() {
         return itemRepository.findAllFoodCategory();
     }
+
+    public List<Item> findItemByCategory(String category) {
+        return itemRepository.findItemByCategoryEquals(category);
+    }
 }
