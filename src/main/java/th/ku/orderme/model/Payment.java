@@ -24,6 +24,8 @@ public class Payment implements Serializable {
     private String ref2;
     private String ref3;
     private String status;
+    private String generateInfo;
+    private String confirmInfo;
     private LocalDateTime createdTimestamp;
     private LocalDateTime updatedTimestamp;
 

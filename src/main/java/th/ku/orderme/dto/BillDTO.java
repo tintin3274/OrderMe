@@ -14,7 +14,6 @@ public class BillDTO {
     private int billId;
     private int person;
     private String type;
-    private String status;
     private LocalDateTime timestamp;
     private List<OrderDTO> orders;
     private double subTotal;

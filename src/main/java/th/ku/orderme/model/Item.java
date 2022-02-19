@@ -40,4 +40,19 @@ public class Item implements Serializable {
             joinColumns=@JoinColumn(name="item_id", referencedColumnName="id"),
             inverseJoinColumns=@JoinColumn(name="optional_id", referencedColumnName="id"))
     private List<Optional> optionalList;
+
+    @Override
+    public String toString() {
+        return "Item{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", category='" + category + '\'' +
+                ", image='" + image + '\'' +
+                ", price=" + price +
+                ", quantity=" + quantity +
+                ", checkQuantity=" + checkQuantity +
+                ", display=" + display +
+                '}';
+    }
 }

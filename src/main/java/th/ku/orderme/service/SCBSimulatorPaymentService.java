@@ -1,17 +1,27 @@
-package th.ku.orderme.util;
+package th.ku.orderme.service;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.squareup.okhttp.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import th.ku.orderme.model.Payment;
+import th.ku.orderme.repository.PaymentRepository;
+import th.ku.orderme.util.ConstantUtil;
 
 import javax.naming.AuthenticationException;
+import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 @Service
-public class SCBSimulatorPayment {
+@RequiredArgsConstructor
+public class SCBSimulatorPaymentService {
+
+    private final PaymentRepository paymentRepository;
+    private final PaymentService paymentService;
 
     private static String accessToken;
     private static Long accessTokenExpiresAt;
@@ -25,11 +35,11 @@ public class SCBSimulatorPayment {
     @Value("${scb.simulator.orderme.billerId}")
     private String billerId;
 
-    @Value("${scb.simulator.orderme.ref1}")
-    private String ref1;
+    @Value("${scb.simulator.orderme.ref1Prefix}")
+    private String ref1Prefix;
 
-    @Value("${scb.simulator.orderme.ref2}")
-    private String ref2;
+    @Value("${scb.simulator.orderme.ref2Prefix}")
+    private String ref2Prefix;
 
     @Value("${scb.simulator.orderme.ref3Prefix}")
     private String ref3Prefix;
@@ -39,7 +49,6 @@ public class SCBSimulatorPayment {
 
     @Value("${scb.simulator.orderme.terminalId}")
     private String terminalId;
-
 
     public String generateAccessToken() {
         try {
@@ -67,8 +76,6 @@ public class SCBSimulatorPayment {
                 JsonObject data = jsonResponse.getAsJsonObject("data");
                 accessToken = data.getAsJsonPrimitive("accessToken").getAsString();
                 accessTokenExpiresAt = data.getAsJsonPrimitive("expiresAt").getAsLong();
-
-                System.out.println("accessToken: "+accessToken);
                 return accessToken;
             }
             else {
@@ -80,7 +87,6 @@ public class SCBSimulatorPayment {
             System.err.println(e);
             accessToken = null;
         }
-
         return null;
     }
 
@@ -91,9 +97,12 @@ public class SCBSimulatorPayment {
         return true;
     }
 
-    public String generateDeeplink(Double amount) {
+    public String generateDeeplink(Payment payment) {
         try {
             if(!validateToken()) throw new AuthenticationException("Can't Generate SCB Token");
+
+            int billId = payment.getBill().getId();
+            payment.setRef3(ref3Prefix+payment.getRef1());
 
             OkHttpClient client = new OkHttpClient();
             MediaType mediaType = MediaType.parse("application/json");
@@ -103,16 +112,16 @@ public class SCBSimulatorPayment {
                     "\n\t\"sessionValidityPeriod\": 900," +
                     "\n\t\"sessionValidUntil\": \"\"," +
                     "\n\t\"billPayment\": {" +
-                    "\n\t\t\"paymentAmount\": "+amount+"," +
-                    "\n\t\t\"accountTo\": \"164041983738626\"," +
-                    "\n\t\t\"ref1\": \""+ref1+"\"," +
-                    "\n\t\t\"ref2\": \""+ref2+"\"," +
-                    "\n\t\t\"ref3\": \""+ref3Prefix+"\"\n\t}," +
+                    "\n\t\t\"paymentAmount\": "+payment.getTotal()+"," +
+                    "\n\t\t\"accountTo\": \""+billerId+"\"," +
+                    "\n\t\t\"ref1\": \""+ payment.getRef1() +"\"," +
+                    "\n\t\t\"ref2\": \""+ payment.getRef2() +"\"," +
+                    "\n\t\t\"ref3\": \""+payment.getRef3()+"\"\n\t}," +
                     "\n\t\"creditCardFullAmount\": {" +
-                    "\n\t\t\"merchantId\": \"741195842153552\"," +
-                    "\n\t\t\"terminalId\": \"751110402887330\"," +
-                    "\n\t\t\"orderReference\": \"12345678\"," +
-                    "\n\t\t\"paymentAmount\": "+amount+"\n\t}," +
+                    "\n\t\t\"merchantId\": \""+merchantId+"\"," +
+                    "\n\t\t\"terminalId\": \""+terminalId+"\"," +
+                    "\n\t\t\"orderReference\": \""+payment.getRef1()+"\"," +
+                    "\n\t\t\"paymentAmount\": "+payment.getTotal()+"\n\t}," +
                     "\n\t\"merchantMetaData\": {" +
                     "\n\t\t\"callbackUrl\": \"http://tintin3274.trueddns.com:40850\"," +
                     "\n\t\t\"merchantInfo\": {" +
@@ -145,17 +154,19 @@ public class SCBSimulatorPayment {
 
             JsonObject jsonResponse = JsonParser.parseString(response.body().string()).getAsJsonObject();
             JsonObject status = jsonResponse.getAsJsonObject("status");
-            String statusCode = status.getAsJsonPrimitive("code").getAsString();
+            String statusCode = status.get("code").getAsString();
 
             if(statusCode.equals("1000")) {
+                payment.setChannel(ConstantUtil.DEEP_LINK);
+                payment.setGenerateInfo(jsonResponse.toString());
+                save(payment);
+
                 JsonObject data = jsonResponse.getAsJsonObject("data");
-                String deeplinkUrl = data.getAsJsonPrimitive("deeplinkUrl").getAsString();
-                return deeplinkUrl;
+                return data.get("deeplinkUrl").getAsString();
             }
             else {
-                throw new Exception("Status code "+statusCode+": "+status.getAsJsonPrimitive("description").getAsString());
+                throw new Exception("Status code "+statusCode+": "+status.get("description").getAsString());
             }
-
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println(e);
@@ -163,9 +174,12 @@ public class SCBSimulatorPayment {
         return null;
     }
 
-    public String generateQrCode(Double amount) {
+    public String generateQrCode(Payment payment) {
         try {
             if(!validateToken()) throw new AuthenticationException("Can't Generate SCB Token");
+
+            int billId = payment.getBill().getId();
+            payment.setRef3(ref3Prefix+payment.getRef1());
 
             OkHttpClient client = new OkHttpClient();
             MediaType mediaType = MediaType.parse("application/json");
@@ -173,13 +187,13 @@ public class SCBSimulatorPayment {
                     "\r\n\t\"qrType\": \"PPCS\", " +
                     "\r\n\t\"ppType\": \"BILLERID\", " +
                     "\r\n\t\"ppId\": \""+billerId+"\", " +
-                    "\r\n\t\"amount\": "+amount+", " +
-                    "\r\n\t\"ref1\": \""+ref1+"\", " +
-                    "\r\n\t\"ref2\": \""+ref2+"\", " +
-                    "\r\n\t\"ref3\": \""+ref3Prefix+"\"," +
+                    "\r\n\t\"amount\": "+payment.getTotal()+", " +
+                    "\r\n\t\"ref1\": \""+payment.getRef1()+"\", " +
+                    "\r\n\t\"ref2\": \""+ payment.getRef2() +"\", " +
+                    "\r\n\t\"ref3\": \""+payment.getRef3()+"\"," +
                     "\r\n\t\"merchantId\": \""+merchantId+"\"," +
                     "\r\n\t\"terminalId\": \""+terminalId+"\"," +
-                    "\r\n\t\"invoice\": \"ORDERMETEST1\"" +
+                    "\r\n\t\"invoice\": \""+payment.getRef1()+"\"" +
                     "\t\r\n}");
             Request request = new Request.Builder()
                     .url("https://api-sandbox.partners.scb/partners/sandbox/v1/payment/qrcode/create")
@@ -194,21 +208,121 @@ public class SCBSimulatorPayment {
 
             JsonObject jsonResponse = JsonParser.parseString(response.body().string()).getAsJsonObject();
             JsonObject status = jsonResponse.getAsJsonObject("status");
-            String statusCode = status.getAsJsonPrimitive("code").getAsString();
+            String statusCode = status.get("code").getAsString();
 
             if(statusCode.equals("1000")) {
+                payment.setChannel(ConstantUtil.QR_CODE);
+                payment.setGenerateInfo(jsonResponse.toString());
+                save(payment);
+
                 JsonObject data = jsonResponse.getAsJsonObject("data");
-                String qrImage = data.getAsJsonPrimitive("qrImage").getAsString();
+                String qrImage = data.get("qrImage").getAsString();
                 return jsonResponse.toString();
             }
             else {
-                throw new Exception("Status code "+statusCode+": "+status.getAsJsonPrimitive("description").getAsString());
+                throw new Exception("Status code "+statusCode+": "+status.get("description").getAsString());
             }
-
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println(e);
         }
         return null;
+    }
+
+    private void save(Payment payment) {
+        LocalDateTime localDateTime = LocalDateTime.now();
+        if(payment.getCreatedTimestamp() == null) payment.setCreatedTimestamp(localDateTime);
+        payment.setUpdatedTimestamp(localDateTime);
+        paymentRepository.saveAndFlush(payment);
+    }
+
+    public void slipVerification(String transRef) { // QR30 Only
+        String request = "{\"transactionId\":\""+transRef+"\"}";
+        paymentConfirm(request);
+    }
+
+    public void paymentConfirm(String request) {
+        try {
+            if(!validateToken()) throw new AuthenticationException("Can't Generate SCB Token");
+            String url;
+
+            JsonObject jsonRequest = JsonParser.parseString(request).getAsJsonObject();
+            String transactionId = jsonRequest.get("transactionId").getAsString();
+            if(transactionId.contains("-")) {
+                url = "https://api-sandbox.partners.scb/partners/sandbox/v2/transactions/"+transactionId; // SCB EASY
+            }
+            else {
+                if(jsonRequest.has("qrId")) {
+                    String qrId = jsonRequest.get("qrId").getAsString();
+                    url = "https://api-sandbox.partners.scb/partners/sandbox/v1/payment/qrcode/creditcard/"+qrId; // QRCS
+
+                }
+                else {
+                    url = "https://api-sandbox.partners.scb/partners/sandbox/v1/payment/billpayment/transactions/"+transactionId+"?sendingBank=014"; // QR30
+                }
+            }
+
+            Response response = buildRequestConfirmPayment(url);
+
+            JsonObject jsonResponse = JsonParser.parseString(response.body().string()).getAsJsonObject();
+            JsonObject status = jsonResponse.getAsJsonObject("status");
+            String statusCode = status.get("code").getAsString();
+
+            if(statusCode.equals("1000")) {
+                String channel;
+                String ref1 = null;
+                JsonObject data = jsonResponse.getAsJsonObject("data");
+
+                if(data.has("transactionMethod")) {
+                    channel = data.get("transactionMethod").getAsString(); // SCB EASY - BP, CCFA
+                    switch (channel) {
+                        case "BP":
+                            JsonObject billPayment = data.getAsJsonObject("billPayment");
+                            ref1 = billPayment.get("ref1").getAsString();
+                            break;
+                        case "CCFA":
+                            JsonObject creditCardFullAmount = data.getAsJsonObject("creditCardFullAmount");
+                            ref1 = creditCardFullAmount.get("orderReference").getAsString();
+                            break;
+                    }
+                }
+                else if(data.has("paymentMethod")) {
+                    channel = data.get("paymentMethod").getAsString(); // QRCS
+                    ref1 = data.get("invoice").getAsString();
+                }
+                else {
+                    channel = "QR30"; //QR30
+                    ref1 = data.get("ref1").getAsString();
+                }
+
+                Payment payment = paymentRepository.findByRef1(ref1);
+                if(payment != null && payment.getStatus().equalsIgnoreCase(ConstantUtil.UNPAID)) {
+                    payment.setStatus(ConstantUtil.PAID);
+                    payment.setChannel(channel);
+                    payment.setConfirmInfo(jsonResponse.toString());
+                    save(payment);
+                    paymentService.createReceipt(ref1);
+                }
+            }
+            else {
+                throw new Exception("Status code "+statusCode+": "+status.get("description").getAsString());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println(e);
+        }
+    }
+
+    private Response buildRequestConfirmPayment(String url) throws IOException {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url)
+                .method("GET", null)
+                .addHeader("authorization", "Bearer "+accessToken)
+                .addHeader("resourceOwnerId", apiKey)
+                .addHeader("requestUId", java.util.UUID.randomUUID().toString())
+                .addHeader("accept-language", "EN")
+                .build();
+        return client.newCall(request).execute();
     }
 }

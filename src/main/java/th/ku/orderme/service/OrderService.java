@@ -1,6 +1,6 @@
 package th.ku.orderme.service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import th.ku.orderme.dto.CartDTO;
 import th.ku.orderme.dto.OrderRequestDTO;
@@ -9,12 +9,13 @@ import th.ku.orderme.model.*;
 import th.ku.orderme.model.Optional;
 import th.ku.orderme.repository.OrderRepository;
 import th.ku.orderme.repository.SelectItemRepository;
+import th.ku.orderme.util.ConstantUtil;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class OrderService {
     private final OrderRepository orderRepository;
     private final SelectItemRepository selectItemRepository;
@@ -32,7 +33,7 @@ public class OrderService {
 
     public String order(CartDTO cartDTO, Bill bill) {
         try {
-            if(!bill.getStatus().equalsIgnoreCase("OPEN")) throw new IllegalArgumentException("Bill is CLOSE");
+            if(!bill.getStatus().equalsIgnoreCase(ConstantUtil.OPEN)) throw new IllegalArgumentException("Bill is not OPEN");
 
             if(!validateAndUpdateItemQuantity(cartDTO.getOrderRequests())) throw new IllegalArgumentException("Something wrong! Cannot order");
 
@@ -48,7 +49,7 @@ public class OrderService {
                 order.setItem(itemService.findById(orderRequestDTO.getItemId()));
                 order.setQuantity(orderRequestDTO.getQuantity());
                 order.setComment(orderRequestDTO.getComment());
-                order.setStatus("ORDER");
+                order.setStatus(ConstantUtil.ORDER);
                 order.setTimestamp(timestamp);
                 order = orderRepository.saveAndFlush(order);
 
@@ -81,7 +82,6 @@ public class OrderService {
             stringBuilder.append("Total: "+total);
             return stringBuilder.toString();
         } catch (IllegalArgumentException e) {
-            e.printStackTrace();
             return e.getMessage();
         }
     }

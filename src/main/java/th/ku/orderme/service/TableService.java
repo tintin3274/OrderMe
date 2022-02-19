@@ -1,11 +1,11 @@
 package th.ku.orderme.service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import th.ku.orderme.repository.TableRepository;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class TableService {
     private final TableRepository tableRepository;
 

@@ -30,4 +30,15 @@ public class Bill implements Serializable {
     @JsonIgnore
     @OneToMany(mappedBy="bill")
     private List<Order> orderList;
+
+    @Override
+    public String toString() {
+        return "Bill{" +
+                "id=" + id +
+                ", person=" + person +
+                ", type='" + type + '\'' +
+                ", status='" + status + '\'' +
+                ", timestamp=" + timestamp +
+                '}';
+    }
 }
