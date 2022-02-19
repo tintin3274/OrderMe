@@ -1,11 +1,14 @@
+.menu-name{
+    font-weight: 600;
+}
+
 .picture{
     max-height: 125px;
     max-width: 125px;
 }
 
 .card-body{
-    padding-left: 2%;
-    padding-right: 5%;
+    padding: 2% 3% 2% 3%;
 }
 
 .card{
@@ -42,6 +45,11 @@
     display: flex;
     justify-content: center;
     align-content: center;
+}
+
+.price{
+    position: absolute;
+    bottom: 0;
 }
 
 

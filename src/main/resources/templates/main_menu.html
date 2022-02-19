@@ -12,36 +12,47 @@
 <body>
 <div layout:fragment="content">
     <nav class="navbar navbar-dark bg-dark">
-        <div class="container-fluid">
+        <ul class="nav nav-pills">
+            <li class="nav-item">
+                <a href="/cart" class="nav-link">Cart</a>
+            </li>
+            <li class="nav-item">
+                <a href="/bill" class="nav-link">Bill</a>
+            </li>
+        </ul>
+    </nav>
+    <nav class="navbar navbar-light bg-light" >
+        <ul class="nav nav-pills" id="navbar-category">
             <form class="d-flex">
                 <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success" type="submit">Search</button>
-                <a href="/admin/cart" role="button" class="btn btn-primary">Cart</a>
-                <a href="/admin/bill" role="button" class="btn btn-primary">Bill</a>
             </form>
-        </div>
+        </ul>
     </nav>
-    <div class="px-3">
-        <h1>main_menu</h1>
-        <div class="cardScroll">
-            <div class="row" id="cardContainer" >
-                <!-- card-->
-                <div class="col-md-6 card d-flex" >
-                    <div class="row my-1">
-                        <!--img-->
-                        <div class="columnImage col-auto " >
-                            <img src="/images/default.png" class="picture" >
-                        </div>
+    <!--- create in JS -->
+    <div class="px-3" data-bs-spy="scroll" data-bs-target="#navbar-category" id="menu" data-bs-offset="5">
+<!--        <h1 id="Dessert">Dessert</h1>-->
+<!--        <div class="cardScroll">-->
+<!--            <div class="row">-->
+<!--                &lt;!&ndash; card&ndash;&gt;-->
+<!--                <div class="col-md-6 card d-flex" >-->
+<!--                    <div class="row my-1">-->
+<!--                        &lt;!&ndash;img&ndash;&gt;-->
+<!--                        <div class="columnImage col-auto " >-->
+<!--                            <img src="/images/default.png" class="picture" >-->
+<!--                        </div>-->
+<!--                        &lt;!&ndash;text&ndash;&gt;-->
+<!--                        <div class="col-7 card-body">-->
+<!--                            <h5 class="card-title">มัทฉะนมสด (ชาเขียวนมสด)</h5>-->
+<!--                            <p class="card-text" ><small class="text-muted hide-text">เมนูสุดฮิตของฟุกุ </small></p>-->
+<!--                            <a class="stretched-link" data-bs-toggle="modal" data-bs-target="#staticBackdrop"></a>-->
+<!--                            <h6 class="price">25 บาท</h6>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+    </div>
 
-                        <!--text-->
-                        <div class="col-7 card-body" >
-                            <h5 class="card-title">มัทฉะนมสด (ชาเขียวนมสด)</h5>
-                            <p class="card-text"><small class="text-muted hide-text">เมนูสุดฮิตของฟุกุ รสชาติเป็นเอกลักษณ์หอมเด่นไม่เหมือนใคร มัทฉะแท้คุณภาพดีนำเข้าจากประเทศญี่ปุ่น เรียกว่ายิ่งกว่าอร่อย สามารถเลือกรูปแบบ ระดับความหวานและท็อปปิ้งได้</small></p>
-                        </div>
-                    </div>
-                    <a type="button"class="stretched-link" data-bs-toggle="modal" data-bs-target="#staticBackdrop"></a>
-                </div>
-            </div>
 
             <!-- Button trigger modal -->
             <!--        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">-->
@@ -53,22 +64,27 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <img class="img-fluid" id="modalImg" src="/images/default.png">
+                            <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close" ></button>
                         </div>
-                        <div class="modal-body">
-                            <h4>มัทฉะนมสด (ชาเขียวนมสด)</h4>
-                            <p class="card-text"><small >เมนูสุดฮิตของฟุกุ รสชาติเป็นเอกลักษณ์หอมเด่นไม่เหมือนใคร มัทฉะแท้คุณภาพดีนำเข้าจากประเทศญี่ปุ่น เรียกว่ายิ่งกว่าอร่อย สามารถเลือกรูปแบบ ระดับความหวานและท็อปปิ้งได้</small></p>
+                        <div class="modal-body pb-0">
+                            <h4 class="menu-name" id="titleItem"></h4>
+                            <label id="desItem"></label>
                             <hr>
                         </div>
+                        <div class="modal-body py-0" id="modalBody">
+                        </div>
+                        <div class="modal-body pt-0" >
+                            <hr>
+                            <h5>Comment</h5>
+                            <textarea type="text" class="form-control" rows="3"></textarea>
+                        </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-primary">Understood</button>
+                            <button class="btn btn-primary" style="width: 100%" disabled>Get in Cart</button>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 </div>
 
 </body>
