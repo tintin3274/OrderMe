@@ -64,13 +64,16 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <img class="img-fluid" id="modalImg" src="/images/default.png">
+<!--                            <img class="img-fluid" id="modalImg" src="/images/default.png">-->
                             <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close" ></button>
                         </div>
                         <div class="modal-body pb-0">
-                            <h4 class="menu-name" id="titleItem"></h4>
+                            <div class="name-price">
+                                <h4 class="menu-name" id="titleItem"></h4>
+                                <p class="text-muted mb-0" id="priceItem"></p>
+                            </div>
                             <label id="desItem"></label>
-                            <hr>
+                            <hr class="mb-0">
                         </div>
                         <div class="modal-body py-0" id="modalBody">
                         </div>
@@ -80,7 +83,7 @@
                             <textarea type="text" class="form-control" rows="3"></textarea>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-primary" style="width: 100%" disabled>Get in Cart</button>
+                            <button class="btn btn-primary" style="width: 100%" id="goCart" disabled>Get in Cart</button>
                         </div>
                     </div>
                 </div>

@@ -1,6 +1,7 @@
 let item
 let i,j
 let allItem
+let groupName
 
 $.get( '/api/item/category', function( data ) {
     // console.log(data)
@@ -65,7 +66,7 @@ function createCard( category ){
 
             let prices = document.createElement('h6');
             prices.className = 'price'
-            prices.innerText = item[i].price + ' บาท'
+            prices.innerText = '฿ '+item[i].price
 
             let link = document.createElement('a');
             link.className = 'stretched-link'
@@ -108,8 +109,10 @@ function createNavCategory( category ){
 function createModal(id){
     $.get( '/api/item/' + id , function( data ) {
         allItem = data
+        // console.log(allItem)
         $('#titleItem').text(allItem.name)
         $('#desItem').text(allItem.description)
+        $('#priceItem').text('฿ ' + allItem.price)
         $.get( '/api/item/optional-of-id/' + id , function( data ) {
             $('#modalBody').empty()
             createOption(data)
@@ -119,17 +122,20 @@ function createModal(id){
 }
 
 function createOption(optionItem){
+
+    groupName = {}
+
     console.log(optionItem)
     let optionContainer = document.createElement('div');
 
     for(i=0;i < optionItem.length;i++){
 
         let titleOption = document.createElement('h5');
-        titleOption.className = 'menu-name'
+        titleOption.className = 'option-name'
         titleOption.innerText = optionItem[i].name
 
         let desOption = document.createElement('small');
-        desOption.className = 'text-muted'
+        desOption.className = 'text-muted option-des'
         desOption.innerText = optionItem[i].description
 
         optionContainer.appendChild(titleOption)
@@ -137,45 +143,86 @@ function createOption(optionItem){
 
         let min = optionItem[i].min
         let max = optionItem[i].max
+        let group = optionItem[i].name
 
         for(j=0;j < optionItem[i].itemList.length;j++){
 
+            let eachOptionContainer = document.createElement('div');
+            eachOptionContainer.className = 'name-price'
+
             let form = document.createElement('div');
-            form.className = 'form-check'
+            form.className = 'form-check option-div'
 
             let input = document.createElement('input');
             input.className = 'form-check-input'
             input.setAttribute('type','checkbox')
             input.id = optionItem[i].itemList[j].name
-            input.setAttribute('name',optionItem[i].name)
+            input.setAttribute('name',group)
 
             let label = document.createElement('label');
             label.className = 'form-check-label'
             label.innerText = optionItem[i].itemList[j].name
             label.setAttribute('for',optionItem[i].itemList[j].name)
 
+            let price = document.createElement('p');
+            price.className = 'text-muted mb-0'
+            if(optionItem[i].itemList[j].price > 0){
+                price.innerText = '+฿ ' + optionItem[i].itemList[j].price
+            }
             if(min == 1 && max == 1){
                 input.setAttribute('type','radio')
+                input.setAttribute('checked',true)
             }
             else {
-                input.onchange = function (){limitCheck(max,min,input.name)}
+                input.onchange = function (){limitCheck(max,min,group)}
             }
 
             form.appendChild(input)
             form.appendChild(label)
-            optionContainer.appendChild(form)
+            eachOptionContainer.appendChild(form)
+            eachOptionContainer.appendChild(price)
+            optionContainer.appendChild(eachOptionContainer)
         }
         $('#modalBody').append(optionContainer)
+
+        if((min == 0) || (min == 1 && max ==1) ){
+            groupName[group] = true
+        }
+        else{
+            groupName[group] = false
+        }
     }
+    buttonCheck()
+    console.log(groupName)
 }
 
 function limitCheck(max,min,name){
     let target = "input[name='"+name+"']"
     // console.log($(target+":checked").length)
-    if(($(target+":checked").length >= max)){
+    if (($(target+":checked").length >= max)){
         $(target).not(":checked").prop("disabled", true)
     }
-    if(($(target+":checked").length < max)){
+    else {
         $(target).prop("disabled",false)
+    }
+
+    if(($(target+":checked").length >= min)){
+        groupName[name] = true
+        buttonCheck()
+    }
+    else{
+        groupName[name] = false
+        $('#goCart').prop('disabled', true);
+    }
+}
+
+function buttonCheck(){
+
+    $('#goCart').prop('disabled', false);
+
+    for(var name in groupName){
+        if(groupName[name] == false){
+            $('#goCart').prop('disabled', true);
+        }
     }
 }
