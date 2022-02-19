@@ -18,6 +18,7 @@ public class TokenController {
         this.tokenService = tokenService;
     }
 
+    @ResponseBody
     @GetMapping("token/{uid}")
     public String createCookie(@PathVariable String uid, HttpServletRequest request, HttpServletResponse response) {
         if(!tokenService.tokenIsPresent(uid)) return null;

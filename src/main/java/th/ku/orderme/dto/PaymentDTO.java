@@ -9,11 +9,10 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderDTO {
-    private String name;
-    private String option;
-    private int quantity;
-    private double price;
-    private double amount;
-    private String comment;
+public class PaymentDTO {
+    private String ref1;
+    private String channel;
+    private LocalDateTime createdTimestamp;
+    private LocalDateTime updatedTimestamp;
+    private double total;
 }

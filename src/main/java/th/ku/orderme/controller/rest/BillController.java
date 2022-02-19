@@ -25,8 +25,7 @@ public class BillController {
     }
 
     @GetMapping("/{id}")
-    public BillDTO getBill(@PathVariable int id) {
-        return billService.getBill(id);
+    public BillDTO getBillDTO(@PathVariable int id) {
+        return billService.getBillDTO(id);
     }
-
 }

@@ -10,7 +10,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.*;
 
-
 @Service
 @AllArgsConstructor
 public class OptionalService {

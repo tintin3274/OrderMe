@@ -1,6 +1,6 @@
 package th.ku.orderme.service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import th.ku.orderme.dto.BillDTO;
 import th.ku.orderme.dto.OrderDTO;
@@ -10,13 +10,15 @@ import th.ku.orderme.model.Order;
 import th.ku.orderme.model.SelectItem;
 import th.ku.orderme.repository.BillRepository;
 import th.ku.orderme.repository.SelectItemRepository;
+import th.ku.orderme.util.ConstantUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class BillService {
     private final BillRepository billRepository;
     private final ItemService itemService;
@@ -34,7 +36,7 @@ public class BillService {
         return billRepository.existsById(id);
     }
 
-    public BillDTO getBill(int id) {
+    public BillDTO getBillDTO(int id) {
         Bill bill = findById(id);
         if(bill == null) return null;
 
@@ -42,7 +44,7 @@ public class BillService {
         List<OrderDTO> orderDTOList = new ArrayList<>();
 
         for(Order order : bill.getOrderList()) {
-            if(order.getStatus().equals("CANCEL")) continue;
+            if(order.getStatus().equals(ConstantUtil.CANCEL)) continue;
 
             Item item = order.getItem();
             double price = item.getPrice();
@@ -64,7 +66,6 @@ public class BillService {
             orderDTO.setPrice(price);
             orderDTO.setAmount(price*order.getQuantity());
             orderDTO.setComment(order.getComment());
-            orderDTO.setStatus(order.getStatus());
 
             subTotal += price*order.getQuantity();
             orderDTOList.add(orderDTO);
@@ -74,10 +75,25 @@ public class BillService {
         billDTO.setBillId(bill.getId());
         billDTO.setPerson(bill.getPerson());
         billDTO.setType(bill.getType());
-        billDTO.setStatus(bill.getStatus());
         billDTO.setTimestamp(bill.getTimestamp());
         billDTO.setOrders(orderDTOList);
         billDTO.setSubTotal(subTotal);
         return billDTO;
+    }
+
+    public void setStatusPaymentBill(int id) {
+        Bill bill = findById(id);
+        if(bill == null) return;
+        if(bill.getStatus().equalsIgnoreCase(ConstantUtil.OPEN)) {
+            bill.setStatus(ConstantUtil.PAYMENT);
+            billRepository.saveAndFlush(bill);
+        }
+    }
+
+    public void setStatusCloseBill(int id) {
+        Bill bill = findById(id);
+        if(bill == null) return;
+        bill.setStatus(ConstantUtil.CLOSE);
+        billRepository.saveAndFlush(bill);
     }
 }

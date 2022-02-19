@@ -31,4 +31,15 @@ public class Optional implements Serializable {
             joinColumns=@JoinColumn(name="optional_id", referencedColumnName="id"),
             inverseJoinColumns=@JoinColumn(name="item_id", referencedColumnName="id"))
     private List<Item> itemList;
+
+    @Override
+    public String toString() {
+        return "Optional{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", min=" + min +
+                ", max=" + max +
+                '}';
+    }
 }

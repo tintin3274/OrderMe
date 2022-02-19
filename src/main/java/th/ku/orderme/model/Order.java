@@ -33,4 +33,16 @@ public class Order implements Serializable {
     private String comment;
     private String status;
     private LocalDateTime timestamp;
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", item=" + item +
+                ", quantity=" + quantity +
+                ", comment='" + comment + '\'' +
+                ", status='" + status + '\'' +
+                ", timestamp=" + timestamp +
+                '}';
+    }
 }
