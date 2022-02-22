@@ -18,5 +18,9 @@ public class ConstantUtil {
     public static final String CASH = "CASH";
     public static final String QR_CODE = "QRCODE";
     public static final String DEEP_LINK = "DEEPLINK";
+    public static final String BP = "BP";
+    public static final String CCFA = "CCFA";
+    public static final String QR30 = "QR30";
+    public static final String QRCS = "QRCS";
 
 }
