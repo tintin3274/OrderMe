@@ -14,7 +14,7 @@
     <nav class="navbar navbar-dark bg-dark">
         <ul class="nav nav-pills">
             <li class="nav-item">
-                <a href="/cart" class="nav-link">Cart</a>
+                <a class="nav-link" data-bs-toggle="modal" data-bs-target="#cartModal" type="button" onclick="createCartItem()">Cart</a>
             </li>
             <li class="nav-item">
                 <a href="/bill" class="nav-link">Bill</a>
@@ -61,11 +61,11 @@
 
             <!-- Modal -->
             <div class="modal fade" id="staticBackdrop"  tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-fullscreen-md-down">
                     <div class="modal-content">
                         <div class="modal-header">
 <!--                            <img class="img-fluid" id="modalImg" src="/images/default.png">-->
-                            <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close" ></button>
+                            <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close" id="closeModal"></button>
                         </div>
                         <div class="modal-body pb-0">
                             <div class="name-price">
@@ -80,14 +80,54 @@
                         <div class="modal-body pt-0" >
                             <hr>
                             <h5>Comment</h5>
-                            <textarea type="text" class="form-control" rows="3"></textarea>
+                            <textarea type="text" class="form-control" rows="3" id="inputComment"></textarea>
+                            <div class="mt-2 col-6 " >
+                                <div class="input-group number-spinner">
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default" data-dir="dwn">-</button>
+                                            </span>
+                                    <input id="inputQuantity" type="text" class="text-center form-control" value="1" style="width: 50%">
+                                    <span class="input-group-btn">
+					                            <button class="btn btn-default" data-dir="up">+</button>
+				                            </span>
+                                </div>
+                            </div>
                         </div>
+
                         <div class="modal-footer">
-                            <button class="btn btn-primary" style="width: 100%" id="goCart" disabled>Get in Cart</button>
+                            <button class="btn btn-primary" style="width: 100%" id="goCart"  disabled>
+                                <span id="priceButton"></span><span> - </span> <span id="nameButton"></span>
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
+
+    <div class="modal fade" id="cartModal"  tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen-md-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 >Cart</h2>
+                    <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body pb-0" id="cartModalBody">
+                    <div>
+                        <div class="name-price">
+                            <h6 class="menu-name">ข้าวหน้าเนื้อ</h6>
+                            <h6>300</h6>
+                        </div>
+                        <small class="text-muted">ไข่ดิบ, ขิงดอง, XL</small>
+                        <div>
+                            <a type="button">Edit</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" style="width: 100%">Payment</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 </body>

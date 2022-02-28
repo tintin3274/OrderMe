@@ -44,10 +44,18 @@
         overflow: hidden;
         height: 100%;
     }
+
+    @media (max-width:400px){
+        .picture{
+            max-height: 100px;
+            max-width: 100px;
+        }
+    }
 }
 .row{
     height: 100%;
 }
+
 
 .cardScroll{
     height: 100%;
@@ -66,10 +74,14 @@
     display: flex;
     justify-content: center;
     align-content: center;
+    align-items: center;
 }
 
 .price{
     position: absolute;
     bottom: 0;
+}
+.modal-fullscreen-md-down .modal-content{
+    height: unset; !important;
 }
 
