@@ -31,28 +31,6 @@ function createNewCategory(){
     }
 }
 
-function preview() {
-    picPreview.src = URL.createObjectURL(event.target.files[0]);
-
-}
-function clearImage() {
-    document.getElementById('formFile').value = null;
-    picPreview.src = '/images/default.png';
-}
-
-function quantitySelect() {
-    if($('#radioYes').is(":checked")){
-        $('#qtyNum').prop('disabled', false);
-        $('#qtyNum').prop('required',true);
-    }
-    else {
-        $('#qtyNum').val('');
-        $('#qtyNum').prop('disabled', true);
-        $('#qtyNum').prop('required',false);
-    }
-}
-
-
 
 function selectedOptionGroup(){
     var selectRow=$('#optionGroup').bootstrapTable('getSelections');
@@ -68,10 +46,6 @@ function selectedOptionGroup(){
         optionId.push(selectOptionTable[i].id);
     }
 
-    // console.log(selectId)
-    // console.log(optionId)
-    // console.log(selectId.filter(x => !optionId.includes(x)))
-
     var selectIdDiffOptionId=selectId.filter(x => !optionId.includes(x));
 
     for(let i=0;i<selectIdDiffOptionId.length;i++){
@@ -86,23 +60,19 @@ function selectedOptionGroup(){
             });
     }
 
-    // console.log(optionId.filter(x => !selectId.includes(x)))
     var optionIdDiffSelectId=optionId.filter(x => !selectId.includes(x));
 
-    for(let i=0;i<optionIdDiffSelectId.length;i++){
-        $('#selectedOption').bootstrapTable(
-            'remove', {
-                field: 'id',
-                values: [optionIdDiffSelectId[i]]
-            })
-    }
+    $('#selectedOption').bootstrapTable(
+        'remove', {
+            field: 'id',
+            values: optionIdDiffSelectId
+        })
 }
 
 function create() {
     let display = clicked
     let name = $('#inputName').val()
     let description = $('#inputDescription').val()
-    console.log(description)
     let category = $('#inputCategory').val()
     let checkQuantity
     let quantity
@@ -115,63 +85,25 @@ function create() {
         checkQuantity = 0
         quantity = 0
     }
-    let json ="{" + '"optionGroupId":['
-    var i
+
+    let item = {
+        "name": name,
+        "description": description,
+        "category":category,
+        "price": price,
+        "quantity": quantity,
+        "checkQuantity": checkQuantity,
+        "display": display
+    }
+
+    let group = []
     var table = $('#selectedOption').bootstrapTable('getData')
     for(i=0;i<table.length;i++){
-        json += (table[i].id)
-        if(i == table.length -1 ){
-            break
-        }
-    json += ','
+        group.push(table[i].id)
     }
-    json += '],'
-
-    json += '"item":{"name":"'+ name
-    if(description != ''){
-        json += '","description": "' + description
+    let json = {
+        "item": item,
+        "optionGroupId": group
     }
-    json += '","category":"'+ category + '","price":' + price + ',"quantity":' +
-        quantity + ',"checkQuantity":' + checkQuantity + ',"display":' + display + '}}'
-    json = JSON.stringify(JSON.parse(json))
-    console.log(json)
-    alert(json)
-
-
-    var formdata = storePicture()
-    formdata.append('addItemDTO',json)
-
-    $.ajax({
-        url: '/api/item/add-with-image',
-        data: formdata ,
-        processData: false ,
-        contentType: false ,
-        type: 'POST',
-        success: function () {
-            console.log('success')
-        }
-    });
-
-
-    // let pictureName
-    // if(document.getElementById('formFile').value == null){
-    //     pictureName = 'default.png'
-    // }
-    // else {
-    //     pictureName = $('#formFile')[0].files[0].name
-    // }
-    // console.log( pictureName)
-
-}
-
-function storePicture(){
-    var img = document.getElementById('formFile');
-    var imgList = img.files
-
-    var formData = new FormData()
-
-    if(imgList != null && imgList.length > 0){
-        formData.append('image',imgList[0])
-    }
-    return formData
+    sendApiCreateItem(json)
 }

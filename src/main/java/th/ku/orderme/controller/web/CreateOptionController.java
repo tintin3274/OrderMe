@@ -5,8 +5,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/bill")
-public class BillViewController {
+@RequestMapping("/admin/create-option")
+public class CreateOptionController {
     @GetMapping
-    public String getpage(){return "bill";}
+    public String getPage(){
+        return "create_option";
+    }
 }

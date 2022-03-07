@@ -9,46 +9,100 @@
 </head>
 <body >
 <section layout:fragment="content">
-    <div class="d-flex">
-        <div class="d-flex flex-column flex-shrink-0 text-white  slideBar" >
-            <button type="button" class="btn m-md-2 btn-bar active" id="btnFood" onclick="selectFood()" >Menu</button>
-            <button type="button" class="btn m-md-2 btn-bar" id="btnOpGr" onclick="selectOpGr()">Option Group</button>
-            <button type="button" class="btn m-md-2 btn-bar" id="btnOption" onclick="selectOption()">Option</button>
-        </div>
-    <div style="width: 100%">
-    <div class="p-3 bg-white" id="content">
-            <button type="button" class="btn btn-secondary" id="btn-toggle" onclick="tog()">Toggle</button>
+    <ul class="nav nav-tabs" id="manageTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="menu-tab" data-bs-toggle="tab" data-bs-target="#menu" href="#menu" type="button" role="tab" aria-controls="menu" aria-selected="true">Menu</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="group-tab" data-bs-toggle="tab"  href="#group" type="button" role="tab" aria-controls="group" aria-selected="true">Option Group</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="option-tab" data-bs-toggle="tab"  href="#option" type="button" role="tab" aria-controls="option" aria-selected="false">Option</button>
+        </li>
+    </ul>
 
-        <div class="toolbar" id="toolbarFood">
-            <a class="m-md-2 btn-bar btn btn-secondary" href="/admin/create-item" type="button">Create</a>
+    <div class="tab-content p-1" id="myTabContent">
+        <div class="tab-pane fade show active" id="menu" role="tabpanel" aria-labelledby="menu-tab">
+            <div id="pageFood" class="table-responsive">
+                <div class="toolbar" id="toolbarFood">
+                    <a class="m-md-2 btn-bar btn btn-secondary" href="/admin/create-item" type="button">Create</a>
+                </div>
+                <table id="tableFood"
+                       data-toggle="table"
+                       data-pagination="true"
+                       data-pagination-h-align="left"
+                       data-pagination-detail-h-align="right"
+                       data-search="true"
+                       data-toolbar="#toolbarFood"
+                       data-url="/api/item"
+                       class="table"
+                >
+                    <thead >
+                    <tr>
+                        <th data-field="image" data-formatter="imageFormatter" data-halign="left" data-align="center" data-width="200">Picture</th>
+                        <th data-field="name" data-sortable="true" >Name</th>
+                        <th data-field="category" data-sortable="true" >Category</th>
+                        <th data-field="price" data-sortable="true" >Price</th>
+                        <th data-field="quantity" data-sortable="true" >Quantity</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div id="pageFood">
-        <table id="tableFood"
-               data-toggle="table"
-               data-pagination="true"
-               data-pagination-h-align="left"
-               data-pagination-detail-h-align="right"
-               data-search="true"
-               data-toolbar="#toolbarFood"
-               data-url="/api/item"
-        >
-            <thead >
-            <tr>
-                <th data-field="image" data-formatter="imageFormatter" data-halign="left" data-align="center" data-width="200">Picture</th>
-                <th data-field="name" data-sortable="true" >Name</th>
-                <th data-field="category" data-sortable="true" >Category</th>
-                <th data-field="price" data-sortable="true" >Price</th>
-                <th data-field="quantity" data-sortable="true" >Quantity</th>
-            </tr>
-            </thead>
-                <tbody>
-            </tbody>
-        </table>
-        </div>
-    </div>
-    </div>
-    </div>
 
+        <div class="tab-pane fade" id="group" role="tabpanel" aria-labelledby="group-tab">
+            <div id="pageOptionGroup" class="table-responsive">
+                <div class="toolbar" id="toolbarOptionGroup">
+                    <a class="m-md-2 btn-bar btn btn-secondary" href="/admin/create-option-group" type="button">Create</a>
+                </div>
+                <table id="tableOptionGroup"
+                       data-toggle="table"
+                       data-pagination="true"
+                       data-pagination-h-align="left"
+                       data-pagination-detail-h-align="right"
+                       data-search="true"
+                       data-toolbar="#toolbarOptionGroup"
+                >
+                    <thead >
+                    <tr>
+                        <th data-field="name" data-sortable="true" >Name</th>
+                        <th data-field="using" data-sortable="true" >Using</th>
+                        <th data-field="min" data-sortable="true" >Min</th>
+                        <th data-field="max" data-sortable="true" >Max</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="option" role="tabpanel" aria-labelledby="option-tab">
+            <div id="pageOption">
+                <div class="toolbar" id="toolbarOption">
+                    <a class="m-md-2 btn-bar btn btn-secondary" href="/admin/create-option" type="button">Create</a>
+                </div>
+                <table id="tableOption"
+                       data-toggle="table"
+                       data-pagination="true"
+                       data-pagination-h-align="left"
+                       data-pagination-detail-h-align="right"
+                       data-search="true"
+                       data-toolbar="#toolbarOption"
+                >
+                    <thead >
+                    <tr>
+                        <th data-field="name" data-sortable="true" >Name</th>
+                        <th data-field="using" data-sortable="true" >Using</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </section>
 </body>
 

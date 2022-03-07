@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="https://www.thymeleaf.org"
+      layout:decorate="~{fragments/create_header.html}">
+
+<head>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <script src="/js/create_option_group.js" type = "text/javascript"></script>
+</head>
+
+<body class="bg">
+<section layout:fragment="content">
+<!--    <div id="qrcode"></div>-->
+<div class="container mt-3 shadow bg-body rounded px-4" id="layout">
+    <form class="row g-3" >
+        <!--        name & des-->
+        <div class="col-md-12">
+            <h5 for="inputName" class="form-label">Group Name</h5>
+            <input type="text" class="form-control" id="inputNameGroup" required>
+        </div>
+        <div class="col-12">
+            <h5 for="inputDescription" class="form-label">Description</h5>
+            <textarea type="text" class="form-control" id="inputDescriptionGroup" rows="4"></textarea>
+        </div>
+        <div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#optionModal" onclick="checkTable()">Select Option</button>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createOptionModal">Create Option</button>
+        </div>
+
+            <!--table-->
+        <table id="selectedOption"
+               data-toggle="table"
+               data-use-row-attr-func="true"
+               data-reorderable-rows="true"
+        >
+            <thead >
+            <tr>
+                <th data-field="id" >ID</th>
+                <th data-field="name" >Option</th>
+                <th data-field="price" >Price</th>
+                <th data-field="remove" data-formatter="operateFormatter" data-events="operateEvents">Remove</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <!--table            -->
+        <div class="mt-2 col-6 " >
+            <h5>MIN</h5>
+            <div class="input-group number-spinner">
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-primary" data-dir="dwn" value="0">-</button>
+                </span>
+                <input type="number" class="text-center form-control" value= 0  style="width: 50%">
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-primary" data-dir="up" value="0">+</button>
+                </span>
+            </div>
+        </div>
+        <div class="mt-2 col-6 " >
+            <h5>MAX</h5>
+            <div class="input-group number-spinner col-6">
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-primary" data-dir="dwn" value="0">-</button>
+                </span>
+                <input type="number" class="text-center form-control" value= 0 style="width: 50%">
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-primary" data-dir="up" value="0">+</button>
+                </span>
+            </div>
+        </div>
+        <!--footer-->
+        <footer  style="display: flex; justify-content: space-between">
+            <div class="mb-3">
+                <a class="btn btn-secondary" href="/admin/manage-item#group" type="button" id="btnBack">Back</a>
+            </div>
+            <div class="mb-3">
+                <button class="btn btn-primary" type="submit">Create</button>
+            </div>
+        </footer>
+    </form>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="optionModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Select Option</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table id="optionGroup"
+                       data-toggle="table"
+                       data-pagination="true"
+                       data-pagination-h-align="left"
+                       data-pagination-detail-h-align="right"
+                       data-search="true"
+                       data-click-to-select="true"
+                       data-url="/api/item/category/OPTION"
+                >
+                    <thead >
+                    <tr>
+                        <th data-field="state" data-checkbox="true"></th>
+                        <th data-field="id" >ID</th>
+                        <th data-field="name" >Option</th>
+                        <th data-field="price" >Price</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="insertOptionTable()">Selected</button>
+            </div>
+        </div>
+    </div>
+</div>
+    <!-- Modal Create-->
+<div class="modal fade" id="createOptionModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create Option</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pb-0">
+                <form class="row g-3" onsubmit="createOption()">
+                    <div class="col-md-12">
+                        <h5 for="inputNameOption" class="form-label">Name</h5>
+                        <input type="text" class="form-control" id="inputNameOption" required>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Quantity</label>
+                        <div class="row g-2 align-items-center col-auto">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="radioNo" onclick="quantitySelect()" checked>
+                                <label class="form-check-label" for="radioNo">
+                                    No
+                                </label>
+                            </div>
+                            <div class="form-check col-auto">
+                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="radioYes" onclick="quantitySelect()">
+                                <label class="form-check-label" for="radioYes">
+                                    Yes
+                                </label>
+                            </div>
+                            <div class="col-auto">
+                                <input type="number"  class="form-control" id="qtyNum" min="0" disabled >
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <label for="inputPrice" class="form-label">Price</label>
+                        <input type="number" class="form-control" id="inputPrice" min="0" step="0.01" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button class="btn btn-primary" type="submit">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--    <script type="text/javascript">-->
+<!--        new QRCode(document.getElementById("qrcode"), "https://webisora.com");-->
+<!--    </script>-->
+</section>
+</body>
+</html>

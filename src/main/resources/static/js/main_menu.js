@@ -389,6 +389,11 @@ function createCartItem(order){
         link.setAttribute('data-bs-target',"#staticBackdrop")
         link.onclick = function(){editItem(index)}
 
+        let linkDelete = document.createElement('a')
+        linkDelete.setAttribute('type', 'button')
+        linkDelete.innerText = 'Delete'
+        linkDelete.onclick = function (){deleteItem(index)}
+
         itemName.innerText = cartText[i].name
         price.innerText = cartText[i].price
         option.innerText = cartText[i].opText.join(', ')
@@ -431,4 +436,9 @@ function editRequestList(index){
 function openCartModal(){
     createCartItem()
     $('#cartModal').modal('show')
+}
+
+function deleteItem(index){
+    orderRequests = orderRequests.splice(index,1)
+    cartText = cartText.splice(index,1)
 }

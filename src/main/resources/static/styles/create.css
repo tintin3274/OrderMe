@@ -5,13 +5,18 @@
     background: gray;
 
 }
-#bg{
+.bg{
     background: #0c7d5b;
 }
 
-/*#layout{*/
-/*    background: white;*/
-/*}*/
+#layout{
+   width: 60%;
+}
+@media (max-width:800px){
+    #layout{
+        width: 100%;
+    }
+}
 
 .center{
     display: flex;
