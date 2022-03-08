@@ -8,7 +8,6 @@ import org.springframework.web.servlet.view.RedirectView;
 import th.ku.orderme.model.Payment;
 import th.ku.orderme.service.PaymentService;
 import th.ku.orderme.service.SCBSimulatorPaymentService;
-import th.ku.orderme.util.ConstantUtil;
 
 @RestController
 @RequestMapping("/api/payment")

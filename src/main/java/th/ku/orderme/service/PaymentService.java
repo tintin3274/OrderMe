@@ -50,8 +50,8 @@ public class PaymentService {
 
             payment = new Payment();
             payment.setBill(bill);
-            payment.setRef1(ref1Prefix+ymd+bill.getId());
-            payment.setRef2(ref2Prefix+ymd+bill.getId());
+            payment.setRef1(ref1Prefix+ymd);
+            payment.setRef2(ref2Prefix+ymd);
         }
         else {
             payment.setRef3(null);

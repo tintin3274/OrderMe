@@ -1,25 +1,30 @@
 package th.ku.orderme.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import th.ku.orderme.dto.CartDTO;
 import th.ku.orderme.dto.OrderRequestDTO;
 import th.ku.orderme.dto.SelectItemDTO;
 import th.ku.orderme.model.*;
 import th.ku.orderme.model.Optional;
+import th.ku.orderme.repository.ItemRepository;
 import th.ku.orderme.repository.OrderRepository;
 import th.ku.orderme.repository.SelectItemRepository;
 import th.ku.orderme.util.ConstantUtil;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderService {
     private final OrderRepository orderRepository;
+    private final ItemRepository itemRepository;
     private final SelectItemRepository selectItemRepository;
-    private final BillService billService;
     private final ItemService itemService;
     private final OptionalService optionalService;
 
@@ -43,13 +48,15 @@ public class OrderService {
             stringBuilder.append("Timestamp: "+timestamp+"\n");
             stringBuilder.append("--------------------\n");
             double total = 0;
+            String status = ConstantUtil.ORDER;
+            if(bill.getType().equals(ConstantUtil.TAKE_OUT)) status = ConstantUtil.PENDING;
             for(OrderRequestDTO orderRequestDTO : cartDTO.getOrderRequests()) {
                 Order order = new Order();
                 order.setBill(bill);
                 order.setItem(itemService.findById(orderRequestDTO.getItemId()));
                 order.setQuantity(orderRequestDTO.getQuantity());
                 order.setComment(orderRequestDTO.getComment());
-                order.setStatus(ConstantUtil.ORDER);
+                order.setStatus(status);
                 order.setTimestamp(timestamp);
                 order = orderRepository.saveAndFlush(order);
 
@@ -59,6 +66,7 @@ public class OrderService {
                 List<String> optionalItemName = new ArrayList<>();
 
                 for(SelectItemDTO selectItemDTO : orderRequestDTO.getSelectItems()) {
+                    List<SelectItem> selectItemList = new ArrayList<>();
                     int orderId = order.getId();
                     int optionalId = selectItemDTO.getOptionalId();
                     for(int itemId : selectItemDTO.getItemOptionalId()) {
@@ -66,11 +74,12 @@ public class OrderService {
                         SelectItem selectItem = new SelectItem();
                         selectItem.setSelectItemId(selectItemId);
                         selectItem.setOptionalId(optionalId);
-                        selectItem = selectItemRepository.saveAndFlush(selectItem);
+                        selectItemList.add(selectItem);
 
                         amount += itemMap.get(selectItem.getSelectItemId().getItemId()).getPrice()*order.getQuantity();
                         optionalItemName.add(itemMap.get(selectItem.getSelectItemId().getItemId()).getName());
                     }
+                    selectItemRepository.saveAllAndFlush(selectItemList);
                 }
 
                 stringBuilder.append(order.getQuantity()+"x "+order.getItem().getName()+" "+amount+"\n");
@@ -82,11 +91,13 @@ public class OrderService {
             stringBuilder.append("Total: "+total);
             return stringBuilder.toString();
         } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
             return e.getMessage();
         }
     }
 
-    private boolean validateAndUpdateItemQuantity(List<OrderRequestDTO> orderRequestsDTO){
+    @Transactional
+    public boolean validateAndUpdateItemQuantity(List<OrderRequestDTO> orderRequestsDTO){
         try {
             Map<Integer,Integer> itemIdAndQuantity = new HashMap<>();
             Map<Integer,Item> itemMap = new HashMap<>();
@@ -125,21 +136,55 @@ public class OrderService {
                     }
                 }
             }
-            for(int itemId : itemIdAndQuantity.keySet()) {
-                Item itemCheck = itemMap.get(itemId);
-                if(itemCheck.isCheckQuantity() && itemIdAndQuantity.get(itemId) > itemCheck.getQuantity()) return false;
-            }
 
+            List<Item> itemListUpdate = new ArrayList<>();
             for(int itemId : itemIdAndQuantity.keySet()) {
                 Item itemCheck = itemMap.get(itemId);
                 if(itemCheck.isCheckQuantity()) {
+                    if(itemIdAndQuantity.get(itemId) > itemCheck.getQuantity()) return false;
                     itemCheck.setQuantity(itemCheck.getQuantity() - itemIdAndQuantity.get(itemId));
-                    itemService.saveAndFlush(itemCheck);
+                    itemListUpdate.add(itemCheck);
                 }
             }
+            if(!itemListUpdate.isEmpty()) {
+                itemRepository.saveAllAndFlush(itemListUpdate);
+            }
             return true;
-        } catch (NullPointerException e) {
+        } catch (NullPointerException | ObjectOptimisticLockingFailureException e) {
+            log.error(e.getMessage());
             return false;
+        }
+    }
+
+    @Transactional
+    public void cancel(int id) {
+        try {
+            Order order = findById(id);
+            if(order == null) return;
+            if(!order.getStatus().equalsIgnoreCase(ConstantUtil.COMPLETE)) {
+                order.setStatus(ConstantUtil.CANCEL);
+                orderRepository.save(order);
+
+                Item item = order.getItem();
+                int quantity = order.getQuantity();
+
+                if(item.isCheckQuantity()) {
+                    item.setQuantity(item.getQuantity() + quantity);
+                    itemRepository.saveAndFlush(item);
+                }
+
+                List<SelectItem> selectItemList = selectItemRepository.findSelectItemsBySelectItemId_OrderId(id);
+                for(SelectItem selectItem : selectItemList) {
+                    Item itemOption = itemService.findById(selectItem.getSelectItemId().getItemId());
+                    if(itemOption.isCheckQuantity()) {
+                        itemOption.setQuantity(itemOption.getQuantity() + quantity);
+                        itemRepository.saveAndFlush(itemOption);
+                    }
+                }
+            }
+        }
+        catch (NullPointerException | ObjectOptimisticLockingFailureException e) {
+            log.error(e.getMessage());
         }
     }
 }

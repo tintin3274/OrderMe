@@ -12,17 +12,26 @@ import th.ku.orderme.repository.BillRepository;
 import th.ku.orderme.repository.SelectItemRepository;
 import th.ku.orderme.util.ConstantUtil;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 
 @Service
 @RequiredArgsConstructor
 public class BillService {
+    private static final ScheduledExecutorService ses = Executors.newScheduledThreadPool(2, new DaemonThreadFactory());
     private final BillRepository billRepository;
     private final ItemService itemService;
     private final SelectItemRepository selectItemRepository;
+    private final TokenService tokenService;
+    private final TableService tableService;
+    private final OrderService orderService;
 
     public List<Bill> findAll() {
         return billRepository.findAll();
@@ -32,8 +41,16 @@ public class BillService {
         return billRepository.findById(id).orElse(null);
     }
 
-    public boolean existsById(int id) {
-        return billRepository.existsById(id);
+    public Bill createBill(int person, String type) {
+        Bill bill = new Bill();
+        bill.setPerson(person);
+        bill.setType(type);
+        bill.setStatus(ConstantUtil.OPEN);
+        bill.setTimestamp(LocalDateTime.now());
+        bill = billRepository.saveAndFlush(bill);
+
+        tokenService.mappingTokenToBill(bill);
+        return bill;
     }
 
     public BillDTO getBillDTO(int id) {
@@ -95,5 +112,31 @@ public class BillService {
         if(bill == null) return;
         bill.setStatus(ConstantUtil.CLOSE);
         billRepository.saveAndFlush(bill);
+    }
+
+    public void cancelBill(int id) {
+        Bill bill = findById(id);
+        if(bill == null) return;
+        if(!bill.getStatus().equalsIgnoreCase(ConstantUtil.CLOSE)) {
+            bill.setStatus(ConstantUtil.VOID);
+            billRepository.saveAndFlush(bill);
+
+            for(Order order : bill.getOrderList()) {
+                orderService.cancel(order.getId());
+            }
+        }
+    }
+
+    public void autoCancelBill(int id) {
+        Runnable task = () -> cancelBill(id);
+        ses.schedule(task, 15, TimeUnit.MINUTES);
+    }
+
+    private static class DaemonThreadFactory implements ThreadFactory {
+        public Thread newThread(Runnable r) {
+            Thread thread = new Thread(r);
+            thread.setDaemon(true);
+            return thread;
+        }
     }
 }

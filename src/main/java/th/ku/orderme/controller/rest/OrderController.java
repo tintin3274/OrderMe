@@ -26,8 +26,8 @@ public class OrderController {
         return orderService.findAll();
     }
 
-    @PostMapping
-    public String order(@RequestBody CartDTO cartDTO, @CookieValue(name = "uid", defaultValue = "default-uid") String uid) {
+    @PostMapping("/new")
+    public String order(@RequestBody CartDTO cartDTO, @CookieValue(name = "uid") String uid) {
         Token token = tokenService.findById(uid);
         if(token == null) return ("Invalid Token: "+uid);
         Bill bill = token.getBill();

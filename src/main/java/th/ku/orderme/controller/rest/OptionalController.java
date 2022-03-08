@@ -1,14 +1,17 @@
 package th.ku.orderme.controller.rest;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
+import th.ku.orderme.dto.AddOptionalDTO;
 import th.ku.orderme.model.Optional;
 import th.ku.orderme.service.OptionalService;
 
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/optional")
 public class OptionalController {
@@ -21,6 +24,22 @@ public class OptionalController {
     @GetMapping
     public List<Optional> findAll() {
         return optionalService.findAll();
+    }
+
+    @PostMapping("/add")
+    public Optional addOptional(@RequestBody AddOptionalDTO addOptionalDTO) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonString = mapper.writeValueAsString(addOptionalDTO.getOptionGroup());
+            Optional optional = mapper.readValue(jsonString, Optional.class);
+            optional = optionalService.addOptional(optional, addOptionalDTO.getOptionId());
+            System.out.println(optional);
+            return optional;
+        }
+        catch (JsonProcessingException e) {
+            log.error(e.getMessage());
+        }
+        return null;
     }
 
     @GetMapping("/using")

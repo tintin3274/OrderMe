@@ -1,21 +1,29 @@
 package th.ku.orderme.service;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import th.ku.orderme.model.Item;
 import th.ku.orderme.model.Optional;
+import th.ku.orderme.model.OptionalItem;
+import th.ku.orderme.repository.ItemRepository;
+import th.ku.orderme.repository.OptionalItemRepository;
 import th.ku.orderme.repository.OptionalRepository;
+import th.ku.orderme.util.ConstantUtil;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.*;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class OptionalService {
     @PersistenceContext
     private final EntityManager entityManager;
     private final OptionalRepository optionalRepository;
+    private final OptionalItemRepository optionalItemRepository;
+    private final ItemRepository itemRepository;
 
     public Optional findById(int id) {
         return optionalRepository.findById(id).orElse(null);
@@ -24,20 +32,52 @@ public class OptionalService {
     public List<Integer> getAllItemIdOfOptionalId(int optionalId) {
         List<Integer> itemIdList = new ArrayList<>();
         Optional optional = findById(optionalId);
-        if(optional != null) {
+        if(optional != null && optional.getFlag() == ConstantUtil.FLAG_NORMAL) {
             for(Item item : optional.getItemList()) {
-                itemIdList.add(item.getId());
+                if(item.getFlag() == ConstantUtil.FLAG_NORMAL) {
+                    itemIdList.add(item.getId());
+                }
             }
         }
         return itemIdList;
     }
 
     public List<Optional> findAll() {
-        return optionalRepository.findAll();
+        return optionalRepository.findAllByFlagEquals(ConstantUtil.FLAG_NORMAL);
     }
 
     public boolean existsById(int id) {
         return optionalRepository.existsById(id);
+    }
+
+    public Optional addOptional(Optional optional, List<Integer> optionId) {
+        try {
+            if(optionId == null) optionId = new ArrayList<>();
+            for(int id : optionId) {
+                Item item = itemRepository.findById(id).orElse(null);
+                if(item == null || !item.getCategory().equalsIgnoreCase(ConstantUtil.OPTION)) throw new IllegalArgumentException("Invalid Item ID: "+id);
+            }
+
+            optional = optionalRepository.saveAndFlush(optional);
+
+            List<OptionalItem> optionalItemList = new ArrayList<>();
+            for(int i=0; i<optionId.size(); i++) {
+                OptionalItem.OptionalItemId optionalItemId = new OptionalItem.OptionalItemId();
+                optionalItemId.setOptionalId(optional.getId());
+                optionalItemId.setItemId(optionId.get(i));
+
+                OptionalItem optionalItem = new OptionalItem();
+                optionalItem.setOptionalItemId(optionalItemId);
+                optionalItem.setNumber(i+1);
+
+                optionalItemList.add(optionalItem);
+            }
+            optionalItemRepository.saveAllAndFlush(optionalItemList);
+            return optional;
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+            return null;
+        }
     }
 
     public Map<Integer, Integer> optionalUsingCount() {

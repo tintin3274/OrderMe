@@ -1,11 +1,12 @@
 package th.ku.orderme.controller.rest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import th.ku.orderme.dto.AddItemDTO;
-import th.ku.orderme.dto.ItemDTO;
 import th.ku.orderme.model.Item;
 import th.ku.orderme.model.Optional;
 import th.ku.orderme.service.ItemService;
@@ -14,6 +15,7 @@ import th.ku.orderme.util.FileUploadUtil;
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/item")
 public class ItemController {
@@ -52,17 +54,27 @@ public class ItemController {
 
     @PostMapping("/add")
     public Item addItem(@RequestBody AddItemDTO addItemDTO) {
-        Item item = convertItemDTOToItem(addItemDTO.getItem());
-        item = itemService.addItem(item, addItemDTO.getOptionGroupId());
-        return item;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonString = mapper.writeValueAsString(addItemDTO.getItem());
+            Item item = mapper.readValue(jsonString, Item.class);
+            item = itemService.addItem(item, addItemDTO.getOptionGroupId());
+            return item;
+
+        }
+        catch (JsonProcessingException e) {
+            log.error(e.getMessage());
+        }
+        return null;
     }
 
     @PostMapping("/add-with-image")
     public Item addItemWithImage(@RequestParam String addItemDTO, @RequestParam(value = "image", required = false) MultipartFile multipartFile) {
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            AddItemDTO addItemDTOObj = objectMapper.readValue(addItemDTO, AddItemDTO.class);
-            Item item = convertItemDTOToItem(addItemDTOObj.getItem());
+            ObjectMapper mapper = new ObjectMapper();
+            AddItemDTO addItemDTOObj = mapper.readValue(addItemDTO, AddItemDTO.class);
+            String jsonString = mapper.writeValueAsString(addItemDTOObj.getItem());
+            Item item = mapper.readValue(jsonString, Item.class);
 
             if(multipartFile != null) {
                 String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
@@ -78,17 +90,5 @@ public class ItemController {
             e.printStackTrace();
         }
         return null;
-    }
-
-    private Item convertItemDTOToItem(ItemDTO itemDTO) {
-        Item item = new Item();
-        item.setName(itemDTO.getName());
-        item.setDescription(itemDTO.getDescription());
-        item.setCategory(itemDTO.getCategory());
-        item.setPrice(itemDTO.getPrice());
-        item.setQuantity(itemDTO.getQuantity());
-        item.setCheckQuantity(itemDTO.isCheckQuantity());
-        item.setDisplay(itemDTO.isDisplay());
-        return item;
     }
 }

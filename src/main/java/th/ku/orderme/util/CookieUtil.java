@@ -2,8 +2,8 @@ package th.ku.orderme.util;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class CookieUtil {
     public static Cookie createCookie(String name, String value, int expiry, boolean isSecure, boolean httpOnly, String path, String domain) {
@@ -16,10 +16,9 @@ public class CookieUtil {
         return cookie;
     }
 
-    public static Optional<String> readCookie(HttpServletRequest request, String name) {
-        return Arrays.stream(request.getCookies())
-                .filter(cookie -> name.equals(cookie.getName()))
-                .map(Cookie::getValue)
-                .findAny();
+    public static Optional<Cookie> readCookie(HttpServletRequest request, String cookieName) {
+        return Stream.of(Optional.ofNullable(request.getCookies()).orElse(new Cookie[0]))
+                .filter(cookie -> cookieName.equals(cookie.getName()))
+                .findFirst();
     }
 }

@@ -9,9 +9,9 @@ import java.util.List;
 
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Integer> {
-    List<Item> findItemByCategoryEquals(String category);
-    List<Item> findItemByCategoryNot(String category);
+    List<Item> findItemByCategoryEqualsAndFlagEquals(String category, int flag);
+    List<Item> findItemByCategoryNotAndFlagEquals(String category, int flag);
 
-    @Query(value = "SELECT DISTINCT `category` FROM `item` WHERE `category` <> 'OPTION'", nativeQuery = true)
+    @Query(value = "SELECT DISTINCT `category` FROM `item` WHERE `category` <> 'OPTION' AND `flag` = 0", nativeQuery = true)
     List<String> findAllFoodCategory();
 }

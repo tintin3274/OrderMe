@@ -1,5 +1,6 @@
 package th.ku.orderme.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,9 @@ public class Optional implements Serializable {
     private String description;
     private int min;
     private int max;
+
+    @JsonIgnore
+    private int flag;
 
     @org.hibernate.annotations.OrderBy(clause="number, optional_id, item_id ASC")
     @ManyToMany

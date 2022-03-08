@@ -8,6 +8,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping
 public class GeneralController {
 
+    @GetMapping("/")
+    public String main() {
+        return "index";
+    }
+
     @GetMapping("/payment-fail")
     public String paymentFail() {
         return "payment_fail";

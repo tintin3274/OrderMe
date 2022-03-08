@@ -33,6 +33,13 @@ public class Item implements Serializable {
     private boolean display;
 
     @JsonIgnore
+    @Version
+    private long version;
+
+    @JsonIgnore
+    private int flag;
+
+    @JsonIgnore
     @org.hibernate.annotations.OrderBy(clause="number, optional_id, item_id ASC")
     @ManyToMany
     @JoinTable(
