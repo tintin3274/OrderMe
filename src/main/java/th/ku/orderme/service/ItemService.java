@@ -25,33 +25,65 @@ public class ItemService {
         return itemRepository.findById(id).orElse(null);
     }
 
+    public List<Item> findAll() {
+        return itemRepository.findAllByFlagEquals(ConstantUtil.FLAG_NORMAL);
+    }
+
     public Item addItem(Item item, List<Integer> optionGroupId) {
-        try {
-            if(optionGroupId == null) optionGroupId = new ArrayList<>();
-            for(int id : optionGroupId) {
-                if(!optionalRepository.existsById(id)) throw new IllegalArgumentException("Invalid Optional ID: "+id);
-            }
+        if(optionGroupId == null) optionGroupId = new ArrayList<>();
+        if(!validateOptionGroupId(optionGroupId)) return null;
+        item = itemRepository.saveAndFlush(item);
 
-            item = itemRepository.saveAndFlush(item);
-
-            List<ItemOptional> itemOptionalList = new ArrayList<>();
-            for(int i=0; i<optionGroupId.size(); i++) {
-                ItemOptional.ItemOptionalId itemOptionalId = new ItemOptional.ItemOptionalId();
-                itemOptionalId.setItemId(item.getId());
-                itemOptionalId.setOptionalId(optionGroupId.get(i));
-
-                ItemOptional itemOptional = new ItemOptional();
-                itemOptional.setItemOptionalId(itemOptionalId);
-                itemOptional.setNumber(i+1);
-
-                itemOptionalList.add(itemOptional);
-            }
-            itemOptionalRepository.saveAllAndFlush(itemOptionalList);
-            return item;
-        } catch (IllegalArgumentException e) {
-            log.error(e.getMessage());
-            return null;
+        List<ItemOptional> itemOptionalList = new ArrayList<>();
+        for(int i=0; i<optionGroupId.size(); i++) {
+            ItemOptional.ItemOptionalId itemOptionalId = new ItemOptional.ItemOptionalId();
+            itemOptionalId.setItemId(item.getId());
+            itemOptionalId.setOptionalId(optionGroupId.get(i));
+            ItemOptional itemOptional = new ItemOptional();
+            itemOptional.setItemOptionalId(itemOptionalId);
+            itemOptional.setNumber(i+1);
+            itemOptionalList.add(itemOptional);
         }
+        itemOptionalRepository.saveAllAndFlush(itemOptionalList);
+        return item;
+    }
+
+    public Item updateItem(Item item) {
+        if(itemRepository.existsById(item.getId())) {
+            return itemRepository.saveAndFlush(item);
+        }
+        return null;
+    }
+
+    public Item updateItemOptional(int id, List<Integer> optionGroupId) {
+        Item item = itemRepository.findById(id).orElse(null);
+        if(item == null || item.getFlag() != ConstantUtil.FLAG_NORMAL) return null;
+        itemOptionalRepository.deleteItemOptionalByItemOptionalId_ItemId(id);
+        return addItem(item, optionGroupId);
+    }
+
+    public Item deleteItem(int id) {
+        Item item = findById(id);
+        if(item == null) return null;
+        item.setFlag(ConstantUtil.FLAG_DELETE);
+        item = itemRepository.saveAndFlush(item);
+        itemOptionalRepository.deleteItemOptionalByItemOptionalId_ItemId(id);
+        return item;
+    }
+
+    private boolean validateOptionGroupId(List<Integer> optionGroupId) {
+        try {
+            List<Optional> optionalList = optionalRepository.findAllById(optionGroupId);
+            for(Optional optional : optionalList) {
+                if(optional.getFlag() != ConstantUtil.FLAG_NORMAL)
+                    throw new IllegalArgumentException("Invalid Optional ID: "+optional.getId());
+            }
+            return true;
+        }
+        catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+        }
+        return false;
     }
 
     public Map<Integer,Item> getMapAllItemOfItemId(int itemId) {

@@ -46,38 +46,54 @@ public class OptionalService {
         return optionalRepository.findAllByFlagEquals(ConstantUtil.FLAG_NORMAL);
     }
 
-    public boolean existsById(int id) {
-        return optionalRepository.existsById(id);
+    public Optional addOptional(Optional optional, List<Integer> optionId) {
+        if(optionId == null) optionId = new ArrayList<>();
+        if(!validateOptionId(optionId)) return null;
+        optional = optionalRepository.saveAndFlush(optional);
+
+        List<OptionalItem> optionalItemList = new ArrayList<>();
+        for(int i=0; i<optionId.size(); i++) {
+            OptionalItem.OptionalItemId optionalItemId = new OptionalItem.OptionalItemId();
+            optionalItemId.setOptionalId(optional.getId());
+            optionalItemId.setItemId(optionId.get(i));
+            OptionalItem optionalItem = new OptionalItem();
+            optionalItem.setOptionalItemId(optionalItemId);
+            optionalItem.setNumber(i+1);
+            optionalItemList.add(optionalItem);
+        }
+        optionalItemRepository.saveAllAndFlush(optionalItemList);
+        return optional;
     }
 
-    public Optional addOptional(Optional optional, List<Integer> optionId) {
+    public Optional updateOptional(Optional optional, List<Integer> optionId) {
+        Optional oldOptional = optionalRepository.findById(optional.getId()).orElse(null);
+        if(oldOptional == null || oldOptional.getFlag() != ConstantUtil.FLAG_NORMAL) return null;
+        optionalItemRepository.deleteOptionalItemByOptionalItemId_OptionalId(optional.getId());
+        return addOptional(optional, optionId);
+    }
+
+    public Optional deleteOptional(int id) {
+        Optional optional = findById(id);
+        if(optional == null) return null;
+        optional.setFlag(ConstantUtil.FLAG_DELETE);
+        optional = optionalRepository.saveAndFlush(optional);
+        optionalItemRepository.deleteOptionalItemByOptionalItemId_OptionalId(optional.getId());
+        return optional;
+    }
+
+    private boolean validateOptionId(List<Integer> optionId) {
         try {
-            if(optionId == null) optionId = new ArrayList<>();
-            for(int id : optionId) {
-                Item item = itemRepository.findById(id).orElse(null);
-                if(item == null || !item.getCategory().equalsIgnoreCase(ConstantUtil.OPTION)) throw new IllegalArgumentException("Invalid Item ID: "+id);
+            List<Item> itemList = itemRepository.findAllById(optionId);
+            for(Item item : itemList) {
+                if(!item.getCategory().equalsIgnoreCase(ConstantUtil.OPTION) || item.getFlag() != ConstantUtil.FLAG_NORMAL)
+                    throw new IllegalArgumentException("Invalid Item ID: "+item.getId());
             }
-
-            optional = optionalRepository.saveAndFlush(optional);
-
-            List<OptionalItem> optionalItemList = new ArrayList<>();
-            for(int i=0; i<optionId.size(); i++) {
-                OptionalItem.OptionalItemId optionalItemId = new OptionalItem.OptionalItemId();
-                optionalItemId.setOptionalId(optional.getId());
-                optionalItemId.setItemId(optionId.get(i));
-
-                OptionalItem optionalItem = new OptionalItem();
-                optionalItem.setOptionalItemId(optionalItemId);
-                optionalItem.setNumber(i+1);
-
-                optionalItemList.add(optionalItem);
-            }
-            optionalItemRepository.saveAllAndFlush(optionalItemList);
-            return optional;
-        } catch (IllegalArgumentException e) {
-            log.error(e.getMessage());
-            return null;
+            return true;
         }
+        catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+        }
+        return false;
     }
 
     public Map<Integer, Integer> optionalUsingCount() {

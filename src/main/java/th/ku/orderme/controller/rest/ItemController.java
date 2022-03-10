@@ -7,6 +7,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import th.ku.orderme.dto.AddItemDTO;
+import th.ku.orderme.dto.ItemDTO;
 import th.ku.orderme.model.Item;
 import th.ku.orderme.model.Optional;
 import th.ku.orderme.service.ItemService;
@@ -25,14 +26,19 @@ public class ItemController {
         this.itemService = itemService;
     }
 
-    @GetMapping
-    public List<Item> findAllFood() {
-        return itemService.findAllFood();
+    @GetMapping("/{id}")
+    public Item findById(@PathVariable int id) {
+        return itemService.findById(id);
     }
 
-    @GetMapping("/{id}")
-    public Item findItem(@PathVariable int id) {
-        return itemService.findById(id);
+    @GetMapping("/all")
+    public List<Item> findAll() {
+        return itemService.findAll();
+    }
+
+    @GetMapping("/food")
+    public List<Item> findAllFood() {
+        return itemService.findAllFood();
     }
 
     @GetMapping("/optional-of-id/{id}")
@@ -42,7 +48,7 @@ public class ItemController {
         return item.getOptionalList();
     }
 
-    @GetMapping("/category")
+    @GetMapping("/list-category")
     public List<String> findAllFoodCategory() {
         return itemService.findAllFoodCategory();
     }
@@ -90,5 +96,53 @@ public class ItemController {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @PostMapping("/update")
+    public Item updateItem(@RequestBody ItemDTO itemDTO) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonString = mapper.writeValueAsString(itemDTO);
+            Item item = mapper.readValue(jsonString, Item.class);
+            item = itemService.updateItem(item);
+            return item;
+        }
+        catch (JsonProcessingException e) {
+            log.error(e.getMessage());
+        }
+        return null;
+    }
+
+    @PostMapping("/update-image")
+    public Item updateItemImage(@RequestParam int id, @RequestParam(value = "image") MultipartFile multipartFile) {
+        try {
+            Item item = itemService.findById(id);
+            if(item == null) return null;
+
+            if(multipartFile != null) {
+                String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+                item.setImage(fileName);
+
+                String uploadDir = "images";
+                FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+            }
+
+            item = itemService.updateItem(item);
+            return item;
+        }
+        catch (IOException e) {
+            log.error(e.getMessage());
+        }
+        return null;
+    }
+
+    @PostMapping("/update-optional")
+    public Item updateItemOptional(@RequestParam int id, @RequestParam List<Integer> optionGroupId) {
+        return itemService.updateItemOptional(id, optionGroupId);
+    }
+
+    @DeleteMapping("/{id}")
+    public Item deleteItem(@PathVariable int id) {
+        return itemService.deleteItem(id);
     }
 }

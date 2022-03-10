@@ -9,6 +9,7 @@ import java.util.List;
 
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Integer> {
+    List<Item> findAllByFlagEquals(int flag);
     List<Item> findItemByCategoryEqualsAndFlagEquals(String category, int flag);
     List<Item> findItemByCategoryNotAndFlagEquals(String category, int flag);
 

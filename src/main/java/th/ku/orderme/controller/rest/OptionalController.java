@@ -21,7 +21,12 @@ public class OptionalController {
         this.optionalService = optionalService;
     }
 
-    @GetMapping
+    @GetMapping("/{id}")
+    public Optional findById(@PathVariable int id) {
+        return optionalService.findById(id);
+    }
+
+    @GetMapping("/all")
     public List<Optional> findAll() {
         return optionalService.findAll();
     }
@@ -33,13 +38,32 @@ public class OptionalController {
             String jsonString = mapper.writeValueAsString(addOptionalDTO.getOptionGroup());
             Optional optional = mapper.readValue(jsonString, Optional.class);
             optional = optionalService.addOptional(optional, addOptionalDTO.getOptionId());
-            System.out.println(optional);
             return optional;
         }
         catch (JsonProcessingException e) {
             log.error(e.getMessage());
         }
         return null;
+    }
+
+    @PostMapping("/update")
+    public Optional updateOptional(@RequestBody AddOptionalDTO addOptionalDTO) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonString = mapper.writeValueAsString(addOptionalDTO.getOptionGroup());
+            Optional optional = mapper.readValue(jsonString, Optional.class);
+            optional = optionalService.updateOptional(optional, addOptionalDTO.getOptionId());
+            return optional;
+        }
+        catch (JsonProcessingException e) {
+            log.error(e.getMessage());
+        }
+        return null;
+    }
+
+    @DeleteMapping("/{id}")
+    public Optional deleteItem(@PathVariable int id) {
+        return optionalService.deleteOptional(id);
     }
 
     @GetMapping("/using")
