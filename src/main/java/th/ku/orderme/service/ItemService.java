@@ -35,6 +35,7 @@ public class ItemService {
         if(optionGroupId == null) optionGroupId = new ArrayList<>();
         if(!validateOptionGroupId(optionGroupId)) return null;
         item = itemRepository.saveAndFlush(item);
+        itemOptionalRepository.deleteItemOptionalByItemOptionalId_ItemId(item.getId());
 
         List<ItemOptional> itemOptionalList = new ArrayList<>();
         for(int i=0; i<optionGroupId.size(); i++) {
@@ -52,17 +53,16 @@ public class ItemService {
 
     @Transactional
     public Item updateItem(Item item) {
-        if(itemRepository.existsById(item.getId())) {
-            return itemRepository.saveAndFlush(item);
-        }
-        return null;
+        Item oldItem = itemRepository.findById(item.getId()).orElse(null);
+        if(oldItem == null || oldItem.getFlag() != ConstantUtil.FLAG_NORMAL) return null;
+        item.setVersion(oldItem.getVersion());
+        return itemRepository.saveAndFlush(item);
     }
 
     @Transactional
     public Item updateItemOptional(int id, List<Integer> optionGroupId) {
         Item item = itemRepository.findById(id).orElse(null);
         if(item == null || item.getFlag() != ConstantUtil.FLAG_NORMAL) return null;
-        itemOptionalRepository.deleteItemOptionalByItemOptionalId_ItemId(id);
         return addItem(item, optionGroupId);
     }
 

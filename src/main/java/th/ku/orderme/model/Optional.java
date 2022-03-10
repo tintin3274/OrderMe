@@ -1,6 +1,7 @@
 package th.ku.orderme.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,18 +17,28 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Optional implements Serializable {
+
+    @JsonView(Views.Overall.class)
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private int id;
 
+    @JsonView(Views.Overall.class)
     private String name;
+
+    @JsonView(Views.Overall.class)
     private String description;
+
+    @JsonView(Views.Overall.class)
     private int min;
+
+    @JsonView(Views.Overall.class)
     private int max;
 
     @JsonIgnore
     private int flag;
 
+    @JsonView(Views.Detail.class)
     @org.hibernate.annotations.OrderBy(clause="number, optional_id, item_id ASC")
     @ManyToMany
     @JoinTable(

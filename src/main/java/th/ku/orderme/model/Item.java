@@ -2,7 +2,7 @@ package th.ku.orderme.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,17 +19,34 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Item implements Serializable {
+
+    @JsonView(Views.Overall.class)
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private int id;
 
+    @JsonView(Views.Overall.class)
     private String name;
+
+    @JsonView(Views.Overall.class)
     private String description;
+
+    @JsonView(Views.Overall.class)
     private String category;
+
+    @JsonView(Views.Overall.class)
     private String image;
+
+    @JsonView(Views.Overall.class)
     private double price;
+
+    @JsonView(Views.Overall.class)
     private int quantity;
+
+    @JsonView(Views.Overall.class)
     private boolean checkQuantity;
+
+    @JsonView(Views.Overall.class)
     private boolean display;
 
     @JsonIgnore
@@ -39,7 +56,7 @@ public class Item implements Serializable {
     @JsonIgnore
     private int flag;
 
-    @JsonIgnore
+    @JsonView(Views.Detail.class)
     @org.hibernate.annotations.OrderBy(clause="number, optional_id, item_id ASC")
     @ManyToMany
     @JoinTable(

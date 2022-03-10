@@ -1,5 +1,6 @@
 package th.ku.orderme.controller.rest;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,7 @@ import th.ku.orderme.dto.AddItemDTO;
 import th.ku.orderme.dto.ItemDTO;
 import th.ku.orderme.model.Item;
 import th.ku.orderme.model.Optional;
+import th.ku.orderme.model.Views;
 import th.ku.orderme.service.ItemService;
 import th.ku.orderme.util.FileUploadUtil;
 
@@ -26,16 +28,19 @@ public class ItemController {
         this.itemService = itemService;
     }
 
+    @JsonView(Views.Detail.class)
     @GetMapping("/{id}")
     public Item findById(@PathVariable int id) {
         return itemService.findById(id);
     }
 
+    @JsonView(Views.Overall.class)
     @GetMapping("/all")
     public List<Item> findAll() {
         return itemService.findAll();
     }
 
+    @JsonView(Views.Overall.class)
     @GetMapping("/food")
     public List<Item> findAllFood() {
         return itemService.findAllFood();
@@ -53,6 +58,7 @@ public class ItemController {
         return itemService.findAllFoodCategory();
     }
 
+    @JsonView(Views.Overall.class)
     @GetMapping("/category/{category}")
     public List<Item> findItemByCategory(@PathVariable String category) {
         return itemService.findItemByCategory(category);

@@ -47,10 +47,12 @@ public class OptionalService {
         return optionalRepository.findAllByFlagEquals(ConstantUtil.FLAG_NORMAL);
     }
 
+    @Transactional
     public Optional addOptional(Optional optional, List<Integer> optionId) {
         if(optionId == null) optionId = new ArrayList<>();
         if(!validateOptionId(optionId)) return null;
         optional = optionalRepository.saveAndFlush(optional);
+        optionalItemRepository.deleteOptionalItemByOptionalItemId_OptionalId(optional.getId());
 
         List<OptionalItem> optionalItemList = new ArrayList<>();
         for(int i=0; i<optionId.size(); i++) {
@@ -66,13 +68,14 @@ public class OptionalService {
         return optional;
     }
 
+    @Transactional
     public Optional updateOptional(Optional optional, List<Integer> optionId) {
         Optional oldOptional = optionalRepository.findById(optional.getId()).orElse(null);
         if(oldOptional == null || oldOptional.getFlag() != ConstantUtil.FLAG_NORMAL) return null;
-        optionalItemRepository.deleteOptionalItemByOptionalItemId_OptionalId(optional.getId());
         return addOptional(optional, optionId);
     }
 
+    @Transactional
     public Optional deleteOptional(int id) {
         Optional optional = findById(id);
         if(optional == null) return null;
