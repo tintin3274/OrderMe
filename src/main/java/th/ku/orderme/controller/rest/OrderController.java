@@ -21,7 +21,7 @@ public class OrderController {
         this.tokenService = tokenService;
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public List<Order> findAll() {
         return orderService.findAll();
     }

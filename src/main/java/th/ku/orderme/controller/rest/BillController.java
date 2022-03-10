@@ -19,7 +19,7 @@ public class BillController {
         this.billService = billService;
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public List<Bill> findAll() {
         return billService.findAll();
     }

@@ -11,6 +11,7 @@ import th.ku.orderme.repository.ItemRepository;
 import th.ku.orderme.repository.OptionalRepository;
 import th.ku.orderme.util.ConstantUtil;
 
+import javax.transaction.Transactional;
 import java.util.*;
 
 @Slf4j
@@ -29,6 +30,7 @@ public class ItemService {
         return itemRepository.findAllByFlagEquals(ConstantUtil.FLAG_NORMAL);
     }
 
+    @Transactional
     public Item addItem(Item item, List<Integer> optionGroupId) {
         if(optionGroupId == null) optionGroupId = new ArrayList<>();
         if(!validateOptionGroupId(optionGroupId)) return null;
@@ -48,6 +50,7 @@ public class ItemService {
         return item;
     }
 
+    @Transactional
     public Item updateItem(Item item) {
         if(itemRepository.existsById(item.getId())) {
             return itemRepository.saveAndFlush(item);
@@ -55,6 +58,7 @@ public class ItemService {
         return null;
     }
 
+    @Transactional
     public Item updateItemOptional(int id, List<Integer> optionGroupId) {
         Item item = itemRepository.findById(id).orElse(null);
         if(item == null || item.getFlag() != ConstantUtil.FLAG_NORMAL) return null;
@@ -62,6 +66,7 @@ public class ItemService {
         return addItem(item, optionGroupId);
     }
 
+    @Transactional
     public Item deleteItem(int id) {
         Item item = findById(id);
         if(item == null) return null;
