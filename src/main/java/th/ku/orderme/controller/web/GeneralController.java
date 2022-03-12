@@ -28,6 +28,6 @@ public class GeneralController {
         return "payment_fail";
     }
 
-    @GetMapping("/manage-table")
+    @GetMapping("/admin/manage-table")
     public String getPageManageTable(){return "manage_table";}
 }

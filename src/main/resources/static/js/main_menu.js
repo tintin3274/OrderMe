@@ -8,6 +8,7 @@ let startPrice
 let optionPrice
 let optionPriceLabel
 let totalPrice
+let maxQty = 10
 
 function getCategoryData(){
     return new Promise(function (resolve, reject){
@@ -147,6 +148,10 @@ async function createModal(id){
     // console.log(idItem)
     allItem = await getItemData(id)
     startPrice = allItem.price
+    if(allItem.checkQuantity){
+        maxQty = allItem.quantity
+    }
+    $('#inputQuantity').val(1)
         // console.log(allItem)
     $('#titleItem').text(allItem.name)
     $('#desItem').text(allItem.description)
@@ -272,7 +277,7 @@ function buttonCheck(){
             $('#goCart').prop('disabled', true);
         }
     }
-    console.log(groupName)
+    // console.log(groupName)
 }
 
 function calculatePrice(){
@@ -337,10 +342,12 @@ function addCart(){
 $(document).on('click', '.number-spinner button', function () {
     var btn = $(this),
         oldValue = btn.closest('.number-spinner').find('input').val().trim(),
-        newVal = 0;
+        newVal = oldValue;
 
     if (btn.attr('data-dir') == 'up') {
-        newVal = parseInt(oldValue) + 1;
+        if(oldValue < maxQty){
+            newVal = parseInt(oldValue) + 1;
+        }
     } else {
         if (oldValue > 1) {
             newVal = parseInt(oldValue) - 1;
@@ -400,6 +407,7 @@ function createCartItem(order){
         container.appendChild(title)
         container.appendChild(option)
         linkContainer.appendChild(link)
+        linkContainer.appendChild(linkDelete)
         container.appendChild(linkContainer)
         $('#cartModalBody').append(container)
     }
@@ -426,8 +434,8 @@ function editRequestList(index){
     orderRequests[index] = request[0]
     cartText[index] = request[1]
     openCartModal()
-    console.log(orderRequests)
-    console.log(cartText)
+    // console.log(orderRequests)
+    // console.log(cartText)
 }
 
 function openCartModal(){
@@ -438,4 +446,21 @@ function openCartModal(){
 function deleteItem(index){
     orderRequests = orderRequests.splice(index,1)
     cartText = cartText.splice(index,1)
+}
+
+function pay(){
+    let json = {
+        "orderRequests": orderRequests
+    }
+
+    $.ajax({
+        url: '/order',
+        data: JSON.stringify(json) ,
+        contentType: "application/json" ,
+        type: 'POST',
+        success: function () {
+            console.log('success')
+            window.location.href = '/payment'
+        }
+    });
 }

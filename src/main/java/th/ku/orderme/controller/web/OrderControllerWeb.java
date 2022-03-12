@@ -2,10 +2,7 @@ package th.ku.orderme.controller.web;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import th.ku.orderme.dto.CartDTO;
 import th.ku.orderme.model.Bill;
@@ -23,7 +20,7 @@ public class OrderControllerWeb {
     private final OrderService orderService;
     private final TokenService tokenService;
 
-    @GetMapping("/order")
+    @PostMapping("/order")
     public String order(@RequestBody CartDTO cartDTO, @CookieValue(name = "uid") String uid, RedirectAttributes redirectAttributes) {
         Token token = tokenService.findById(uid);
         if(token == null) return "redirect:/";

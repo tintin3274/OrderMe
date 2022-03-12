@@ -5,11 +5,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Title</title>
+    <title>Manage Table</title>
+    <script src="/js/manage_table.js" type = "text/javascript"></script>
 </head>
 <body>
-<div layout:fragment="content">
-    
-</div>
+<section layout:fragment="content" class="m-3">
+    <div>
+        <h2>Dine In Table</h2>
+        <button class="btn btn-primary m-2" data-bs-toggle="modal" data-bs-target="#createDineInModal">New Table</button>
+        <div class="row align-items-center m-2" id="tableContainer">
+<!--            <div class="card text-center col d-none">-->
+<!--                <div class="card-body">-->
+<!--                    <h5 class="card-title">1</h5>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="card text-center col">-->
+<!--                <div class="card-body">-->
+<!--                    <h5 class="card-title">2</h5>-->
+<!--                </div>-->
+<!--            </div>-->
+        </div>
+    </div>
+    <hr>
+    <div>
+        <h2>Take Out Bill</h2>
+        <div class="card" style="width: 18rem;">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <h5 class="card-title">Bill ID: asdfghjk</h5>
+                    <p class="card-text">Ref 1:12345678</p>
+                </li>
+                <li class="list-group-item">A second item</li>
+                <li class="list-group-item">A third item</li>
+            </ul>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="createDineInModal"  tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen-md-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 >Cart</h2>
+                    <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body pb-0" id="cartModalBody">
+                    <div>
+                        <div class="name-price">
+                            <h6 class="menu-name">ข้าวหน้าเนื้อ</h6>
+                            <h6>300</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" style="width: 100%" id="createBtn" disabled onclick="pay()">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 </body>
 </html>
