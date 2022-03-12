@@ -31,10 +31,14 @@ public class TokenController {
 
     @GetMapping("/take-out")
     public String takeOut(HttpServletRequest request, HttpServletResponse response) {
-        Cookie cookie1 = CookieUtil.createCookie("uid", generateNewToken(), 15 * 60, false, true, "/", request.getServerName());
-        Cookie cookie2 = CookieUtil.createCookie("type", ConstantUtil.TAKE_OUT, 15 * 60, false, true, "/", request.getServerName());
+        String uid = generateNewToken();
+        Cookie cookie1 = CookieUtil.createCookie("uid", uid, 30 * 60, false, true, "/", request.getServerName());
+        Cookie cookie2 = CookieUtil.createCookie("type", ConstantUtil.TAKE_OUT, 30 * 60, false, true, "/", request.getServerName());
         response.addCookie(cookie1);
         response.addCookie(cookie2);
+
+        tokenService.newToken(uid);
+        tokenService.autoDeleteToken(uid);
         return "redirect:/main-menu";
     }
 

@@ -27,7 +27,7 @@ public class OrderController {
     }
 
     @PostMapping("/new")
-    public String order(@RequestBody CartDTO cartDTO, @CookieValue(name = "uid") String uid) {
+    public String order(@RequestBody CartDTO cartDTO, @CookieValue(name = "uid") String uid, @CookieValue(name = "type") String type) {
         Token token = tokenService.findById(uid);
         if(token == null) return ("Invalid Token: "+uid);
         Bill bill = token.getBill();

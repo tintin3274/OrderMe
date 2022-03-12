@@ -377,4 +377,19 @@ public class SCBSimulatorPaymentService {
                 .build();
         return client.newCall(request).execute();
     }
+
+    // For QR Code Only
+    public String extractQrImageFromResponse(String response) {
+        JsonObject jsonResponse = JsonParser.parseString(response).getAsJsonObject();
+        JsonObject data = jsonResponse.getAsJsonObject("data");
+        return data.get("qrImage").getAsString();
+    }
+
+    // For Deep Link Only
+    public String extractDeepLinkFromResponse(String response) {
+        JsonObject jsonResponse = JsonParser.parseString(response).getAsJsonObject();
+        JsonObject data = jsonResponse.getAsJsonObject("data");
+        return data.get("deeplinkUrl").getAsString();
+    }
+
 }

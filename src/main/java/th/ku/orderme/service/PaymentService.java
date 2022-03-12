@@ -54,6 +54,10 @@ public class PaymentService {
             payment.setRef2(ref2Prefix+ymd+bill.getId());
         }
         else {
+            if(payment.getStatus().equalsIgnoreCase(ConstantUtil.PAID)) {
+                return payment;
+            }
+
             payment.setRef3(null);
             payment.setGenerateInfo(null);
             payment.setConfirmInfo(null);

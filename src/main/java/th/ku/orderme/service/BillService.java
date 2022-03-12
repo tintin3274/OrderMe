@@ -41,15 +41,27 @@ public class BillService {
         return billRepository.findById(id).orElse(null);
     }
 
-    public Bill createBill(int person, String type) {
+    public Bill createBill(int person) {
         Bill bill = new Bill();
         bill.setPerson(person);
-        bill.setType(type);
+        bill.setType(ConstantUtil.DINE_IN);
         bill.setStatus(ConstantUtil.OPEN);
         bill.setTimestamp(LocalDateTime.now());
         bill = billRepository.saveAndFlush(bill);
 
-        tokenService.mappingTokenToBill(bill);
+        tokenService.mappingNewTokenToBill(bill);
+        return bill;
+    }
+
+    public Bill createBillTakeOut(String tokenId) {
+        Bill bill = new Bill();
+        bill.setPerson(1);
+        bill.setType(ConstantUtil.TAKE_OUT);
+        bill.setStatus(ConstantUtil.OPEN);
+        bill.setTimestamp(LocalDateTime.now());
+        bill = billRepository.saveAndFlush(bill);
+
+        tokenService.mappingTokenToBill(tokenId, bill);
         return bill;
     }
 
@@ -77,6 +89,7 @@ public class BillService {
             }
 
             OrderDTO orderDTO = new OrderDTO();
+            orderDTO.setId(order.getId());
             orderDTO.setName(item.getName());
             orderDTO.setOption(String.join(", ", option));
             orderDTO.setQuantity(order.getQuantity());

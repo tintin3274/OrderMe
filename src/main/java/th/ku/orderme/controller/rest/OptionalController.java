@@ -3,6 +3,7 @@ package th.ku.orderme.controller.rest;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import th.ku.orderme.dto.AddOptionalDTO;
@@ -17,12 +18,10 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/api/optional")
+@RequiredArgsConstructor
 public class OptionalController {
     private final OptionalService optionalService;
 
-    public OptionalController(OptionalService optionalService) {
-        this.optionalService = optionalService;
-    }
 
     @JsonView(Views.Detail.class)
     @GetMapping("/{id}")

@@ -3,6 +3,7 @@ package th.ku.orderme.controller.rest;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -21,12 +22,9 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/item")
+@RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
-
-    public ItemController(ItemService itemService) {
-        this.itemService = itemService;
-    }
 
     @JsonView(Views.Detail.class)
     @GetMapping("/{id}")
