@@ -12,7 +12,7 @@
 <section layout:fragment="content">
 <!--    <div id="qrcode"></div>-->
 <div class="container mt-3 shadow bg-body rounded px-4" id="layout">
-    <form class="row g-3" >
+    <form class="row g-3"  onsubmit="createOptionGroup()">
         <!--        name & des-->
         <div class="col-md-12">
             <h5 for="inputName" class="form-label">Group Name</h5>
@@ -51,7 +51,7 @@
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-primary" data-dir="dwn" value="0">-</button>
                 </span>
-                <input type="number" class="text-center form-control" value= 0  style="width: 50%">
+                <input type="number" class="text-center form-control" value= 0  style="width: 50%" id="minOp">
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-primary" data-dir="up" value="0">+</button>
                 </span>
@@ -63,7 +63,7 @@
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-primary" data-dir="dwn" value="0">-</button>
                 </span>
-                <input type="number" class="text-center form-control" value= 0 style="width: 50%">
+                <input type="number" class="text-center form-control" value= 0 style="width: 50%" id="maxOp">
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-primary" data-dir="up" value="0">+</button>
                 </span>

@@ -11,7 +11,7 @@ let totalPrice
 
 function getCategoryData(){
     return new Promise(function (resolve, reject){
-        $.get( '/api/item/category', function( data ) {
+        $.get( '/api/item/list-category', function( data ) {
             resolve(data)
         });
     })
@@ -142,14 +142,6 @@ function getItemData(id){
     )
 }
 
-function getOptionData(id){
-    return new Promise( function (resolve, reject) {
-        $.get( '/api/item/optional-of-id/' + id , function( data ) {
-            resolve(data)
-        });
-    })
-}
-
 async function createModal(id){
     idItem = id
     // console.log(idItem)
@@ -161,10 +153,9 @@ async function createModal(id){
     $('#priceItem').text('฿ ' + startPrice)
     $('#priceButton').text(startPrice)
     $('#modalBody').empty()
-    let optionData = await getOptionData(id)
+    let optionData = allItem.optionalList
     createOption(optionData)
 }
-
 
 function createOption(optionItem){
 
@@ -363,6 +354,12 @@ $(document).on('click', '.number-spinner button', function () {
 
 function createCartItem(order){
     $('#cartModalBody').empty()
+
+    console.log(cartText.length)
+
+    if(cartText.length > 0){
+        $('#payBtn').prop('disabled',false)
+    }
 
     for(let i=0;i<cartText.length;i++) {
         let index = i

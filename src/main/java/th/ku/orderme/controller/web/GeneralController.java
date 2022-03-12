@@ -17,4 +17,10 @@ public class GeneralController {
     public String paymentFail() {
         return "payment_fail";
     }
+
+    @GetMapping("/payment")
+    public String getPagePayment(){return "payment";}
+
+    @GetMapping("/manage-table")
+    public String getPageManageTable(){return "manage_table";}
 }

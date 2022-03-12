@@ -107,3 +107,33 @@ function createOption(){
     }
     sendApiCreateItem(json)
 }
+
+function createOptionGroup(){
+    let optionGroup = {
+        "name": $('#inputNameGroup').val(),
+        "description":$('#inputDescriptionGroup').val(),
+        "min": $('#minOp').val(),
+        "max":$('#maxOp').val()
+    }
+
+    let selected = $('#selectedOption').bootstrapTable('getData')
+    let selectedId = []
+    for(let i=0;i<selected.length;i++){
+        selectedId.push(selected[i].id)
+    }
+
+    let json = {
+        "optionGroup": optionGroup,
+        "optionId": selectedId
+    }
+
+    $.ajax({
+        url: '/api/optional/add',
+        data: JSON.stringify(json) ,
+        contentType: "application/json" ,
+        type: 'POST',
+        success: function () {
+            console.log('success')
+        }
+    });
+}

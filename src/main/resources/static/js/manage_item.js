@@ -1,3 +1,6 @@
+let optionGroup
+let option
+
 function getDataOption(){
     return new Promise(function (resolve,reject){
         $.get( '/api/item/category/OPTION', function( data ) {
@@ -16,7 +19,7 @@ function getDataOptionUsing(){
 
 function getDataOptionGroup(){
     return new Promise(function (resolve,reject){
-        $.get( '/api/optional', function( data ) {
+        $.get( '/api/optional/all', function( data ) {
             resolve(data)
         });
     })
@@ -30,26 +33,36 @@ function getDataOptionGroupUsing(){
     })
 }
 
+function getOptionOfOptionGroup(id){
+    return new Promise(function (resolve,reject){
+        $.get( '/api/optional/' + id, function( data ) {
+            resolve(data)
+        });
+    })
+}
+
 $(async function() {
     let i
     $('#tableFood').bootstrapTable({
         sortReset: true,
         paginationParts: ['pageList','pageInfo']
     })
-    let option = await getDataOption()
+    option = await getDataOption()
     let optionUsing = await getDataOptionUsing()
 
     for(i=0;i<option.length;i++){
         $('#tableOption').bootstrapTable('insertRow',{
             index: i,
             row: {
+                id : i,
                 name: option[i].name,
                 using :optionUsing[option[i].id]
             }
         })
     }
+    $('#tableOption').bootstrapTable('hideColumn', 'id')
 
-    let optionGroup = await getDataOptionGroup()
+    optionGroup = await getDataOptionGroup()
     let optionGroupUsing = await getDataOptionGroupUsing()
     console.log(optionGroup)
     console.log(optionGroupUsing)
@@ -58,6 +71,7 @@ $(async function() {
         $('#tableOptionGroup').bootstrapTable('insertRow',{
             index: i,
             row: {
+                id: optionGroup[i].id,
                 name: optionGroup[i].name,
                 using :optionGroupUsing[optionGroup[i].id],
                 min:optionGroup[i].min,
@@ -65,6 +79,7 @@ $(async function() {
             }
         })
     }
+    $('#tableOptionGroup').bootstrapTable('hideColumn', 'id')
 
 })
 
@@ -76,6 +91,16 @@ function imageFormatter(value) {
 }
 
 $(document).ready(() => {
+    $('#tableFood').on('click-row.bs.table',function (row, $element, field) {
+        showItemModal($element)
+    })
+    $('#tableOptionGroup').on('click-row.bs.table',function (row, $element, field) {
+        showOptionGroupModal($element)
+    })
+    $('#tableOption').on('click-row.bs.table',function (row, $element, field) {
+        showOptionGroup($element)
+    })
+
     let url = location.href.replace(/\/$/, "");
 
     if (location.hash) {
@@ -100,3 +125,69 @@ $(document).ready(() => {
         history.replaceState(null, null, newUrl);
     });
 });
+
+// view info with detail table
+function optionDetailFormatter(index, row,$element){
+    let list = row.itemList
+    let text = []
+    for(let i=0;i < list.length;i++){
+        text.push('<p>' + list[i].name + '</p>')
+    }
+    return text.join('')
+}
+
+function showItemModal(item){
+    $('#tableInfo').bootstrapTable('refresh', {
+        url: "/api/item/optional-of-id/" + item.id
+    });
+    $('#name').text(item.name)
+    $('#des').text(item.description)
+    $('#cate').text(item.category)
+    $('#price').text(item.price)
+    if(item.checkQuantity){
+        $('#quan').text(item.quantity)
+    }
+    else {
+        $('#quan').text("No")
+    }
+    if(item.display){
+        $('#dis').text('Yes')
+    }
+    else {
+        $('#dis').text('No')
+    }
+
+    $('#modalFood').modal('show')
+}
+
+async function showOptionGroupModal(item){
+    let optional = await getOptionOfOptionGroup(item.id)
+    console.log(item)
+    $('#nameOptionGroup').text(item.name)
+    $('#desOptionGroup').text(optional.description)
+    $('#min').text(item.min)
+    $('#max').text(item.max)
+
+    $('#optionList').empty()
+    for(i=0;i< optional.itemList.length;i++){
+        let option =  document.createElement('li')
+        option.className = 'list-group-item'
+        option.innerText = optional.itemList[i].name
+        $('#optionList').append(option)
+    }
+
+    $('#modalOptionGroup').modal('show')
+}
+
+function showOptionGroup(item){
+    $('#nameOption').text(item.name)
+    $('#priceOption').text(option[item.id].price)
+    if(option[item.id].checkQuantity){
+        $('#quanOption').text(option[item.id].quantity)
+    }
+    else {
+        $('#quanOption').text("No")
+    }
+
+    $('#modalOption').modal('show')
+}

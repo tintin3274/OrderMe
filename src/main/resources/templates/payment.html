@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="https://www.thymeleaf.org"
+      layout:decorate="~{fragments/create_header.html}">
+
+<head>
+    <script src="/js/create_item.js" type = "text/javascript"></script>
+</head>
+
+<body class="bg">
+<section layout:fragment="content" >
+<div class="container mt-3 shadow bg-body px-4 rounded" id="layout">
+    <div class="row">
+        <div class="col-md-12">
+            <h5>Choose Payment Method</h5>
+        </div>
+        <div class="col-md-12">
+            <button  type="button" class="btn btn-primary">QR-Code</button>
+        </div>
+        <div class="col-md-12">
+            <button  type="button" class="btn btn-primary">SCB EasySandbox</button>
+        </div>
+        <div class="col-md-12">
+            <button  type="button" class="btn btn-primary">Cash</button>
+        </div>
+    </div>
+</div>
+</section>
+</body>
+</html>

@@ -8,5 +8,5 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/main-menu")
 public class MainMenuController {
     @GetMapping
-    public String getpage(){return "main_menu";}
+    public String getPage(){return "main_menu";}
 }

@@ -35,9 +35,9 @@ function sendApiCreateItem(jsons){
     let json = jsons
     if(json['item'].category != 'OPTION'){
         storePicture()
-        alert(json['item'].category)
     }
 
+    alert(JSON.stringify(json))
     formData.append('addItemDTO',JSON.stringify(json))
 
     $.ajax({

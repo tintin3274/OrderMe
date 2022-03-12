@@ -7,7 +7,7 @@ $(document).ready(function() {
         $('#category').modal('hide');
     });
 
-    $.get( '/api/item/category', function( data ) {
+    $.get( '/api/item/list-category', function( data ) {
         arrCategory = data;
         var i;
 
@@ -79,7 +79,7 @@ function create() {
     let price = $('#inputPrice').val()
     if($('#radioYes').is(":checked")){
         checkQuantity = 1
-        quantity = $('#qtyNum')
+        quantity = $('#qtyNum').val()
     }
     else {
         checkQuantity = 0
