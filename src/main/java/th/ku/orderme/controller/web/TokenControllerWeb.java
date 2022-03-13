@@ -12,10 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 
 @Controller
 @RequestMapping
-public class TokenController {
+public class TokenControllerWeb {
     private final TokenService tokenService;
 
-    public TokenController(TokenService tokenService) {
+    public TokenControllerWeb(TokenService tokenService) {
         this.tokenService = tokenService;
     }
 
