@@ -16,7 +16,7 @@ public class OrderControllerWeb {
     private final TokenService tokenService;
 
     @GetMapping("/order")
-    public String order(@RequestBody CartDTO cartDTO, @CookieValue(name = "uid") String uid) {
+    public String order(@CookieValue(name = "uid") String uid) {
         Token token = tokenService.findById(uid);
         if(token == null) return "redirect:/";
         Bill bill = token.getBill();

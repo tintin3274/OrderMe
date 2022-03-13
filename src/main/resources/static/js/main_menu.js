@@ -505,13 +505,13 @@ function order(){
     }
 
     $.ajax({
-        url: '/order',
+        url: '/api/order/new',
         data: JSON.stringify(json) ,
         contentType: "application/json" ,
         type: 'POST',
         success: function () {
             console.log('success')
-            window.location.href = '/payment'
+            location.href = '/order'
         }
     });
 }
