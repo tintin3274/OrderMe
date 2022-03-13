@@ -27,6 +27,13 @@ function getItemEachCategoryData(category){
 }
 
 $( document ).ready(async function() {
+
+    let userType = 'TAKE-OUT'
+    if(userType == 'TAKE-OUT'){
+        document.getElementById('billNav').classList.add('invisible')
+        $('#cartBtn').text('Payment')
+    }
+
     let allCategory = await getCategoryData()
     for(let i=0; i < allCategory.length;i++){
         let category = allCategory[i]
@@ -144,6 +151,7 @@ function getItemData(id){
 }
 
 async function createModal(id){
+
     idItem = id
     // console.log(idItem)
     allItem = await getItemData(id)
@@ -169,22 +177,51 @@ function createOption(optionItem){
     // console.log(optionItem)
     let optionContainer = document.createElement('div');
 
+    if(optionItem.length > 0){
+        let line = document.createElement('hr');
+        line.className = "mb-0"
+        $('#modalBody').append(line)
+    }
+
     for(let i=0;i < optionItem.length;i++){
+
+        let min = optionItem[i].min
+        let max = optionItem[i].max
+        let group = optionItem[i].id
+
+        let titleContainer = document.createElement('div');
+        titleContainer.className = 'name-price'
 
         let titleOption = document.createElement('h5');
         titleOption.className = 'option-name'
         titleOption.innerText = optionItem[i].name
 
+        let pillContainer = document.createElement('h5');
+        pillContainer.className = 'option-name'
+
+        let pill =  document.createElement('span');
+        pill.className = "badge"
+        pill.innerText = min + ' required'
+
+        if(min == 0){
+
+            pill.classList.add("bg-light")
+            pill.classList.add("text-muted")
+        }
+        else {
+            pill.classList.add("bg-primary")
+        }
+
         let desOption = document.createElement('small');
         desOption.className = 'text-muted option-des'
         desOption.innerText = optionItem[i].description
 
-        optionContainer.appendChild(titleOption)
-        optionContainer.appendChild(desOption)
+        pillContainer.appendChild(pill)
+        titleContainer.appendChild(titleOption)
+        titleContainer.appendChild(pillContainer)
 
-        let min = optionItem[i].min
-        let max = optionItem[i].max
-        let group = optionItem[i].id
+        optionContainer.appendChild(titleContainer)
+        optionContainer.appendChild(desOption)
 
         for(let j=0;j < optionItem[i].itemList.length;j++){
 
@@ -288,7 +325,7 @@ function calculatePrice(){
             optionPrice += Number(gn[i].value)
         }
     }
-    totalPrice = startPrice+optionPrice
+    totalPrice = (startPrice+optionPrice) * ($('#inputQuantity').val())
     $('#priceButton').text(totalPrice)
 }
 
@@ -356,16 +393,18 @@ $(document).on('click', '.number-spinner button', function () {
         }
     }
     btn.closest('.number-spinner').find('input').val(newVal);
+    calculatePrice()
 });
 
 
-function createCartItem(order){
+function createCartItem(){
     $('#cartModalBody').empty()
 
-    console.log(cartText.length)
-
     if(cartText.length > 0){
-        $('#payBtn').prop('disabled',false)
+        $('#cartBtn').prop('disabled',false)
+    }
+    else {
+        $('#cartBtn').prop('disabled',true)
     }
 
     for(let i=0;i<cartText.length;i++) {
@@ -384,31 +423,36 @@ function createCartItem(order){
         let option = document.createElement('small')
         option.className = 'text-muted'
 
-        let linkContainer = document.createElement('div')
+        let linkOpContainer = document.createElement('div')
+        linkOpContainer.className = 'name-price'
 
         let link = document.createElement('a')
+        link.className = 'stretched-link'
         link.setAttribute('type', 'button')
-        link.innerText = 'Edit'
         link.setAttribute('data-bs-toggle','modal')
         link.setAttribute('data-bs-target',"#staticBackdrop")
-        link.onclick = function(){editItem(index)}
+        link.onclick = async function(){await editItem(index)}
 
-        let linkDelete = document.createElement('a')
+        let linkDelete = document.createElement('button')
+        linkDelete.className = 'btn btn-delete-cart'
         linkDelete.setAttribute('type', 'button')
-        linkDelete.innerText = 'Delete'
         linkDelete.onclick = function (){deleteItem(index)}
+
+        let iconTrash = document.createElement('i')
+        iconTrash.className = 'bi bi-trash-fill'
 
         itemName.innerText = cartText[i].name
         price.innerText = cartText[i].price
         option.innerText = cartText[i].opText.join(', ')
 
+        linkDelete.appendChild(iconTrash)
         title.appendChild(itemName)
         title.appendChild(price)
         container.appendChild(title)
-        container.appendChild(option)
-        linkContainer.appendChild(link)
-        linkContainer.appendChild(linkDelete)
-        container.appendChild(linkContainer)
+        linkOpContainer.appendChild(option)
+        linkOpContainer.appendChild(linkDelete)
+        container.appendChild(linkOpContainer)
+        container.append(link)
         $('#cartModalBody').append(container)
     }
 }
@@ -416,6 +460,7 @@ function createCartItem(order){
 async function editItem(index){
     let id = orderRequests[index].itemId
     await createModal(id)
+    $('#inputQuantity').val(orderRequests[index].quantity)
 
     let select = orderRequests[index].selectItems
     for(let i=0;i<select.length;i++){
@@ -424,6 +469,7 @@ async function editItem(index){
         }
         document.getElementById(select[i].itemOptionalId[0]).onchange()
     }
+
     $('#nameButton').text('Edit Cart')
     document.getElementById('closeModal').onclick = function (){$('#cartModal').modal('show')}
     document.getElementById('goCart').onclick = function (){editRequestList(index)}
@@ -444,11 +490,16 @@ function openCartModal(){
 }
 
 function deleteItem(index){
-    orderRequests = orderRequests.splice(index,1)
-    cartText = cartText.splice(index,1)
+    console.log(index)
+
+    orderRequests.splice(index,1)
+    cartText.splice(index,1)
+    createCartItem()
+    $('#cartModal').modal('show')
+
 }
 
-function pay(){
+function order(){
     let json = {
         "orderRequests": orderRequests
     }

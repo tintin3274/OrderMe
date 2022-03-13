@@ -16,16 +16,13 @@
             <li class="nav-item">
                 <a class="nav-link" data-bs-toggle="modal" data-bs-target="#cartModal" type="button" onclick="createCartItem()">Cart</a>
             </li>
-            <li class="nav-item">
-                <a  class="nav-link">Bill</a>
+            <li class="nav-item" id="billNav">
+                <a  class="nav-link" data-bs-toggle="modal" data-bs-target="#billModal" type="button">Bill</a>
             </li>
         </ul>
     </nav>
     <nav class="navbar navbar-light bg-light" >
         <ul class="nav nav-pills" id="navbar-category">
-            <form class="d-flex">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-            </form>
         </ul>
     </nav>
     <!--- create in JS -->
@@ -53,12 +50,6 @@
 <!--        </div>-->
     </div>
 
-
-            <!-- Button trigger modal -->
-            <!--        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">-->
-            <!--            Launch static backdrop modal-->
-            <!--        </button>-->
-
             <!-- Modal -->
             <div class="modal fade" id="staticBackdrop"  tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 <div class="modal-dialog modal-fullscreen-md-down">
@@ -73,9 +64,8 @@
                                 <p class="text-muted mb-0" id="priceItem"></p>
                             </div>
                             <label id="desItem"></label>
-                            <hr class="mb-0">
                         </div>
-                        <div class="modal-body py-0" id="modalBody">
+                        <div class="modal-body py-0 " id="modalBody">
                         </div>
                         <div class="modal-body pt-0" >
                             <hr>
@@ -123,11 +113,35 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" style="width: 100%" id="payBtn" disabled onclick="pay()">Payment</button>
+                    <button class="btn btn-primary" style="width: 100%" id="cartBtn" disabled onclick="order()">Order</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="billModal"  tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen-md-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 >Cart</h2>
+                    <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body pb-0" id="BillModalBody">
+                    <div>
+                        <div class="name-price">
+                            <h6 class="menu-name">ข้าวหน้าเนื้อ</h6>
+                            <h6>300</h6>
+                        </div>
+                        <small class="text-muted">ไข่ดิบ, ขิงดอง, XL</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" style="width: 100%" id="BillBtn" disabled onclick="order()">Payment</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 </body>

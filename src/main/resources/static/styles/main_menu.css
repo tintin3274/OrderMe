@@ -92,3 +92,14 @@
     height: unset; !important;
 }
 
+.bi-trash-fill{
+    color: crimson;
+}
+
+.btn-delete-cart{
+    z-index: 2;
+    position: relative;
+    padding: 0;
+    margin-left: 10px;
+}
+
