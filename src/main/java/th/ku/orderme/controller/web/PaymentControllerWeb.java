@@ -15,10 +15,13 @@ import th.ku.orderme.service.SCBSimulatorPaymentService;
 import th.ku.orderme.service.TokenService;
 import th.ku.orderme.util.ConstantUtil;
 
+import java.text.DecimalFormat;
+
 @Controller
 @RequestMapping("/payment")
 @RequiredArgsConstructor
 public class PaymentControllerWeb {
+    private static final DecimalFormat df = new DecimalFormat("0.00");
     private final PaymentRepository paymentRepository;
     private final PaymentService paymentService;
     private final SCBSimulatorPaymentService scbSimulatorPaymentService;
@@ -79,7 +82,7 @@ public class PaymentControllerWeb {
                 model.addAttribute("ref1", payment.getRef1());
                 model.addAttribute("ref2", payment.getRef2());
                 model.addAttribute("ref3", payment.getRef3());
-                model.addAttribute("total", payment.getTotal());
+                model.addAttribute("total", df.format(payment.getTotal()));
                 return "payment_qrcode";
             }
             else if(bill.getStatus().equalsIgnoreCase(ConstantUtil.CLOSE)) {
@@ -92,29 +95,13 @@ public class PaymentControllerWeb {
         return "redirect:/";
     }
 
-    @GetMapping("/qrcode/success")
-    public String paymentQrCodeSuccess(@CookieValue(name = "uid") String uid) {
-        Token token = tokenService.findById(uid);
-        if(token != null) {
-            Bill bill = token.getBill();
-            if(bill == null) {
-                return "redirect:/main-menu";
-            }
-            else if(bill.getStatus().equalsIgnoreCase(ConstantUtil.CLOSE)) {
-                Payment payment = paymentRepository.findByBill_Id(bill.getId());
-                if(payment.getStatus().equalsIgnoreCase(ConstantUtil.PAID)) {
-                    return "redirect:/receipt/"+payment.getRef1();
-                }
-            }
-            else if(bill.getStatus().equalsIgnoreCase(ConstantUtil.PAYMENT)) {
-                if(scbSimulatorPaymentService.inquiryTransaction(bill.getId())) {
-                    Payment payment = paymentRepository.findByBill_Id(bill.getId());
-                    return "redirect:/receipt/"+payment.getRef1();
-                }
-                return "redirect:/payment/qrcode";
-            }
+    // for QR30 Only
+    @GetMapping("/qrcode/verify/{transRef}")
+    public String slipVerification(@PathVariable String transRef) {
+        if(scbSimulatorPaymentService.slipVerification(transRef)) {
+            return "redirect:/payment/qrcode/success";
         }
-        return "redirect:/";
+        return "redirect:/payment/qrcode";
     }
 
     @GetMapping("/deeplink")
@@ -149,5 +136,37 @@ public class PaymentControllerWeb {
         }
         redirectView.setUrl("/");
         return redirectView;
+    }
+
+    @GetMapping(value = {"/qrcode/success", "/deeplink/success"})
+    public String paymentSuccess(@CookieValue(name = "uid") String uid) {
+        Token token = tokenService.findById(uid);
+        if(token != null) {
+            Bill bill = token.getBill();
+            if(bill == null) {
+                return "redirect:/main-menu";
+            }
+            else if(bill.getStatus().equalsIgnoreCase(ConstantUtil.CLOSE)) {
+                Payment payment = paymentRepository.findByBill_Id(bill.getId());
+                if(payment.getStatus().equalsIgnoreCase(ConstantUtil.PAID)) {
+                    return "redirect:/receipt/"+payment.getRef1();
+                }
+            }
+            else if(bill.getStatus().equalsIgnoreCase(ConstantUtil.PAYMENT)) {
+                Payment payment = paymentRepository.findByBill_Id(bill.getId());
+                if(scbSimulatorPaymentService.inquiryTransaction(bill.getId())) {
+                    return "redirect:/receipt/"+payment.getRef1();
+                }
+                else {
+                    if(payment.getChannel().equalsIgnoreCase(ConstantUtil.QR_CODE)) {
+                        return "redirect:/payment/qrcode";
+                    }
+                    else if(payment.getChannel().equalsIgnoreCase(ConstantUtil.DEEP_LINK)) {
+                        return "redirect:/payment/deeplink";
+                    }
+                }
+            }
+        }
+        return "redirect:/";
     }
 }

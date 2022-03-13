@@ -2,7 +2,6 @@ package th.ku.orderme.service;
 
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import th.ku.orderme.dto.BillDTO;
 import th.ku.orderme.dto.PaymentDTO;
@@ -20,19 +19,13 @@ import java.time.format.DateTimeFormatter;
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
-
-    private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd");
+    private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
     private static final DecimalFormat df = new DecimalFormat("0.00");
     private static final Gson gson = new Gson();
 
     private final PaymentRepository paymentRepository;
     private final BillService billService;
-
-    @Value("${scb.simulator.orderme.ref1Prefix}")
-    private String ref1Prefix;
-
-    @Value("${scb.simulator.orderme.ref2Prefix}")
-    private String ref2Prefix;
+    private final OrderService orderService;
 
     public Payment payBill(int billId) {
         Bill bill = billService.findById(billId);
@@ -46,12 +39,14 @@ public class PaymentService {
         Payment payment = paymentRepository.findByBill_Id(billId);
         if(payment == null) {
             LocalDateTime localDateTime = LocalDateTime.now();
-            String ymd = localDateTime.format(dtf);
+            String dt = localDateTime.format(dtf);
+            String bid = String.format("%04d", bill.getId()%10000);
+            String t = String.format("%04d", (int) subTotal % 10000);
 
             payment = new Payment();
             payment.setBill(bill);
-            payment.setRef1(ref1Prefix+ymd+bill.getId());
-            payment.setRef2(ref2Prefix+ymd+bill.getId());
+            payment.setRef1("OM"+dt+bid);
+            payment.setRef2("OM"+dt+t);
         }
         else {
             if(payment.getStatus().equalsIgnoreCase(ConstantUtil.PAID)) {
@@ -79,8 +74,9 @@ public class PaymentService {
         Payment payment = paymentRepository.findByRef1(ref1);
         if(payment == null) return;
 
-        if(payment.getStatus().equalsIgnoreCase(ConstantUtil.PAID) && payment.getBill().getStatus().equalsIgnoreCase(ConstantUtil.PAYMENT)) {
-            billService.setStatusCloseBill(payment.getBill().getId());
+        Bill bill = payment.getBill();
+        if(payment.getStatus().equalsIgnoreCase(ConstantUtil.PAID) && bill.getStatus().equalsIgnoreCase(ConstantUtil.PAYMENT)) {
+            billService.setStatusCloseBill(bill.getId());
 
             PaymentDTO paymentDTO = new PaymentDTO();
             paymentDTO.setRef1(payment.getRef1());
@@ -94,6 +90,10 @@ public class PaymentService {
 
             payment.setReceipt(gson.toJson(receiptDTO));
             paymentRepository.saveAndFlush(payment);
+
+            if(bill.getType().equalsIgnoreCase(ConstantUtil.TAKE_OUT)) {
+                orderService.changePendingToOrder(bill);
+            }
         }
     }
 

@@ -187,4 +187,14 @@ public class OrderService {
             log.error(e.getMessage());
         }
     }
+
+    @Transactional
+    public void changePendingToOrder(Bill bill) {
+        if(bill == null) return;
+        List<Order> orderList = bill.getOrderList();
+        for(Order order : bill.getOrderList()) {
+            order.setStatus(ConstantUtil.ORDER);
+        }
+        orderRepository.saveAllAndFlush(orderList);
+    }
 }

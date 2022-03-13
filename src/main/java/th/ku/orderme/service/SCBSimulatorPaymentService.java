@@ -38,12 +38,6 @@ public class SCBSimulatorPaymentService {
     @Value("${scb.simulator.orderme.billerId}")
     private String billerId;
 
-    @Value("${scb.simulator.orderme.ref1Prefix}")
-    private String ref1Prefix;
-
-    @Value("${scb.simulator.orderme.ref2Prefix}")
-    private String ref2Prefix;
-
     @Value("${scb.simulator.orderme.ref3Prefix}")
     private String ref3Prefix;
 
@@ -99,11 +93,16 @@ public class SCBSimulatorPaymentService {
         return true;
     }
 
+    private String crateRef3(String ref1, String ref2) {
+        return ref3Prefix + ref1.substring(2, 10) + ref1.substring(16, 20) + ref2.substring(16, 20);
+    }
+
     public String generateDeeplink(Payment payment) {
         try {
             if(!validateToken()) throw new AuthenticationException("Can't Generate SCB Token");
 
-            payment.setRef3(ref3Prefix+payment.getRef1());
+            String ref3 = crateRef3(payment.getRef1(), payment.getRef2());
+            payment.setRef3(ref3);
 
             OkHttpClient client = new OkHttpClient();
             MediaType mediaType = MediaType.parse("application/json");
@@ -124,7 +123,7 @@ public class SCBSimulatorPaymentService {
                     "\n\t\t\"orderReference\": \""+payment.getRef1()+"\"," +
                     "\n\t\t\"paymentAmount\": "+payment.getTotal()+"\n\t}," +
                     "\n\t\"merchantMetaData\": {" +
-                    "\n\t\t\"callbackUrl\": \"http://tintin3274.trueddns.com:40850\"," +
+                    "\n\t\t\"callbackUrl\": \"http://tintin3274.trueddns.com:40850/payment/deeplink/success\"," +
                     "\n\t\t\"merchantInfo\": {" +
                     "\n\t\t\t\"name\": \"OrderMe\"\n\t\t}," +
                     "\n\t\t\"extraData\": {}," +
@@ -178,7 +177,8 @@ public class SCBSimulatorPaymentService {
         try {
             if(!validateToken()) throw new AuthenticationException("Can't Generate SCB Token");
 
-            payment.setRef3(ref3Prefix+payment.getRef1());
+            String ref3 = crateRef3(payment.getRef1(), payment.getRef2());
+            payment.setRef3(ref3);
 
             OkHttpClient client = new OkHttpClient();
             MediaType mediaType = MediaType.parse("application/json");
@@ -270,22 +270,31 @@ public class SCBSimulatorPaymentService {
                     // Try QRCS
                     String transRef = "unknown";
                     String qrId = data.get("qrcodeId").getAsString();
-                    String request = "{\"transactionId\":\""+transRef+"\",\"qrId\":\""+qrId+"\"}"; // Reuse by simulate confirm for QRCS
-                    if(paymentConfirm(request)) return true; // for QRCS Only
+                    String requestBody = "{\"transactionId\":\""+transRef+"\",\"qrId\":\""+qrId+"\"}"; // Reuse by simulate confirm for QRCS
+                    if(paymentConfirm(requestBody)) return true; // for QRCS Only
 
-                    // Try QR30
-                    String ref1 = payment.getRef1();
-                    String transactionDate = payment.getUpdatedTimestamp().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                    String url = "http://api-sandbox.partners.scb/partners/sandbox/v1/payment/billpayment/inquiry?billerId="+billerId+"&reference1="+ref1+"&eventCode=00300100&transactionDate="+transactionDate;
+                    try {
+                        // Try QR30
+                        String ref1 = payment.getRef1();
+                        String transactionDate = payment.getUpdatedTimestamp().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                        String url = "http://api-sandbox.partners.scb/partners/sandbox/v1/payment/billpayment/inquiry?billerId="+billerId+"&reference1="+ref1+"&transactionDate="+transactionDate+"&eventCode=00300100";
 
-                    Response response = buildRequestConfirmPayment(url);
+                        Response response = buildRequestConfirmPayment(url);
 
-                    JsonObject jsonResponse = JsonParser.parseString(response.body().string()).getAsJsonObject();
-                    JsonObject status = jsonResponse.getAsJsonObject("status");
-                    String statusCode = status.get("code").getAsString();
+                        JsonObject jsonResponse = JsonParser.parseString(response.body().string()).getAsJsonObject();
+                        JsonObject status = jsonResponse.getAsJsonObject("status");
+                        String statusCode = status.get("code").getAsString();
 
-                    if(statusCode.equals("1000")) {
-                        return paymentComplete(ref1, ConstantUtil.QR30, jsonResponse.toString());
+                        if(statusCode.equals("1000")) {
+                            return paymentComplete(ref1, ConstantUtil.QR30, jsonResponse.toString());
+                        }
+                        else {
+                            throw new Exception("Status code "+statusCode+": "+status.get("description").getAsString());
+                        }
+
+                    }
+                    catch (Exception e) {
+                        log.error(e.getMessage());
                     }
                 }
 
