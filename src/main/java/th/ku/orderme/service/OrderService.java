@@ -189,6 +189,52 @@ public class OrderService {
     }
 
     @Transactional
+    public void cancelAllOrderOfBill(int billId) {
+        try {
+            HashMap<Integer, Integer> itemsUpdateQuantity = new HashMap<>();
+            List<Order> orderList = orderRepository.findAllByBill_Id(billId);
+            for(Order order : orderList) {
+                if(!order.getStatus().equalsIgnoreCase(ConstantUtil.COMPLETE)) {
+                    order.setStatus(ConstantUtil.CANCEL);
+                    Item item = order.getItem();
+                    int quantity = order.getQuantity();
+                    if(item.isCheckQuantity()) {
+                        if(itemsUpdateQuantity.containsKey(item.getId())) {
+                            itemsUpdateQuantity.put(item.getId(), itemsUpdateQuantity.get(item.getId())+quantity);
+                        }
+                        else {
+                            itemsUpdateQuantity.put(item.getId(), quantity);
+                        }
+                    }
+
+                    List<SelectItem> selectItemList = selectItemRepository.findSelectItemsBySelectItemId_OrderId(order.getId());
+                    for(SelectItem selectItem : selectItemList) {
+                        Item itemOption = itemService.findById(selectItem.getSelectItemId().getItemId());
+                        if(itemOption.isCheckQuantity()) {
+                            if(itemsUpdateQuantity.containsKey(itemOption.getId())) {
+                                itemsUpdateQuantity.put(itemOption.getId(), itemsUpdateQuantity.get(itemOption.getId())+quantity);
+                            }
+                            else {
+                                itemsUpdateQuantity.put(itemOption.getId(), quantity);
+                            }
+                        }
+                    }
+
+                    List<Item> itemList = itemRepository.findAllById(itemsUpdateQuantity.keySet());
+                    for(Item itemUpdate : itemList) {
+                        int addQuantity = itemsUpdateQuantity.get(itemUpdate.getId());
+                        itemUpdate.setQuantity(itemUpdate.getQuantity() + addQuantity);
+                    }
+                    itemRepository.saveAllAndFlush(itemList);
+                }
+            }
+        }
+        catch (NullPointerException | ObjectOptimisticLockingFailureException e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    @Transactional
     public void changePendingToOrder(Bill bill) {
         if(bill == null) return;
         List<Order> orderList = bill.getOrderList();

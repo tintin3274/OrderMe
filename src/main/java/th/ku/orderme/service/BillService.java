@@ -132,17 +132,14 @@ public class BillService {
         if(bill == null) return;
         if(!bill.getStatus().equalsIgnoreCase(ConstantUtil.CLOSE)) {
             bill.setStatus(ConstantUtil.VOID);
-            billRepository.saveAndFlush(bill);
-
-            for(Order order : bill.getOrderList()) {
-                orderService.cancel(order.getId());
-            }
+            bill = billRepository.saveAndFlush(bill);
+            orderService.cancelAllOrderOfBill(bill.getId());
         }
     }
 
     public void autoCancelBill(int id) {
         Runnable task = () -> cancelBill(id);
-        ses.schedule(task, 15, TimeUnit.MINUTES);
+        ses.schedule(task, 20, TimeUnit.MINUTES);
     }
 
     private static class DaemonThreadFactory implements ThreadFactory {
