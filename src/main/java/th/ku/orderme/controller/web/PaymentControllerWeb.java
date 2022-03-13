@@ -75,7 +75,10 @@ public class PaymentControllerWeb {
                     model.addAttribute("qrImage", qrImage);
                 }
 
+                model.addAttribute("billId", payment.getBill().getId());
                 model.addAttribute("ref1", payment.getRef1());
+                model.addAttribute("ref2", payment.getRef2());
+                model.addAttribute("ref3", payment.getRef3());
                 model.addAttribute("total", payment.getTotal());
                 return "payment_qrcode";
             }
