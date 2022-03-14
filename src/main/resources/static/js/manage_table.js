@@ -1,3 +1,5 @@
+let stompClient = null;
+
 let numberTable = [1,2,3]
 let available = [true,true,true]
 
@@ -6,6 +8,28 @@ let available = [true,true,true]
 $( document ).ready((() => {
     createTableCard()
 }))
+
+function connect() {
+    var socket = new SockJS('/orderme-websocket');
+    stompClient = Stomp.over(socket);
+    stompClient.connect({}, function (frame) {
+        setConnected(true);
+        console.log('Connected: ' + frame);
+        stompClient.subscribe('/topic/table-update', function (message) {
+            console.log(message);
+        });
+    });
+}
+
+function disconnect() {
+    if (stompClient !== null) {
+        stompClient.disconnect();
+    }
+    setConnected(false);
+    console.log("Disconnected");
+}
+
+
 
 function createTableCard(){
     for(let i=0;i< numberTable.length;i++){

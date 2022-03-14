@@ -10,23 +10,24 @@
     <link rel="stylesheet" href="/styles/main_menu.css">
 </head>
 <body>
-<div layout:fragment="content">
-    <nav class="navbar navbar-dark bg-dark">
+<section layout:fragment="content">
+
+    <nav class="navbar" style="justify-content: flex-end">
         <ul class="nav nav-pills">
             <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="modal" data-bs-target="#cartModal" type="button" onclick="createCartItem()">Cart</a>
+                <a class="nav-link link-head" data-bs-toggle="modal" data-bs-target="#cartModal" type="button" onclick="createCartItem()">Cart</a>
             </li>
             <li class="nav-item" id="billNav">
-                <a  class="nav-link" data-bs-toggle="modal" data-bs-target="#billModal" type="button">Bill</a>
+                <a  class="nav-link link-head" data-bs-toggle="modal" data-bs-target="#billModal" type="button">Bill</a>
             </li>
         </ul>
     </nav>
-    <nav class="navbar navbar-light bg-light" >
+    <nav class="navbar navbar-light bg-light" id ="scroll-category">
         <ul class="nav nav-pills" id="navbar-category">
         </ul>
     </nav>
     <!--- create in JS -->
-    <div class="px-3" data-bs-spy="scroll" data-bs-target="#navbar-category" id="menu" data-bs-offset="5">
+    <div class="px-3" id="menu" data-spy="scroll" data-target="#scroll-category" data-offset="0" tabindex="0">
 <!--        <h1 id="Dessert">Dessert</h1>-->
 <!--        <div class="cardScroll">-->
 <!--            <div class="row">-->
@@ -53,33 +54,38 @@
             <!-- Modal -->
             <div class="modal fade" id="staticBackdrop"  tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 <div class="modal-dialog modal-fullscreen-md-down">
-                    <div class="modal-content">
-                        <div class="modal-header">
-<!--                            <img class="img-fluid" id="modalImg" src="/images/default.png">-->
+                    <div class="modal-content" >
+                        <div class="modal-header cart-header p-1">
                             <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close" id="closeModal"></button>
                         </div>
-                        <div class="modal-body pb-0">
-                            <div class="name-price">
-                                <h4 class="menu-name" id="titleItem"></h4>
-                                <p class="text-muted mb-0" id="priceItem"></p>
+                        <div class="modal-body" >
+                            <div id="modalImg" class="pb-3">
+                                <img class="img-fluid"  src="/images/bubae.png" style="height: 200px" id="imgModal">
                             </div>
-                            <label id="desItem"></label>
-                        </div>
-                        <div class="modal-body py-0 " id="modalBody">
-                        </div>
-                        <div class="modal-body pt-0" >
-                            <hr>
-                            <h5>Comment</h5>
-                            <textarea type="text" class="form-control" rows="3" id="inputComment"></textarea>
-                            <div class="mt-2 col-6 " >
-                                <div class="input-group number-spinner">
+                            <div class="pb-0">
+                                <div class="name-price">
+                                    <h4 class="menu-name" id="titleItem"></h4>
+                                    <p class="text-muted mb-0" id="priceItem"></p>
+                                </div>
+                                <label id="desItem"></label>
+                            </div>
+
+                            <div id="modalBody"></div>
+
+                            <div class="pt-0" >
+                                <hr>
+                                <h5>Comment</h5>
+                                <textarea type="text" class="form-control" rows="3" id="inputComment"></textarea>
+                                <div class="mt-2 col-6 " >
+                                    <div class="input-group number-spinner">
                                             <span class="input-group-btn">
                                                 <button class="btn btn-default" data-dir="dwn">-</button>
                                             </span>
-                                    <input id="inputQuantity" type="text" class="text-center form-control" value="1" style="width: 50%">
-                                    <span class="input-group-btn">
+                                        <input id="inputQuantity" type="text" class="text-center form-control" value="1" style="width: 50%">
+                                        <span class="input-group-btn">
 					                            <button class="btn btn-default" data-dir="up">+</button>
 				                            </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -123,7 +129,7 @@
         <div class="modal-dialog modal-fullscreen-md-down">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h2 >Cart</h2>
+                    <h2 >Bill</h2>
                     <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body pb-0" id="BillModalBody">
@@ -142,7 +148,13 @@
         </div>
     </div>
 
-</div>
+    <div class="py-4">
 
+    </div>
+    <footer>
+        <a class="btn btn-success" data-bs-toggle="modal" data-bs-target="#cartModal" type="button" onclick="createCartItem()">Cart</a>
+    </footer>
+</section>
 </body>
+
 </html>

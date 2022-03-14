@@ -27,8 +27,9 @@ function getItemEachCategoryData(category){
 }
 
 $( document ).ready(async function() {
+    $('footer').hide()
 
-    let userType = 'TAKE-OUT'
+    let userType = ''
     if(userType == 'TAKE-OUT'){
         document.getElementById('billNav').classList.add('invisible')
         $('#cartBtn').text('Payment')
@@ -48,7 +49,7 @@ $( document ).ready(async function() {
 
 function createCard( category ){
 
-    let categoryName = document.createElement('h1')
+    let categoryName = document.createElement('h3')
     categoryName.innerText = category
     categoryName.id = category
 
@@ -131,7 +132,7 @@ function createCard( category ){
 function createNavCategory( category ){
 
     let navItem = document.createElement('li')
-    navItem.className = 'nav-link'
+    navItem.className = 'nav-item'
 
     let navLink =  document.createElement('a')
     navLink.className = 'nav-link'
@@ -159,6 +160,7 @@ async function createModal(id){
     if(allItem.checkQuantity){
         maxQty = allItem.quantity
     }
+
     $('#inputQuantity').val(1)
         // console.log(allItem)
     $('#titleItem').text(allItem.name)
@@ -168,6 +170,13 @@ async function createModal(id){
     $('#modalBody').empty()
     let optionData = allItem.optionalList
     createOption(optionData)
+
+    if (allItem.image != null){
+        document.getElementById('imgModal').src = '/images/'+allItem.image
+        document.getElementById('imgModal').setAttribute('onerror',"this.src=\'/images/default.png\'")
+    }
+    else {document.getElementById('imgModal').src = '/images/default.png'}
+
 }
 
 function createOption(optionItem){
@@ -201,7 +210,7 @@ function createOption(optionItem){
 
         let pill =  document.createElement('span');
         pill.className = "badge"
-        pill.innerText = min + ' required'
+        pill.innerText = min + ' Required'
 
         if(min == 0){
 
@@ -367,6 +376,8 @@ function createOrderRequest(){
 }
 
 function addCart(){
+    $('footer').show()
+
     let request = createOrderRequest()
     orderRequests.push(request[0])
     cartText.push(request[1])
@@ -405,6 +416,7 @@ function createCartItem(){
     }
     else {
         $('#cartBtn').prop('disabled',true)
+        $('footer').hide()
     }
 
     for(let i=0;i<cartText.length;i++) {

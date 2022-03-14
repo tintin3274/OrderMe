@@ -1,0 +1,28 @@
+body{
+    font-family: Kanit;
+}
+
+h3{
+    color: #3d4d40;
+    margin-top: 8px;
+}
+
+.nav-link {
+    color: #8ba888;
+}
+
+.nav-link:hover{
+    color: #44624a;
+}
+
+.navbar{
+    background-color: #44624a;
+}
+
+.link-head {
+    color: white;
+}
+
+.link-head:hover{
+    color: white;
+}

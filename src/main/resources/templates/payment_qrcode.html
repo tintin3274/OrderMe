@@ -38,7 +38,7 @@
 
             var today = new Date();
             let fileName = today.getFullYear()+''+(today.getMonth()+1)+''+today.getDate()+'_'+today.getHours() + "" + today.getMinutes() + "" + today.getSeconds()
-
+                fileName = "[[${ref1}]]"
             html2canvas(div).then(
                 function (canvas) {
                     var a = document.createElement('a');

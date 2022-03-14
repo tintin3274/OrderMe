@@ -1,3 +1,11 @@
+html {
+    scroll-padding-top: 60px; /* height of sticky header */
+}
+
+#menu{
+    position: relative;
+}
+
 .menu-name{
     font-weight: 600;
 }
@@ -88,9 +96,6 @@
     position: absolute;
     bottom: 0;
 }
-.modal-fullscreen-md-down .modal-content{
-    height: unset; !important;
-}
 
 .bi-trash-fill{
     color: crimson;
@@ -103,3 +108,32 @@
     margin-left: 10px;
 }
 
+footer, footer .btn{
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index: 2;
+    display:none
+}
+
+@media (max-width:760px){
+    footer, footer .btn{
+        display:block;
+    }
+}
+
+
+.navbar-light{
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.cart-header{
+    justify-content: flex-end;
+}
+
+#modalImg{
+    display: flex;
+    justify-content: center;
+}
