@@ -7,6 +7,8 @@ import th.ku.orderme.model.Bill;
 import th.ku.orderme.model.Table;
 import th.ku.orderme.repository.TableRepository;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -15,6 +17,10 @@ public class TableService {
 
     public Table findById(int id) {
         return tableRepository.findById(id).orElse(null);
+    }
+
+    public List<Table> findAll() {
+        return tableRepository.findAll();
     }
 
     public boolean existsById(int id) {

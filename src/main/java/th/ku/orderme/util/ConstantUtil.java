@@ -18,6 +18,7 @@ public class ConstantUtil {
     public static final String CANCEL = "CANCEL";
     public static final String PENDING = "PENDING";
     public static final String ORDER = "ORDER";
+    public static final String COOKING = "COOKING";
     public static final String COMPLETE = "COMPLETE";
 
     public static final String PAID = "PAID";
