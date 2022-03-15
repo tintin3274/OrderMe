@@ -26,6 +26,8 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final BillService billService;
     private final OrderService orderService;
+    private final TableService tableService;
+    private final TokenService tokenService;
 
     public Payment payBill(int billId) {
         Bill bill = billService.findById(billId);
@@ -93,6 +95,11 @@ public class PaymentService {
 
             if(bill.getType().equalsIgnoreCase(ConstantUtil.TAKE_OUT)) {
                 orderService.changePendingToOrder(bill);
+                tokenService.deleteByBillId(bill.getId());
+            }
+            else if(bill.getType().equalsIgnoreCase(ConstantUtil.DINE_IN)) {
+                tableService.clearTableOfBill(bill.getId());
+                tokenService.deleteByBillId(bill.getId());
             }
         }
     }

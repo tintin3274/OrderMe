@@ -48,8 +48,6 @@ public class BillService {
         bill.setStatus(ConstantUtil.OPEN);
         bill.setTimestamp(LocalDateTime.now());
         bill = billRepository.saveAndFlush(bill);
-
-        tokenService.mappingNewTokenToBill(bill);
         return bill;
     }
 

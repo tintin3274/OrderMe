@@ -71,9 +71,9 @@ public class SecurityConfig {
             };
 
             String[] allow = new String[]{
-                    "/dine-in/**", "/take-out", "/scb/payment-confirm",
+                    "/dine-in/**", "/take-out", "/scb/payment-confirm", "/receipt/**",
                     "/generate-token", "/verify-token"
-                    ,"/api/**"
+                    ,"/api/**, /app/**, /topic/**, /orderme-websocket"
             };
 
             http

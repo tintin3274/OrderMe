@@ -38,8 +38,17 @@ public class TokenService {
     }
 
     public void deleteById(String id) {
-        tokenRepository.deleteById(id);
-        log.info("TokenService: Delete ID - "+id);
+        if(tokenRepository.existsById(id)) {
+            tokenRepository.deleteById(id);
+            log.info("TokenService: Delete ID - "+id);
+        }
+    }
+
+    public void deleteByBillId(int billId) {
+        Token token = tokenRepository.findByBill_Id(billId);
+        if(token != null) {
+            deleteById(token.getId());
+        }
     }
 
     public Token newToken(String id) {

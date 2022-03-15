@@ -11,4 +11,5 @@ public class TableDTO {
     private int id;
     private boolean available;
     private int billId;
+    private String token;
 }
