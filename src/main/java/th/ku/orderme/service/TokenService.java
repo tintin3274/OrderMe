@@ -85,9 +85,14 @@ public class TokenService {
         return token;
     }
 
-    public void autoDeleteToken(String id) {
+    public void autoDeleteToken(String id, int minutes) {
         Runnable task = () -> deleteById(id);
-        ses.schedule(task, 30, TimeUnit.MINUTES);
+        ses.schedule(task, minutes, TimeUnit.MINUTES);
+    }
+
+    public void autoDeleteToken(int billId, int minutes) {
+        Runnable task = () -> deleteByBillId(billId);
+        ses.schedule(task, minutes, TimeUnit.MINUTES);
     }
 
     private static class DaemonThreadFactory implements ThreadFactory {

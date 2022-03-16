@@ -1,8 +1,13 @@
 package th.ku.orderme.controller.web;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import th.ku.orderme.dto.ReceiptDTO;
+import th.ku.orderme.service.PaymentService;
 import th.ku.orderme.util.CookieUtil;
 
 import javax.servlet.http.Cookie;
@@ -11,7 +16,9 @@ import javax.servlet.http.HttpServletResponse;
 
 @Controller
 @RequestMapping
+@RequiredArgsConstructor
 public class GeneralControllerWeb {
+    private final PaymentService paymentService;
 
     @GetMapping("/")
     public String main(HttpServletRequest request, HttpServletResponse response) {
@@ -20,6 +27,12 @@ public class GeneralControllerWeb {
         response.addCookie(cookie1);
         response.addCookie(cookie2);
         return "index";
+    }
+
+    @ResponseBody
+    @GetMapping("/receipt/{ref1}")
+    public ReceiptDTO getReceiptDTO(@PathVariable String ref1) {
+        return paymentService.getReceiptDTO(ref1);
     }
 
     @GetMapping("/main-menu")

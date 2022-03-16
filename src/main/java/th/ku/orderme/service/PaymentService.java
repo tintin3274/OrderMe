@@ -95,11 +95,10 @@ public class PaymentService {
 
             if(bill.getType().equalsIgnoreCase(ConstantUtil.TAKE_OUT)) {
                 orderService.changePendingToOrder(bill);
-                tokenService.deleteByBillId(bill.getId());
             }
             else if(bill.getType().equalsIgnoreCase(ConstantUtil.DINE_IN)) {
                 tableService.clearTableOfBill(bill.getId());
-                tokenService.deleteByBillId(bill.getId());
+                tokenService.autoDeleteToken(bill.getId(), 10);
             }
         }
     }
@@ -108,7 +107,7 @@ public class PaymentService {
         Payment payment = paymentRepository.findByRef1(ref1);
         if(payment == null) return null;
         else if(payment.getStatus().equalsIgnoreCase(ConstantUtil.PAID)) {
-            return gson.fromJson(gson.toJson(payment.getReceipt()), ReceiptDTO.class);
+            return gson.fromJson(payment.getReceipt(), ReceiptDTO.class);
         }
         return null;
     }

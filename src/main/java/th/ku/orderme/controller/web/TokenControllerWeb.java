@@ -38,7 +38,7 @@ public class TokenControllerWeb {
         response.addCookie(cookie2);
 
         tokenService.newToken(uid);
-        tokenService.autoDeleteToken(uid);
+        tokenService.autoDeleteToken(uid, 30);
         return "redirect:/main-menu";
     }
 

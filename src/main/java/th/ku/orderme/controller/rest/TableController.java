@@ -55,7 +55,7 @@ public class TableController {
     }
 
     @PostMapping("/update")
-    public TableDTO sendTableDTOUpdate(TableDTO tableDTO) {
+    public TableDTO sendTableDTOUpdate(@RequestBody TableDTO tableDTO) {
         template.convertAndSend("/topic/table/update", tableDTO);
         return tableDTO;
     }

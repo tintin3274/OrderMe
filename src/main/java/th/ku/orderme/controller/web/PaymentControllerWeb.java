@@ -37,7 +37,9 @@ public class PaymentControllerWeb {
                 return "redirect:/main-menu";
             }
             else if(bill.getStatus().equalsIgnoreCase(ConstantUtil.OPEN)) {
-                return "redirect:/main-menu";
+                billService.setStatusPaymentBill(bill.getId());
+                model.addAttribute("bill", billService.getBillDTO(bill.getId()));
+                return "payment";
             }
             else if(bill.getStatus().equalsIgnoreCase(ConstantUtil.PAYMENT)) {
                 model.addAttribute("bill", billService.getBillDTO(bill.getId()));
