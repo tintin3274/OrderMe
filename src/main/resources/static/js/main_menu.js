@@ -168,6 +168,7 @@ async function createModal(id){
     $('#priceItem').text('฿ ' + startPrice)
     $('#priceButton').text(startPrice)
     $('#modalBody').empty()
+    $('#inputComment').val(null)
     let optionData = allItem.optionalList
     createOption(optionData)
 
@@ -423,6 +424,11 @@ function createCartItem(){
         let index = i
 
         let container = document.createElement('div')
+        container.onclick = async function(){await editItem(index)}
+        container.setAttribute('type', 'button')
+        container.setAttribute('data-bs-toggle','modal')
+        container.setAttribute('data-bs-target',"#staticBackdrop")
+        container.className = 'my-2'
 
         let title = document.createElement('div')
         title.className = 'name-price'
@@ -435,15 +441,11 @@ function createCartItem(){
         let option = document.createElement('small')
         option.className = 'text-muted'
 
+        let comment = document.createElement('small')
+        comment.className = 'text-muted'
+
         let linkOpContainer = document.createElement('div')
         linkOpContainer.className = 'name-price'
-
-        let link = document.createElement('a')
-        link.className = 'stretched-link'
-        link.setAttribute('type', 'button')
-        link.setAttribute('data-bs-toggle','modal')
-        link.setAttribute('data-bs-target',"#staticBackdrop")
-        link.onclick = async function(){await editItem(index)}
 
         let linkDelete = document.createElement('button')
         linkDelete.className = 'btn btn-delete-cart'
@@ -454,6 +456,7 @@ function createCartItem(){
         iconTrash.className = 'bi bi-trash-fill'
 
         itemName.innerText = cartText[i].name
+        comment.innerText = orderRequests[i].comment
         price.innerText = cartText[i].price
         option.innerText = cartText[i].opText.join(', ')
 
@@ -464,15 +467,18 @@ function createCartItem(){
         linkOpContainer.appendChild(option)
         linkOpContainer.appendChild(linkDelete)
         container.appendChild(linkOpContainer)
-        container.append(link)
+        container.appendChild(comment)
+
         $('#cartModalBody').append(container)
     }
 }
 
 async function editItem(index){
+    // console.log(index)
     let id = orderRequests[index].itemId
     await createModal(id)
     $('#inputQuantity').val(orderRequests[index].quantity)
+    $('#inputComment').val(orderRequests[index].comment)
 
     let select = orderRequests[index].selectItems
     for(let i=0;i<select.length;i++){

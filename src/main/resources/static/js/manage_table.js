@@ -6,6 +6,7 @@ let available = [true,true,true]
 
 
 $( document ).ready((() => {
+    connect()
     createTableCard()
 }))
 
@@ -13,9 +14,12 @@ function connect() {
     var socket = new SockJS('/orderme-websocket');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
-        setConnected(true);
-        console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/table-update', function (message) {
+        // console.log('Connected: ' + frame);
+        stompClient.subscribe('/app/table/all', function (message) {
+            console.log(message);
+        },{ id: 1});
+        stompClient.unsubscribe(1)
+        stompClient.subscribe('/topic/table/update', function (message) {
             console.log(message);
         });
     });
@@ -25,7 +29,6 @@ function disconnect() {
     if (stompClient !== null) {
         stompClient.disconnect();
     }
-    setConnected(false);
     console.log("Disconnected");
 }
 

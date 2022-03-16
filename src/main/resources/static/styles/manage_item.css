@@ -21,7 +21,19 @@ img{
     object-fit: cover;
 }
 
+.tab-pane{
+    margin: 15px;
+}
 
+#modalImg{
+    display: flex;
+    justify-content: center;
+}
+
+.img-fluid{
+    height: 200px;
+    width: 200px;
+}
 
 
 

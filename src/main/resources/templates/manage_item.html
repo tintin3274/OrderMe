@@ -4,6 +4,7 @@
       layout:decorate="~{fragments/create_header.html}">
 <head>
     <script src="/js/manage_item.js" type = "text/javascript"></script>
+    <script src="/js/create_option_group.js" type = "text/javascript"></script>
     <link rel="stylesheet" href="/styles/manage_item.css">
 
 </head>
@@ -18,6 +19,9 @@
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="option-tab" data-bs-toggle="tab"  href="#option" type="button" role="tab" aria-controls="option" aria-selected="false">Option</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="table-tab" data-bs-toggle="tab"  href="#table" type="button" role="tab" aria-controls="option" aria-selected="false">Table</button>
         </li>
     </ul>
 
@@ -80,6 +84,7 @@
                 </table>
             </div>
         </div>
+
         <div class="tab-pane fade" id="option" role="tabpanel" aria-labelledby="option-tab">
             <div id="pageOption">
                 <div class="toolbar" id="toolbarOption">
@@ -96,6 +101,7 @@
                     <thead >
                     <tr>
                         <th data-field="id">ID</th>
+                        <th data-field="idItem">ID ITEM</th>
                         <th data-field="name" data-sortable="true" >Name</th>
                         <th data-field="using" data-sortable="true" >Using</th>
                     </tr>
@@ -105,6 +111,32 @@
                 </table>
             </div>
         </div>
+
+        <div class="tab-pane fade" id="table" role="tabpanel" aria-labelledby="option-tab">
+            <div>
+                <div class="toolbar" id="toolbarTable">
+                    <a class="m-md-2 btn-bar btn btn-secondary"  type="button">Create</a>
+                </div>
+                <table id="tableNumber"
+                       data-toggle="table"
+                       data-pagination="true"
+                       data-pagination-h-align="left"
+                       data-pagination-detail-h-align="right"
+                       data-search="true"
+                       data-toolbar="#toolbarTable"
+                       data-url="/api/table/all"
+                >
+                    <thead >
+                    <tr>
+                        <th data-field="id" data-sortable="true">ID</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
     <!-- Modal Food-->
@@ -112,10 +144,13 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Infomation</h5>
+                    <h5 class="modal-title">Information</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body pb-0">
+                <div class="modal-body">
+                    <div id="modalImg" class="pb-3">
+                        <img class="img-fluid"  src="/images/bubae.png" style="height: 200px" id="imgModal">
+                    </div>
                     <div class="row">
                         <div class="col-3">
                             <h6 >Name:</h6>
@@ -196,7 +231,7 @@
                     <h5 class="modal-title">Infomation</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body pb-0">
+                <div class="modal-body">
                     <div class="row">
                         <div class="col-3">
                             <h6 >Name:</h6>
@@ -254,7 +289,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Infomation</h5>
+                    <h5 class="modal-title">Information #<span id="idOption"></span></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body pb-0">
@@ -263,7 +298,7 @@
                             <h6 >Name:</h6>
                         </div>
                         <div class="col-9">
-                            <h6 id="nameOption">Milk shake</h6>
+                            <h6 id="nameOption"></h6>
                         </div>
                     </div>
                     <div class="row">
@@ -271,7 +306,7 @@
                             <h6 >Quantity:</h6>
                         </div>
                         <div class="col-9">
-                            <h6 id="quanOption">No</h6>
+                            <h6 id="quanOption"></h6>
                         </div>
                     </div>
                     <div class="row">
@@ -279,14 +314,74 @@
                             <h6 >Price:</h6>
                         </div>
                         <div class="col-9">
-                            <h6 id="priceOption">DRINK</h6>
+                            <h6 id="priceOption"></h6>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button class="btn btn-primary" type="button">Edit</button>
+                    <button class="btn btn-primary" type="button" onclick="editOptionPage()" data-bs-toggle="modal" data-bs-target="#modalOptionEdit">Edit</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalOptionEdit" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body pb-0">
+                    <form class="row g-3" onsubmit="editItems()">
+                    <div class="row py-2">
+                        <div class="col-3">
+                            <h6 >Name:</h6>
+                        </div>
+                        <div class="col-9">
+                            <input type="text" class="form-control" id="nameOptionEdit" required>
+                        </div>
+                    </div>
+                    <div class="row py-2">
+                        <div class="col-3">
+                            <h6 >Quantity:</h6>
+                        </div>
+                        <div class="col-9">
+                            <div class="row g-2 align-items-center col-auto">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="radioNo" onclick="quantitySelect()" checked>
+                                    <label class="form-check-label" for="radioNo">
+                                        No
+                                    </label>
+                                </div>
+                                <div class="form-check col-auto">
+                                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="radioYes" onclick="quantitySelect()">
+                                    <label class="form-check-label" for="radioYes">
+                                        Yes
+                                    </label>
+                                </div>
+                                <div class="col-auto">
+                                    <input type="number"  class="form-control" id="qtyNum" min="0" disabled >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row py-2">
+                        <div class="col-3">
+                            <h6 >Price:</h6>
+                        </div>
+                        <div class="col-9">
+                            <input type="number" class="form-control" id="priceOptionEdit" min="0" step="0.01" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalOption">Close</button>
+                        <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Update</button>
+                    </div>
+                </form>
+                </div>
+
             </div>
         </div>
     </div>

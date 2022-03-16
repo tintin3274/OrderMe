@@ -55,12 +55,13 @@ $(async function() {
             index: i,
             row: {
                 id : i,
+                idItem: option[i].id,
                 name: option[i].name,
                 using :optionUsing[option[i].id]
             }
         })
     }
-    $('#tableOption').bootstrapTable('hideColumn', 'id')
+    $('#tableOption').bootstrapTable('hideColumn', ['id','idItem'])
 
     optionGroup = await getDataOptionGroup()
     let optionGroupUsing = await getDataOptionGroupUsing()
@@ -79,7 +80,7 @@ $(async function() {
             }
         })
     }
-    $('#tableOptionGroup').bootstrapTable('hideColumn', 'id')
+    $('#tableOptionGroup').bootstrapTable('hideColumn', ['id'])
 
 })
 
@@ -137,6 +138,14 @@ function optionDetailFormatter(index, row,$element){
 }
 
 function showItemModal(item){
+
+    if (item.image != null){
+        document.getElementById('imgModal').src = '/images/'+item.image
+        document.getElementById('imgModal').setAttribute('onerror',"this.src=\'/images/default.png\'")
+    }
+    else {document.getElementById('imgModal').src = '/images/default.png'}
+
+
     $('#tableInfo').bootstrapTable('refresh', {
         url: "/api/item/optional-of-id/" + item.id
     });
@@ -180,6 +189,7 @@ async function showOptionGroupModal(item){
 }
 
 function showOptionGroup(item){
+    $('#idOption').text(item.idItem)
     $('#nameOption').text(item.name)
     $('#priceOption').text(option[item.id].price)
     if(option[item.id].checkQuantity){
@@ -190,4 +200,44 @@ function showOptionGroup(item){
     }
 
     $('#modalOption').modal('show')
+}
+
+function editOptionPage(){
+    $('#nameOptionEdit').val($('#nameOption').text())
+    $('#priceOptionEdit').val($('#priceOption').text())
+    if($('#quanOption').text() == "No"){
+        document.getElementById('radioNo').setAttribute('checked',true)
+    }
+    else {
+        document.getElementById('radioYes').setAttribute('checked',true)
+        $('#qtyNum').text($('#quanOption').text())
+    }
+}
+
+function editItems(){
+    let check = false
+    let qty = 0
+    if($('#radioYes').is(":checked")){
+        check = true
+        qty = ('#qtyNum').text()
+    }
+    let json = {
+        "id": $('#idOption').text(),
+        "name":  $('#nameOptionEdit').val(),
+        "price": $('#priceOptionEdit').val(),
+        "checkQuantity": check,
+        "quantity" : qty,
+        "category" : "OPTION"
+    }
+
+    $.ajax({
+        url: '/api/item/update',
+        data: JSON.stringify(json) ,
+        contentType: "application/json" ,
+        type: 'POST',
+        success: function () {
+            console.log('success')
+        }
+    });
+
 }
