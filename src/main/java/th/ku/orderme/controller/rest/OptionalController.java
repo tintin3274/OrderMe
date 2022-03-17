@@ -22,7 +22,6 @@ import java.util.Map;
 public class OptionalController {
     private final OptionalService optionalService;
 
-
     @JsonView(Views.Detail.class)
     @GetMapping("/{id}")
     public Optional findById(@PathVariable int id) {

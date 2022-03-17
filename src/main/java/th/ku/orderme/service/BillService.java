@@ -94,6 +94,7 @@ public class BillService {
             orderDTO.setPrice(price);
             orderDTO.setAmount(price*order.getQuantity());
             orderDTO.setComment(order.getComment());
+            orderDTO.setStatus(order.getStatus());
 
             subTotal += price*order.getQuantity();
             orderDTOList.add(orderDTO);
