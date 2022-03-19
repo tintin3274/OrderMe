@@ -36,7 +36,7 @@ public class TableController {
         return tableService.getAllId();
     }
 
-    @GetMapping("/open")
+    @PostMapping("/open")
     public TableDTO openTableDineIn(@RequestParam int id, @RequestParam int person) {
         if(tableService.tableIsAvailable(id) && person >= 1) {
             Bill bill = billService.createBill(person);

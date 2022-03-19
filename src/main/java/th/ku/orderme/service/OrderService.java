@@ -2,11 +2,10 @@ package th.ku.orderme.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
-import th.ku.orderme.dto.CartDTO;
-import th.ku.orderme.dto.OrderRequestDTO;
-import th.ku.orderme.dto.SelectItemDTO;
+import th.ku.orderme.dto.*;
 import th.ku.orderme.model.*;
 import th.ku.orderme.model.Optional;
 import th.ku.orderme.repository.ItemRepository;
@@ -27,6 +26,7 @@ public class OrderService {
     private final SelectItemRepository selectItemRepository;
     private final ItemService itemService;
     private final OptionalService optionalService;
+    private final SimpMessagingTemplate template;
 
     public List<Order> findAll() {
         return orderRepository.findAll();
@@ -234,13 +234,88 @@ public class OrderService {
         }
     }
 
-    @Transactional
+    public OrderDTO convertOrderToOrderDTO(Order order) {
+        try {
+            Item item = order.getItem();
+            double price = item.getPrice();
+
+            Map<Integer, Item> itemMap = itemService.getMapAllItemOfItemId(item.getId());
+            List<String> option = new ArrayList<>();
+
+            List<SelectItem> selectItemList = selectItemRepository.findSelectItemsBySelectItemId_OrderId(order.getId());
+            for(SelectItem selectItem : selectItemList) {
+                Item itemOption = itemMap.get(selectItem.getSelectItemId().getItemId());
+                option.add(itemOption.getName());
+                price += itemOption.getPrice();
+            }
+
+            OrderDTO orderDTO = new OrderDTO();
+            orderDTO.setId(order.getId());
+            orderDTO.setName(item.getName());
+            orderDTO.setOption(String.join(", ", option));
+            orderDTO.setQuantity(order.getQuantity());
+            orderDTO.setPrice(price);
+            orderDTO.setAmount(price*order.getQuantity());
+            orderDTO.setComment(order.getComment());
+            orderDTO.setStatus(order.getStatus());
+            return orderDTO;
+        }
+        catch (Exception e) {
+            log.error(e.getMessage());
+            return null;
+        }
+    }
+
+    public UpdateOrderDTO getUpdateOrderDTO(int orderId) {
+        Order order = findById(orderId);
+        if(order == null) return null;
+        UpdateOrderDTO updateOrderDTO = new UpdateOrderDTO();
+        updateOrderDTO.setBillId(order.getBill().getId());
+        updateOrderDTO.setType(order.getBill().getType());
+        updateOrderDTO.setOrderDTO(convertOrderToOrderDTO(order));
+        return updateOrderDTO;
+    }
+
     public void changePendingToOrder(Bill bill) {
         if(bill == null) return;
         List<Order> orderList = bill.getOrderList();
-        for(Order order : bill.getOrderList()) {
+        for(Order order : orderList) {
             order.setStatus(ConstantUtil.ORDER);
         }
-        orderRepository.saveAllAndFlush(orderList);
+        orderList = orderRepository.saveAllAndFlush(orderList);
+
+        for(Order order : orderList) {
+            template.convertAndSend("/topic/order/update", getUpdateOrderDTO(order.getId()));
+        }
+    }
+
+    public UpdateOrderDTO changeOrderToCooking(int id) {
+        Order order = findById(id);
+        if(order == null || !order.getStatus().equalsIgnoreCase(ConstantUtil.ORDER)) return null;
+        order.setStatus(ConstantUtil.COOKING);
+        orderRepository.saveAndFlush(order);
+        UpdateOrderDTO updateOrderDTO = getUpdateOrderDTO(id);
+        template.convertAndSend("/topic/order/update", updateOrderDTO);
+        return updateOrderDTO;
+    }
+
+    public UpdateOrderDTO changeCookingToServing(int id) {
+        Order order = findById(id);
+        if(order == null || !order.getStatus().equalsIgnoreCase(ConstantUtil.COOKING)) return null;
+        order.setStatus(ConstantUtil.SERVING);
+        orderRepository.saveAndFlush(order);
+        UpdateOrderDTO updateOrderDTO = getUpdateOrderDTO(id);
+        template.convertAndSend("/topic/order/update", updateOrderDTO);
+        return updateOrderDTO;
+    }
+
+    public UpdateOrderDTO changeToComplete(int id) {
+        Order order = findById(id);
+        if(order == null) return null;
+        String status = order.getStatus();
+        if(status.equalsIgnoreCase(ConstantUtil.CANCEL) || status.equalsIgnoreCase(ConstantUtil.PENDING) || status.equalsIgnoreCase(ConstantUtil.COMPLETE)) return null;
+        order.setStatus(ConstantUtil.COMPLETE);
+        orderRepository.saveAndFlush(order);
+        return getUpdateOrderDTO(id);
     }
 }

@@ -72,31 +72,8 @@ public class BillService {
 
         for(Order order : bill.getOrderList()) {
             if(order.getStatus().equals(ConstantUtil.CANCEL)) continue;
-
-            Item item = order.getItem();
-            double price = item.getPrice();
-
-            Map<Integer, Item> itemMap = itemService.getMapAllItemOfItemId(item.getId());
-            List<String> option = new ArrayList<>();
-
-            List<SelectItem> selectItemList = selectItemRepository.findSelectItemsBySelectItemId_OrderId(order.getId());
-            for(SelectItem selectItem : selectItemList) {
-                Item itemOption = itemMap.get(selectItem.getSelectItemId().getItemId());
-                option.add(itemOption.getName());
-                price += itemOption.getPrice();
-            }
-
-            OrderDTO orderDTO = new OrderDTO();
-            orderDTO.setId(order.getId());
-            orderDTO.setName(item.getName());
-            orderDTO.setOption(String.join(", ", option));
-            orderDTO.setQuantity(order.getQuantity());
-            orderDTO.setPrice(price);
-            orderDTO.setAmount(price*order.getQuantity());
-            orderDTO.setComment(order.getComment());
-            orderDTO.setStatus(order.getStatus());
-
-            subTotal += price*order.getQuantity();
+            OrderDTO orderDTO = orderService.convertOrderToOrderDTO(order);
+            subTotal += orderDTO.getAmount();
             orderDTOList.add(orderDTO);
         }
 

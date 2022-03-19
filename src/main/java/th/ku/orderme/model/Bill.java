@@ -2,6 +2,7 @@ package th.ku.orderme.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,14 +20,25 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Bill implements Serializable {
+
+    @JsonView(Views.Overall.class)
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private int id;
+
+    @JsonView(Views.Overall.class)
     private int person;
+
+    @JsonView(Views.Overall.class)
     private String type;
+
+    @JsonView(Views.Overall.class)
     private String status;
+
+    @JsonView(Views.Overall.class)
     private LocalDateTime timestamp;
 
+    @JsonView(Views.Detail.class)
     @JsonIgnore
     @OneToMany(mappedBy="bill")
     private List<Order> orderList;

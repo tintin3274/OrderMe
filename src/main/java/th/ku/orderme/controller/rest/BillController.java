@@ -1,10 +1,12 @@
 package th.ku.orderme.controller.rest;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import th.ku.orderme.dto.BillDTO;
 import th.ku.orderme.model.Bill;
 import th.ku.orderme.model.Token;
+import th.ku.orderme.model.Views;
 import th.ku.orderme.service.BillService;
 import th.ku.orderme.service.TokenService;
 
@@ -17,6 +19,7 @@ public class BillController {
     private final BillService billService;
     private final TokenService tokenService;
 
+    @JsonView(Views.Overall.class)
     @GetMapping("/all")
     public List<Bill> findAll() {
         return billService.findAll();
