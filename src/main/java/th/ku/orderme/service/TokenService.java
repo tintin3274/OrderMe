@@ -37,6 +37,10 @@ public class TokenService {
         return tokenRepository.findById(id).orElse(null);
     }
 
+    public Token findByBillId(int billId) {
+        return tokenRepository.findByBill_Id(billId);
+    }
+
     public void deleteById(String id) {
         if(tokenRepository.existsById(id)) {
             tokenRepository.deleteById(id);

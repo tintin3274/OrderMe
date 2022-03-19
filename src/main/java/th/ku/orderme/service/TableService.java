@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import th.ku.orderme.dto.TableDTO;
 import th.ku.orderme.model.Bill;
 import th.ku.orderme.model.Table;
+import th.ku.orderme.model.Token;
 import th.ku.orderme.repository.TableRepository;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TableService {
     private final TableRepository tableRepository;
+    private final TokenService tokenService;
     private final SimpMessagingTemplate template;
 
     public Table findById(int id) {
@@ -81,6 +83,10 @@ public class TableService {
         tableDTO.setAvailable(table.isAvailable());
         if(table.getBill() != null) {
             tableDTO.setBillId(table.getBill().getId());
+            Token token = tokenService.findByBillId(table.getBill().getId());
+            if(token != null) {
+                tableDTO.setToken(token.getId());
+            }
         }
         return tableDTO;
     }
