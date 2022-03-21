@@ -3,22 +3,19 @@
       xmlns:th="https://www.thymeleaf.org"
       layout:decorate="~{fragments/header.html}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Title</title>
+    <title th:text="${type}"></title>
     <script src="/js/main_menu.js" type = "text/javascript"></script>
     <link rel="stylesheet" href="/styles/main_menu.css">
 </head>
 <body>
 <section layout:fragment="content">
-
     <nav class="navbar" style="justify-content: flex-end">
         <ul class="nav nav-pills">
             <li class="nav-item">
                 <a class="nav-link link-head" data-bs-toggle="modal" data-bs-target="#cartModal" type="button" onclick="createCartItem()">Cart</a>
             </li>
             <li class="nav-item" id="billNav">
-                <a  class="nav-link link-head" data-bs-toggle="modal" data-bs-target="#billModal" type="button">Bill</a>
+                <a  class="nav-link link-head" data-bs-toggle="modal" data-bs-target="#billModal" type="button" onclick="createBillItem()">Bill</a>
             </li>
         </ul>
     </nav>
@@ -60,7 +57,7 @@
                         </div>
                         <div class="modal-body" >
                             <div id="modalImg" class="pb-3">
-                                <img class="img-fluid"  src="/images/bubae.png" style="height: 200px" id="imgModal">
+                                <img class="img-fluid"  src="/images/bubae.png" id="imgModal">
                             </div>
                             <div class="pb-0">
                                 <div class="name-price">
@@ -119,7 +116,9 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" style="width: 100%" id="cartBtn" disabled onclick="order()">Order</button>
+                    <button class="btn btn-primary" style="width: 100%" id="cartBtn" disabled onclick="order()">
+                        <span id="cartBtnText">฿ 0</span><span> - </span>
+                        Order</button>
                 </div>
             </div>
         </div>
@@ -132,17 +131,44 @@
                     <h2 >Bill</h2>
                     <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body pb-0" id="BillModalBody">
+                <div class="modal-body" id="BillModalBody">
                     <div>
                         <div class="name-price">
-                            <h6 class="menu-name">ข้าวหน้าเนื้อ</h6>
-                            <h6>300</h6>
+                                <h6 class="menu-name">ข้าวหน้าเนื้อ</h6>
+                                <h6>300</h6>
                         </div>
-                        <small class="text-muted">ไข่ดิบ, ขิงดอง, XL</small>
+                        <div class="name-price-status">
+                            <div>
+                                <small class="text-muted">ไข่ดิบ, ขิงดอง, XL</small>
+                                <br>
+                                <small class="text-muted">asdfghjkl;poiqwertyuiop[;lkjhgf,iop[;;llkkjjhhjkkkk</small>
+                            </div>
+                            <span class="badge rounded-pill bg-danger">Cooking</span>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" style="width: 100%" id="BillBtn" disabled onclick="order()">Payment</button>
+                    <button class="btn btn-primary" style="width: 100%" id="billBtn" data-bs-toggle="modal" data-bs-target="#alertModal" type="button" disabled>
+                        <span id="billBtnText">฿ 0</span><span> - </span>
+                        Payment
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="alertModal"  tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 >Alert</h2>
+                    <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure?
+                </div>
+                <div class="modal-footer" style="justify-content: space-between">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#billModal">Close</button>
+                    <a class="btn btn-primary" type="button" href="/payment">Go To Checkout</a>
                 </div>
             </div>
         </div>
@@ -151,6 +177,7 @@
     <footer>
         <a class="btn btn-success" data-bs-toggle="modal" data-bs-target="#cartModal" type="button" onclick="createCartItem()">Cart</a>
     </footer>
+
 </section>
 </body>
 

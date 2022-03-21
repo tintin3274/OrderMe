@@ -36,7 +36,7 @@ public class SecurityConfig {
 
         @Override
         protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-            auth.inMemoryAuthentication().withUser("admin").password(passwordEncoder().encode("password")).roles("ADMIN");
+            auth.inMemoryAuthentication().withUser("admin").password(passwordEncoder().encode("password")).roles("ADMIN", "STAFF");
             auth.inMemoryAuthentication().withUser("staff").password(passwordEncoder().encode("password")).roles("STAFF");
         }
     }
@@ -80,6 +80,7 @@ public class SecurityConfig {
                     .addFilterBefore(new CustomerAuthorizationFilter(), BasicAuthenticationFilter.class)
                     .authorizeRequests()
                     .antMatchers("/admin/**").hasRole("ADMIN")
+                    .antMatchers("/staff/**").hasRole("STAFF")
                     .antMatchers(resources).permitAll()
                     .antMatchers(allow).permitAll()
                     .anyRequest().authenticated()

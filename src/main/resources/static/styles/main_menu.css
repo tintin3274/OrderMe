@@ -6,17 +6,6 @@ html {
     position: relative;
 }
 
-.menu-name{
-    font-weight: 600;
-    margin: 0;
-}
-
-.name-price{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
 .option-name{
     font-weight: 600;
     padding-top: 20px;
@@ -35,6 +24,7 @@ html {
 .picture{
     max-height: 125px;
     max-width: 125px;
+    /*height: 200px;*/
 }
 
 .card-body{

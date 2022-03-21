@@ -26,3 +26,62 @@ h3{
 .link-head:hover{
     color: white;
 }
+
+.menu-name{
+    font-weight: 600;
+    margin: 0;
+}
+
+.name-price{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.name-price-status{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.ORDER{
+    background-color: rgb(220,53,69);
+}
+
+.COOKING{
+    background-color: darkorange;
+}
+
+.COMPLETE{
+    background-color: #44624a;
+}
+
+.SERVING{
+    background-color: #0d6efd;
+}
+
+#picPreview{
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    background: gray;
+
+}
+.bg{
+    background: #0c7d5b;
+}
+
+#layout{
+    width: 60%;
+}
+@media (max-width:800px){
+    #layout{
+        width: 100%;
+    }
+}
+
+.center{
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}

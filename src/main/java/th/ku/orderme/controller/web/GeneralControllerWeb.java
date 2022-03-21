@@ -1,11 +1,11 @@
 package th.ku.orderme.controller.web;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 import th.ku.orderme.dto.ReceiptDTO;
 import th.ku.orderme.service.PaymentService;
 import th.ku.orderme.util.CookieUtil;
@@ -36,14 +36,24 @@ public class GeneralControllerWeb {
     }
 
     @GetMapping("/main-menu")
-    public String getPageMainMenu(){return "main_menu";}
+    public String getPageMainMenu(@CookieValue(name = "type") String type, Model model){
+        model.addAttribute("type", type);
+        return "main_menu";
+    }
+
+    @GetMapping("/staff/index")
+    public String getPageIndexAdmin(Model model){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        model.addAttribute("role", authentication.getAuthorities().toString());
+        return "staff_main_menu";
+    }
 
     @GetMapping("/admin/manage-item")
     public String getPageManageItem(){
         return "manage_item";
     }
 
-    @GetMapping("/admin/manage-table")
+    @GetMapping("/staff/manage-table")
     public String getPageManageTable(){return "manage_table";}
 
     @GetMapping("/admin/create-item")
@@ -59,6 +69,11 @@ public class GeneralControllerWeb {
     @GetMapping("/admin/create-option-group")
     public String getPageCreateOptionGroup(){
         return "create_option_group";
+    }
+
+    @GetMapping("/staff/kitchen")
+    public String getPageKitchen(){
+        return "kitchen_order";
     }
 
 }

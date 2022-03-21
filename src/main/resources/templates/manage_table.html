@@ -6,9 +6,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Manage Table</title>
+
     <script src="/js/manage_table.js" type = "text/javascript"></script>
+    <link rel="stylesheet" href="/styles/manage_table.css">
     <script src="/webjars/sockjs-client/sockjs.min.js"></script>
     <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
 </head>
 <body>
 <section layout:fragment="content" class="m-3">
@@ -16,16 +19,7 @@
         <h2>Dine In Table</h2>
         <button class="btn btn-primary m-2" data-bs-toggle="modal" data-bs-target="#createDineInModal">New Table</button>
         <div class="row align-items-center m-2" id="tableContainer">
-<!--            <div class="card text-center col d-none">-->
-<!--                <div class="card-body">-->
-<!--                    <h5 class="card-title">1</h5>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="card text-center col">-->
-<!--                <div class="card-body">-->
-<!--                    <h5 class="card-title">2</h5>-->
-<!--                </div>-->
-<!--            </div>-->
+
         </div>
     </div>
     <hr>
@@ -45,26 +39,98 @@
                     <h5 class="card-title">Bill ID: asdfghjk</h5>
                 </li>
             </ul>
-
     </div>
 
-    <div class="modal fade" id="createDineInModal"  tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal fade" id="createDineInModal"  tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen-md-down">
+            <div class="modal-content">
+                <form>
+                    <div class="modal-header">
+                        <h2 >Open Dine In Table</h2>
+                        <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body pb-0" id="cartModalBody">
+                        <h5>Table No.</h5>
+                        <select class="form-select" required>
+                            <option value="">Select Table</option>
+                        </select>
+                        <div >
+                            <h5>Person</h5>
+                            <div class="input-group number-spinner col-6">
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-primary" data-dir="dwn" value="0">-</button>
+                                </span>
+                                <input type="number" class="text-center form-control" value= 1 style="width: 50%">
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-primary" data-dir="up" value="0">+</button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" type="submit" style="width: 100%" >Open</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="DineInModal"  tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen-md-down">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h2 >Cart</h2>
+                    <h3></h3>
                     <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body pb-0" id="cartModalBody">
-                    <div>
+                <div class="modal-body pb-0" >
+                    <div class="toolbar" id="toolbarFood">
                         <div class="name-price">
-                            <h6 class="menu-name">ข้าวหน้าเนื้อ</h6>
-                            <h6>300</h6>
+                            <button class="m-md-2 btn-bar btn btn-success" id="completeBtn" disabled>
+                                <i class="bi bi-check" style="color: white"></i>
+                                Complete</button>
+                            <button class="m-md-2 btn-bar btn btn-danger" id="deleteBtn" disabled>Delete</button>
                         </div>
                     </div>
+                    <table id="tableFood"
+                           data-toggle="table"
+                           data-click-to-select="true"
+                           data-toolbar="#toolbarFood"
+                           data-toolbar-align="false"
+                           data-detail-view="true"
+                           data-detail-formatter= "orderDetailFormatter"
+                           class="table"
+                    >
+                        <thead >
+                        <tr>
+                            <th data-field="state" data-checkbox="true"></th>
+                            <th data-field="name"></th>
+                            <th data-field="id" data-visible="false"></th>
+                            <th data-field="option" data-visible="false"></th>
+                            <th data-field="comment" data-visible="false"></th>
+                            <th data-field="quantity" data-visible="false"></th>
+                            <th data-field="amount" data-visible="false"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer name-price">
+                    <button class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#qrModal" id="qrBtn">QrCode</button>
+                    <button class="btn btn-primary" onclick="payCash()">Cash</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="qrModal"  tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-fullscreen-md-down">
+            <div class="modal-content">
+                <div class="modal-body pb-0" >
+                    <div id="qrPic"></div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" style="width: 100%" id="createBtn" disabled onclick="pay()">Create</button>
+                    <button class="btn btn-primary" style="width: 100%" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#DineInModal">Close</button>
                 </div>
             </div>
         </div>

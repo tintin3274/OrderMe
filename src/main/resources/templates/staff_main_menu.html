@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="https://www.thymeleaf.org"
+      layout:decorate="~{fragments/header.html}"
+>
+
+<head>
+</head>
+
+<body class="bg">
+<section layout:fragment="content" >
+    <div class="container bg-body px-4" id="layout" style="height: 100vh">
+        <div style="align-items: center;display: flex;height: 70vh;justify-content: center">
+        <div class="py-2" style="display: flex;flex-direction: column;align-items: center">
+            <div class="my-1">
+                <span th:text="${role}" class="d-none"></span>
+                <h3>Choose Manage Type</h3>
+            </div>
+            <div class="my-1">
+                <a type="button" class="btn btn-primary btn-lg d-none" href="/admin/manage-item" id="adminBtn">Manage Menu</a>
+            </div>
+            <div class="my-1">
+                <a type="button" class="btn btn-primary btn-lg" href="/staff/manage-table" >Manage Table</a>
+            </div>
+            <div class="my-1">
+                <a type="button" class="btn btn-primary btn-lg" href="/staff/kitchen">Kitchen</a>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <script>
+        let role = $(' span').text()
+        if(role.includes("ROLE_ADMIN")){
+            document.getElementById('adminBtn').classList.remove("d-none")
+        }
+    </script>
+</section>
+</body>
+</html>

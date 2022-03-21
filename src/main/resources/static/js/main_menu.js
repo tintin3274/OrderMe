@@ -26,10 +26,18 @@ function getItemEachCategoryData(category){
     })
 }
 
+function getBillData(){
+    return new Promise(function (resolve, reject){
+        $.get('/api/bill/my-bill',function (data){
+            resolve(data)
+        })
+    })
+}
+
 $( document ).ready(async function() {
     $('footer').hide()
 
-    let userType = ''
+    let userType = $('title').text()
     if(userType == 'TAKE-OUT'){
         document.getElementById('billNav').classList.add('invisible')
         $('#cartBtn').text('Payment')
@@ -166,7 +174,6 @@ async function createModal(id){
     $('#titleItem').text(allItem.name)
     $('#desItem').text(allItem.description)
     $('#priceItem').text('฿ ' + startPrice)
-    $('#priceButton').text(startPrice)
     $('#modalBody').empty()
     $('#inputComment').val(null)
     let optionData = allItem.optionalList
@@ -284,6 +291,7 @@ function createOption(optionItem){
         }
     }
     buttonCheck()
+    calculatePrice()
 }
 
 function radioCheck(name){
@@ -410,6 +418,8 @@ $(document).on('click', '.number-spinner button', function () {
 
 
 function createCartItem(){
+    let total = 0
+
     $('#cartModalBody').empty()
 
     if(cartText.length > 0){
@@ -424,14 +434,13 @@ function createCartItem(){
         let index = i
 
         let container = document.createElement('div')
-        container.onclick = async function(){await editItem(index)}
-        container.setAttribute('type', 'button')
-        container.setAttribute('data-bs-toggle','modal')
-        container.setAttribute('data-bs-target',"#staticBackdrop")
         container.className = 'my-2'
 
         let title = document.createElement('div')
         title.className = 'name-price'
+        title.setAttribute('data-bs-toggle','modal')
+        title.setAttribute('data-bs-target',"#staticBackdrop")
+        title.onclick = async function(){await editItem(index)}
 
         let itemName = document.createElement('h6')
         itemName.className = 'menu-name'
@@ -452,25 +461,38 @@ function createCartItem(){
         linkDelete.setAttribute('type', 'button')
         linkDelete.onclick = function (){deleteItem(index)}
 
+        // let editLink = document.createElement('a')
+        // editLink.className = 'stretched-link'
+
+
         let iconTrash = document.createElement('i')
         iconTrash.className = 'bi bi-trash-fill'
 
-        itemName.innerText = cartText[i].name
+        let opCommentContainer = document.createElement('div')
+        let newline = document.createElement('br')
+
+        itemName.innerText = orderRequests[i].quantity+'x '+cartText[i].name
         comment.innerText = orderRequests[i].comment
-        price.innerText = cartText[i].price
+        price.innerText = '฿ '+cartText[i].price
         option.innerText = cartText[i].opText.join(', ')
+
+        total += Number(cartText[i].price)
+
 
         linkDelete.appendChild(iconTrash)
         title.appendChild(itemName)
         title.appendChild(price)
         container.appendChild(title)
-        linkOpContainer.appendChild(option)
+        opCommentContainer.appendChild(option)
+        opCommentContainer.appendChild(newline)
+        opCommentContainer.appendChild(comment)
+        linkOpContainer.appendChild(opCommentContainer)
         linkOpContainer.appendChild(linkDelete)
         container.appendChild(linkOpContainer)
-        container.appendChild(comment)
 
         $('#cartModalBody').append(container)
     }
+    $('#cartBtnText').text('฿ '+total)
 }
 
 async function editItem(index){
@@ -508,7 +530,7 @@ function openCartModal(){
 }
 
 function deleteItem(index){
-    console.log(index)
+    // console.log(index)
 
     orderRequests.splice(index,1)
     cartText.splice(index,1)
@@ -532,4 +554,61 @@ function order(){
             location.href = '/order'
         }
     });
+}
+
+async function createBillItem(){
+    $('#BillModalBody').empty()
+
+    // let json = {
+    //     "billId": 19,
+    //     "person": 2,
+    //     "type": "DINE-IN",
+    //     "timestamp": "2022-03-17T22:57:31",
+    //     "orders": [
+    //         {
+    //             "id": 62,
+    //             "name": "ชานม",
+    //             "option": "หวาน 100%, ไข่มุกน้ำผึ้ง, ครัมเบิ้ลวานิลลา",
+    //             "quantity": 1,
+    //             "price": 75.0,
+    //             "amount": 75.0,
+    //             "comment": "venom",
+    //             "status": "ORDER"
+    //         }
+    //     ],
+    //     "subTotal": 75.0
+    // }
+
+    let json = await getBillData()
+
+    let orders = json.orders
+
+    if(json.orders != null){
+    if(orders.length > 0 ){
+        $('#billBtn').prop('disabled',false)
+    }
+    else {
+        $('#billBtn').prop('disabled',true)
+    }
+
+    const template = `${orders.map(order => `
+  <div>
+    <div class="name-price">
+        <h6 class="menu-name"> ${order.quantity}x ${order.name}</h6>
+        <h6>฿ ${order.amount}</h6>
+    </div>
+    <div class="name-price-status">
+        <div>
+            <small class="text-muted">${order.option}</small>
+            <br>
+            <small class="text-muted">${order.comment}</small>
+        </div>
+        <span class="badge rounded-pill ${order.status}">${order.status}</span>
+     </div>
+  </div>
+        `).join('')}
+`;
+    $('#BillModalBody').append(template)
+    $('#billBtnText').text('฿ '+json.subTotal)
+    }
 }
