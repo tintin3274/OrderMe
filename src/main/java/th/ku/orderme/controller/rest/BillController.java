@@ -11,6 +11,7 @@ import th.ku.orderme.service.BillService;
 import th.ku.orderme.service.TokenService;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/bill")
@@ -37,5 +38,10 @@ public class BillController {
         Bill bill = token.getBill();
         if(bill == null) return null;
         return billService.getBillDTO(bill.getId());
+    }
+
+    @GetMapping("/all-id-take-out-process")
+    public List<Integer> getAllBillIdTakeOutOfOrderNotCancelAndComplete() {
+        return billService.getAllBillIdTakeOutOfOrderNotCancelAndComplete();
     }
 }

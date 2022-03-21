@@ -316,6 +316,26 @@ public class OrderService {
         if(status.equalsIgnoreCase(ConstantUtil.CANCEL) || status.equalsIgnoreCase(ConstantUtil.PENDING) || status.equalsIgnoreCase(ConstantUtil.COMPLETE)) return null;
         order.setStatus(ConstantUtil.COMPLETE);
         orderRepository.saveAndFlush(order);
+        UpdateOrderDTO updateOrderDTO = getUpdateOrderDTO(id);
+        template.convertAndSend("/topic/order/update", updateOrderDTO);
+        return updateOrderDTO;
+    }
+
+    public UpdateOrderDTO changeToCancel(int id) {
+        Order order = findById(id);
+        if(order == null || !order.getStatus().equalsIgnoreCase(ConstantUtil.CANCEL)) return null;
+        cancel(id);
+        UpdateOrderDTO updateOrderDTO = getUpdateOrderDTO(id);
+        template.convertAndSend("/topic/order/update", updateOrderDTO);
         return getUpdateOrderDTO(id);
+    }
+
+    public List<UpdateOrderDTO> getDoingOrder() {
+        List<Integer> orderIds = orderRepository.getAllOrderIdNotPendingAndCancelAndComplete();
+        List<UpdateOrderDTO> updateOrderDTOList = new ArrayList<>();
+        for(int id : orderIds) {
+            updateOrderDTOList.add(getUpdateOrderDTO(id));
+        }
+        return updateOrderDTOList;
     }
 }

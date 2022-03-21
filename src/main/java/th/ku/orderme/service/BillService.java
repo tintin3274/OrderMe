@@ -5,21 +5,18 @@ import org.springframework.stereotype.Service;
 import th.ku.orderme.dto.BillDTO;
 import th.ku.orderme.dto.OrderDTO;
 import th.ku.orderme.model.Bill;
-import th.ku.orderme.model.Item;
 import th.ku.orderme.model.Order;
-import th.ku.orderme.model.SelectItem;
 import th.ku.orderme.repository.BillRepository;
-import th.ku.orderme.repository.SelectItemRepository;
+import th.ku.orderme.repository.OrderRepository;
 import th.ku.orderme.util.ConstantUtil;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -27,10 +24,8 @@ import java.util.concurrent.TimeUnit;
 public class BillService {
     private static final ScheduledExecutorService ses = Executors.newScheduledThreadPool(2, new DaemonThreadFactory());
     private final BillRepository billRepository;
-    private final ItemService itemService;
-    private final SelectItemRepository selectItemRepository;
+    private final OrderRepository orderRepository;
     private final TokenService tokenService;
-    private final TableService tableService;
     private final OrderService orderService;
 
     public List<Bill> findAll() {
@@ -124,5 +119,21 @@ public class BillService {
             thread.setDaemon(true);
             return thread;
         }
+    }
+
+    public List<Integer> getAllBillIdOfOrderNotCancelAndComplete() {
+        return orderRepository.getAllBillIdOfOrderNotCancelAndComplete();
+    }
+
+    public List<Integer> getAllBillIdTakeOutOfOrderNotCancelAndComplete() {
+        List<Integer> allBillIdTakeOut = billRepository.getAllIdByTypeEqual(ConstantUtil.TAKE_OUT);
+        List<Integer> allBillIdOfOrderProcess = orderRepository.getAllBillIdOfOrderNotCancelAndComplete();
+        Set<Integer> result = allBillIdTakeOut.stream()
+                .distinct()
+                .filter(allBillIdOfOrderProcess::contains)
+                .collect(Collectors.toSet());
+        List<Integer> resultList = new ArrayList<>(result);
+        Collections.sort(resultList);
+        return resultList;
     }
 }
