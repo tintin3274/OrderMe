@@ -272,7 +272,7 @@ public class OrderService {
         UpdateOrderDTO updateOrderDTO = new UpdateOrderDTO();
         updateOrderDTO.setBillId(order.getBill().getId());
         updateOrderDTO.setType(order.getBill().getType());
-        updateOrderDTO.setOrderDTO(convertOrderToOrderDTO(order));
+        updateOrderDTO.setOrder(convertOrderToOrderDTO(order));
         return updateOrderDTO;
     }
 

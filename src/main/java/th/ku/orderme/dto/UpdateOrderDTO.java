@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class UpdateOrderDTO {
     private int billId;
     private String type;
-    private OrderDTO orderDTO;
+    private OrderDTO order;
 }
