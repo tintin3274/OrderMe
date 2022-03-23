@@ -21,21 +21,9 @@
         </div>
     </div>
     <hr>
-    <div id="photo">
+    <div>
         <h2>Take Out Bill</h2>
-            <ul class="list-group list-group-horizontal-md">
-                <li class="list-group-item">
-                    <h5 class="card-title">Bill ID: asdfghjk</h5>
-                </li>
-                <li class="list-group-item">
-                    <h5 class="card-title">Bill ID: asdfghjk</h5>
-                </li>
-                <li class="list-group-item">
-                    <h5 class="card-title">Bill ID: asdfghjk</h5>
-                </li>
-                <li class="list-group-item">
-                    <h5 class="card-title">Bill ID: asdfghjk</h5>
-                </li>
+            <ul class="list-group list-group-horizontal-md" id="takeOutList">
             </ul>
     </div>
 
@@ -101,7 +89,7 @@
                         <thead >
                         <tr>
                             <th data-field="state" data-checkbox="true"></th>
-                            <th data-field="name"></th>
+                            <th data-field="name">Order</th>
                             <th data-field="id" data-visible="false"></th>
                             <th data-field="option" data-visible="false"></th>
                             <th data-field="comment" data-visible="false"></th>
@@ -112,10 +100,14 @@
                         <tbody>
                         </tbody>
                     </table>
+                    <div style="display: flex">
+                        <h5 style="margin-top: 10px">Total: </h5>
+                        <h5 style="margin-top: 10px;margin-left: 10px" id="total"></h5>
+                    </div>
                 </div>
                 <div class="modal-footer name-price">
-                    <button class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#qrModal" id="qrBtn">QrCode</button>
-                    <button class="btn btn-primary" onclick="payCash()">Cash</button>
+                    <button class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#qrModal" id="qrBtn" disabled>QRCode</button>
+                    <button class="btn btn-primary" id="cashBtn" disabled>Pay Cash</button>
                 </div>
             </div>
         </div>

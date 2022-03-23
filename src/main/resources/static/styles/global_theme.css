@@ -44,7 +44,7 @@ h3{
     align-items: flex-start;
 }
 
-.ORDER{
+.ORDER,.PENDING{
     background-color: rgb(220,53,69);
 }
 
@@ -84,4 +84,9 @@ h3{
     display: flex;
     justify-content: center;
     align-content: center;
+}
+
+.columnFlex{
+    flex-direction: column;
+    display: flex;
 }

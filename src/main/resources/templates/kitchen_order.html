@@ -5,49 +5,42 @@
 <head>
     <title>KITCHEN</title>
     <script src="/js/kitchen.js" type = "text/javascript"></script>
-    <link rel="stylesheet" href="/styles/main_menu.css">
+    <link rel="stylesheet" href="/styles/kitchen.css">
 </head>
-<body>
+<body >
 <section layout:fragment="content">
-    <div>
-        <h2>Cooking</h2>
-        <table id="tableCooking"
-               data-toggle="table"
-               data-show-columns="true"
-               data-show-columns-toggle-all="true"
-        >
-            <thead >
-            <tr>
-                <th data-field="id" >ID</th>
-                <th data-field="name" >Group Name</th>
-            </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
-    <div>
-        <h2>Order</h2>
-        <table id="tableOrder"
-               data-toggle="table"
-               data-show-columns="true"
-               data-show-columns-toggle-all="true"
-               data-pagination="true"
-               data-page-size="15"
-        >
-            <thead >
-            <tr>
-                <th data-field="name">Food</th>
-                <th data-field="id" >billID</th>
-                <th data-field="option" >Option</th>
-                <th data-field="comment" >Comment</th>
-                <th data-field="qty" >QTY</th>
-                <th data-field="type" >Type</th>
-            </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+    <div class="containerToDo bg">
+        <div class="rowModal d-none">
+            <div class="modal-dialog m-0">
+                <div class="modal-content">
+                    <div class="modal-header name-price">
+                        <h5 class="modal-title" >Table 5</h5>
+                        <h5 class="m-0">21:27</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div>
+                            <div>
+                                <h6 class="m-0">2X ชานม<br></h6>
+                                <small class="text-muted">+ หวาน 50% + เฉาก๊วย + ไข่มุกน้ำผึ้ง</small>
+                                <br>
+                                <small class="text-muted">ร่ายเวทย์แห่งความรักลงไปด้วย</small>
+                            </div>
+                        </div>
+                        <del>
+                            <div>
+                                <h6 class="m-0">2X ชานม<br></h6>
+                                <small class="text-muted">+ หวาน 50% + เฉาก๊วย + ไข่มุกน้ำผึ้ง</small>
+                                <br>
+                                <small class="text-muted">ร่ายเวทย์แห่งความรักลงไปด้วย</small>
+                            </div>
+                        </del>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary">Start</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 </body>

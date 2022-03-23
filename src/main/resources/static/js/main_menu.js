@@ -469,7 +469,7 @@ function createCartItem(){
         iconTrash.className = 'bi bi-trash-fill'
 
         let opCommentContainer = document.createElement('div')
-        let newline = document.createElement('br')
+        opCommentContainer.className = 'columnFlex'
 
         itemName.innerText = orderRequests[i].quantity+'x '+cartText[i].name
         comment.innerText = orderRequests[i].comment
@@ -484,7 +484,6 @@ function createCartItem(){
         title.appendChild(price)
         container.appendChild(title)
         opCommentContainer.appendChild(option)
-        opCommentContainer.appendChild(newline)
         opCommentContainer.appendChild(comment)
         linkOpContainer.appendChild(opCommentContainer)
         linkOpContainer.appendChild(linkDelete)
@@ -598,7 +597,7 @@ async function createBillItem(){
         <h6>฿ ${order.amount}</h6>
     </div>
     <div class="name-price-status">
-        <div>
+        <div class="columnFlex">
             <small class="text-muted">${order.option}</small>
             <br>
             <small class="text-muted">${order.comment}</small>

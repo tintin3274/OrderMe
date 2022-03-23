@@ -87,6 +87,8 @@ public class OrderService {
                 if(!optionalItemName.isEmpty()) stringBuilder.append("   "+String.join(", ", optionalItemName)+"\n");
                 if(order.getComment() != null) stringBuilder.append("   "+order.getComment()+"\n");
                 total += amount;
+
+                template.convertAndSend("/topic/order/update", getUpdateOrderDTO(order.getId()));
             }
             stringBuilder.append("--------------------\n");
             stringBuilder.append("Total: "+total);

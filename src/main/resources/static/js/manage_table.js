@@ -1,10 +1,19 @@
 let stompClient = null;
 let allTable
 let index = []
+let indexTable = []
 
 function getDataBill(billId){
     return new Promise(function (resolve,reject){
         $.get( '/api/bill/' + billId, function( data ) {
+            resolve(data)
+        });
+    })
+}
+
+function getDataAllBillTakeOut(){
+    return new Promise(function (resolve,reject){
+        $.get( '/api/bill/all-id-take-out-process', function( data ) {
             resolve(data)
         });
     })
@@ -28,8 +37,10 @@ $(document).on('click', '.number-spinner button', function () {
     btn.closest('.number-spinner').find('input').val(newVal);
 });
 
-$( document ).ready(function (){
+ $( document ).ready(async function (){
     connect()
+
+    await initializeTakeOut()
 
     $(' form').submit(function(e){
         openTable()
@@ -74,7 +85,7 @@ function createTableCard(numberTable,billTable){
                 <div class="card-body">
                     <h5 class="card-title">${numberTable}</h5>
                     <a class="stretched-link" data-bs-toggle="modal" data-bs-target="#DineInModal" 
-                    onclick="createModalTable(${billTable})"></a>
+                    onclick="openModalDineIn(${billTable},${numberTable})"></a>
                 </div>
             </div>
     `
@@ -87,17 +98,20 @@ function initializeTable(tables){
     for(i=0;i<tables.length;i++){
         let table = tables[i]
         index.push(table.billId)
+        indexTable.push(table.id)
         updatePage(table)
     }
     stompClient.unsubscribe(1)
 }
 
 async function createModalTable(billId){
-    $('#DineInModal h3').text('#' + allTable[index.indexOf(billId)].billId)
+     $('#deleteBtn').show()
+    $(' .toolbar').show()
     $('#tableFood').bootstrapTable('removeAll')
-    let bill = await getDataBill(allTable[index.indexOf(billId)].billId)
+    let bill = await getDataBill(billId)
     let orders = bill.orders
-    for(let i=0;i<orders.length;i++){
+    let i
+    for(i=0;i<orders.length;i++){
         $('#tableFood').bootstrapTable('insertRow',{
             index: i,
             row: {
@@ -110,11 +124,23 @@ async function createModalTable(billId){
                 amount: orders[i].amount
             }
         })
+        if(orders[i].status == "PENDING"){
+            $(' .toolbar').hide()
+            $('.modal-footer').show()
+        }
     }
-
+    $('#qrBtn').prop('disabled',true)
+    if(orders.length > 0 ){
+        $('#cashBtn').prop('disabled',false)
+    }
+    else {
+        $('#cashBtn').prop('disabled',true)
+    }
     document.getElementById('qrBtn').onclick = function (){loadQr(bill.billId)}
     document.getElementById('completeBtn').onclick = function (){updateComplete(bill.billId)}
     document.getElementById('deleteBtn').onclick = function (){updateCancel(bill.billId)}
+    document.getElementById('cashBtn').onclick = function (){payCash(bill.billId)}
+    $('#total').text(bill.subTotal)
 }
 
 function initializeOption(numberTable){
@@ -174,8 +200,11 @@ function orderDetailFormatter(index, row,$element){
 function updateTable(table){
     let i=0
 
-    allTable[index.indexOf(table.billId)] = table
-
+    console.log(table)
+    console.log(index)
+    let target = indexTable.indexOf(table.id)
+    allTable[target] = table
+    index[target] = table.billId
     if(!table.available){
         loadQr(table.billId)
         $('#qrModal').modal('show');
@@ -197,11 +226,18 @@ async function updateStatus(status,billId){
     let selected =$('#tableFood').bootstrapTable('getSelections')
     for(let i=0; i < selected.length;i++){
         console.log( selected[i].id)
-        let json = {
-            "id": selected[i].id,
-            "status": status
-        }
-        stompClient.send('/app/order/update',{},JSON.stringify(json))
+        // let json = {
+        //     "id": selected[i].id,
+        //     "status": status
+        // }
+        // stompClient.send('/app/order/update',{},JSON.stringify(json))
+        $.ajax({
+            url: '/api/order/update?id= ' + selected[i].id + '&status=' + status,
+            type: 'POST',
+            success: function () {
+                console.log('success')
+            }
+        });
     }
     await createModalTable(billId)
 }
@@ -214,6 +250,44 @@ async function updateCancel(billId){
     await updateStatus('CANCEL',billId)
 }
 
-function payCash(){
+function payCash(id){
+    $.ajax({
+        url: '/api/payment/cash/' + id,
+        type: 'POST',
+        success: function () {
+            console.log('success')
+        }
+    });
+    $('#DineInModal').modal('hide')
+}
+
+async function initializeTakeOut(){
+    let bill = await getDataAllBillTakeOut()
+    console.log(bill)
+    for(let i=0;i<bill.length;i++){
+        let template = `
+                    <li class="list-group-item">
+                    <h5 class="card-title">Bill ID: ${bill[i]}</h5>
+                    <a class="stretched-link" data-bs-toggle="modal" data-bs-target="#DineInModal" 
+                    onclick="openModalTakeOut(${bill[i]})"></a>
+                </li>
+    `
+        $('#takeOutList').append(template)
+    }
 
 }
+
+async function openModalDineIn(billId,table){
+    $('.modal-footer').show()
+     await createModalTable(billId)
+    $('#qrBtn').prop('disabled',false)
+    $('#DineInModal h3').text('Table '+table+' Bill#' + billId)
+}
+
+async function openModalTakeOut(billId){
+    $('.modal-footer').hide()
+    await createModalTable(billId)
+    $('#deleteBtn').hide()
+    $('#DineInModal h3').text('Take Out Bill#' + billId)
+}
+
