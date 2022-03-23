@@ -105,6 +105,7 @@ public class BillService {
             bill.setStatus(ConstantUtil.VOID);
             bill = billRepository.saveAndFlush(bill);
             orderService.cancelAllOrderOfBill(bill.getId());
+            orderService.checkAllOrderOfBillComplete(bill.getId());
         }
     }
 
@@ -119,10 +120,6 @@ public class BillService {
             thread.setDaemon(true);
             return thread;
         }
-    }
-
-    public List<Integer> getAllBillIdOfOrderNotCancelAndComplete() {
-        return orderRepository.getAllBillIdOfOrderNotCancelAndComplete();
     }
 
     public List<Integer> getAllBillIdTakeOutOfOrderNotCancelAndComplete() {

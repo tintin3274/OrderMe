@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import th.ku.orderme.dto.*;
 import th.ku.orderme.model.*;
 import th.ku.orderme.model.Optional;
+import th.ku.orderme.repository.BillRepository;
 import th.ku.orderme.repository.ItemRepository;
 import th.ku.orderme.repository.OrderRepository;
 import th.ku.orderme.repository.SelectItemRepository;
@@ -24,8 +25,10 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ItemRepository itemRepository;
     private final SelectItemRepository selectItemRepository;
+    private final BillRepository billRepository;
     private final ItemService itemService;
     private final OptionalService optionalService;
+    private final TableService tableService;
     private final SimpMessagingTemplate template;
 
     public List<Order> findAll() {
@@ -157,7 +160,7 @@ public class OrderService {
     }
 
     @Transactional
-    public void cancel(int id) {
+    void cancel(int id) {
         try {
             Order order = findById(id);
             if(order == null) return;
@@ -318,6 +321,8 @@ public class OrderService {
         orderRepository.saveAndFlush(order);
         UpdateOrderDTO updateOrderDTO = getUpdateOrderDTO(id);
         template.convertAndSend("/topic/order/update", updateOrderDTO);
+
+        checkAllOrderOfBillComplete(order.getBill().getId());
         return updateOrderDTO;
     }
 
@@ -327,6 +332,8 @@ public class OrderService {
         cancel(id);
         UpdateOrderDTO updateOrderDTO = getUpdateOrderDTO(id);
         template.convertAndSend("/topic/order/update", updateOrderDTO);
+
+        checkAllOrderOfBillComplete(order.getBill().getId());
         return getUpdateOrderDTO(id);
     }
 
@@ -337,5 +344,27 @@ public class OrderService {
             updateOrderDTOList.add(getUpdateOrderDTO(id));
         }
         return updateOrderDTOList;
+    }
+
+    public boolean allOrderOfBillComplete(int billId) {
+        List<Integer> billIds = orderRepository.getAllBillIdOfOrderNotCancelAndComplete();
+        return !billIds.contains(billId);
+    }
+
+    public void checkAllOrderOfBillComplete(int billId) {
+        Bill bill = billRepository.findById(billId).orElse(null);
+        if(bill == null) return;
+        if(bill.getType().equalsIgnoreCase(ConstantUtil.TAKE_OUT)) {
+            if(allOrderOfBillComplete(bill.getId())) {
+                template.convertAndSend("/topic/take-out/complete", bill.getId());
+            }
+        }
+        else if(bill.getType().equalsIgnoreCase(ConstantUtil.DINE_IN)) {
+            if(bill.getStatus().equalsIgnoreCase(ConstantUtil.CLOSE)) {
+                if(allOrderOfBillComplete(bill.getId())) {
+                    tableService.clearTableOfBill(bill.getId());
+                }
+            }
+        }
     }
 }

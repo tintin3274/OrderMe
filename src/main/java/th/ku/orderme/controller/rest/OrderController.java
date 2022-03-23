@@ -3,7 +3,6 @@ package th.ku.orderme.controller.rest;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.web.bind.annotation.*;
 import th.ku.orderme.dto.CartDTO;
 import th.ku.orderme.dto.UpdateOrderDTO;
@@ -88,7 +87,6 @@ public class OrderController {
     }
 
     @GetMapping("/doing")
-    @SubscribeMapping("/order/doing")
     public List<UpdateOrderDTO> getAllOrderNotPendingAndCancelAndComplete() {
         return orderService.getDoingOrder();
     }

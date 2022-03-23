@@ -97,7 +97,9 @@ public class PaymentService {
                 orderService.changePendingToOrder(bill);
             }
             else if(bill.getType().equalsIgnoreCase(ConstantUtil.DINE_IN)) {
-                tableService.clearTableOfBill(bill.getId());
+                if(orderService.allOrderOfBillComplete(bill.getId())) {
+                    tableService.clearTableOfBill(bill.getId());
+                }
                 tokenService.autoDeleteToken(bill.getId(), 10);
             }
         }
