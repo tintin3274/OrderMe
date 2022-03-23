@@ -48,6 +48,7 @@ public class TableController {
             tableDTO.setAvailable(table.isAvailable());
             tableDTO.setBillId(bill.getId());
             tableDTO.setToken(token.getId());
+            tableDTO.setPaid(false);
             template.convertAndSend("/topic/table/update", tableDTO);
             return tableDTO;
         }

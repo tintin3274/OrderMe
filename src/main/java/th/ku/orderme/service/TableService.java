@@ -9,6 +9,7 @@ import th.ku.orderme.model.Bill;
 import th.ku.orderme.model.Table;
 import th.ku.orderme.model.Token;
 import th.ku.orderme.repository.TableRepository;
+import th.ku.orderme.util.ConstantUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,6 +84,9 @@ public class TableService {
         tableDTO.setAvailable(table.isAvailable());
         if(table.getBill() != null) {
             tableDTO.setBillId(table.getBill().getId());
+            if(table.getBill().getStatus().equalsIgnoreCase(ConstantUtil.PAID)) {
+                tableDTO.setPaid(true);
+            }
             Token token = tokenService.findByBillId(table.getBill().getId());
             if(token != null) {
                 tableDTO.setToken(token.getId());
