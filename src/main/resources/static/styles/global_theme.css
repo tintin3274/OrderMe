@@ -74,9 +74,18 @@ h3{
 #layout{
     width: 60%;
 }
+
+.indexBg{
+    background: #0c7d5b;
+    height: 100vh;background: url('/material/indexBG.jpg')no-repeat fixed center;
+}
+
 @media (max-width:800px){
     #layout{
         width: 100%;
+    }
+    .indexBg{
+        background-size: cover;
     }
 }
 

@@ -39,7 +39,7 @@ $( document ).ready(async function() {
 
     let userType = $('title').text()
     if(userType == 'TAKE-OUT'){
-        document.getElementById('billNav').classList.add('invisible')
+        $('#billNav').hide()
         $('#cartBtn').text('Payment')
     }
 

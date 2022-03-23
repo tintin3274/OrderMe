@@ -84,7 +84,7 @@ public class TableService {
         tableDTO.setAvailable(table.isAvailable());
         if(table.getBill() != null) {
             tableDTO.setBillId(table.getBill().getId());
-            if(table.getBill().getStatus().equalsIgnoreCase(ConstantUtil.PAID)) {
+            if(table.getBill().getStatus().equalsIgnoreCase(ConstantUtil.CLOSE)) {
                 tableDTO.setPaid(true);
             }
             Token token = tokenService.findByBillId(table.getBill().getId());

@@ -19,6 +19,14 @@ function getDataAllBillTakeOut(){
     })
 }
 
+function getDataAllTable(){
+    return new Promise(function (resolve,reject){
+        $.get( '/api/table/all', function( data ) {
+            resolve(data)
+        });
+    })
+}
+
 $(document).on('click', '.number-spinner button', function () {
     var btn = $(this),
         oldValue = btn.closest('.number-spinner').find('input').val().trim()
@@ -39,6 +47,9 @@ $(document).on('click', '.number-spinner button', function () {
 
  $( document ).ready(async function (){
     connect()
+     allTable = await getDataAllTable()
+     console.log(allTable)
+     initializeTable(allTable);
 
     await initializeTakeOut()
 
@@ -61,10 +72,6 @@ function connect() {
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         // console.log('Connected: ' + frame);
-        stompClient.subscribe('/app/table/all', function (message) {
-            allTable = JSON.parse(message.body)
-            initializeTable(allTable);
-        },{ id: 1});
         stompClient.subscribe('/topic/table/update', function (message) {
             console.log('success')
             updateTable(JSON.parse(message.body))
@@ -101,7 +108,6 @@ function initializeTable(tables){
         indexTable.push(table.id)
         updatePage(table)
     }
-    stompClient.unsubscribe(1)
 }
 
 async function createModalTable(billId){
@@ -130,7 +136,7 @@ async function createModalTable(billId){
         }
     }
     $('#qrBtn').prop('disabled',true)
-    if(orders.length > 0 ){
+    if(orders.length > 0){
         $('#cashBtn').prop('disabled',false)
     }
     else {
@@ -282,6 +288,10 @@ async function openModalDineIn(billId,table){
      await createModalTable(billId)
     $('#qrBtn').prop('disabled',false)
     $('#DineInModal h3').text('Table '+table+' Bill#' + billId)
+    if(allTable[index.indexOf(billId)].paid){
+        $('.modal-footer').hide()
+        $('#DineInModal h3').text('Table '+table+' Bill#' + billId + ' [PAID]')
+    }
 }
 
 async function openModalTakeOut(billId){

@@ -67,7 +67,7 @@ public class SecurityConfig {
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             String[] resources = new String[]{
-                    "/", "/js/**","/css/**","/styles/**", "/webjars/**"
+                    "/", "/js/**","/css/**","/styles/**", "/webjars/**", "/material/**"
             };
 
             String[] allow = new String[]{
