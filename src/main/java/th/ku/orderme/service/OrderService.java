@@ -261,6 +261,7 @@ public class OrderService {
             orderDTO.setAmount(price*order.getQuantity());
             orderDTO.setComment(order.getComment());
             orderDTO.setStatus(order.getStatus());
+            orderDTO.setTimestamp(order.getTimestamp());
             return orderDTO;
         }
         catch (Exception e) {
