@@ -11,4 +11,5 @@ public class UpdateOrderDTO {
     private int billId;
     private String type;
     private OrderDTO order;
+    private int tableId;
 }

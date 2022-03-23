@@ -14,7 +14,6 @@ import th.ku.orderme.util.ConstantUtil;
 import javax.naming.AuthenticationException;
 import java.io.IOException;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
@@ -159,7 +158,7 @@ public class SCBSimulatorPaymentService {
             if(statusCode.equals("1000")) {
                 payment.setChannel(ConstantUtil.DEEP_LINK);
                 payment.setGenerateInfo(jsonResponse.toString());
-                save(payment);
+                paymentService.save(payment);
 
                 JsonObject data = jsonResponse.getAsJsonObject("data");
                 return data.get("deeplinkUrl").getAsString();
@@ -212,7 +211,7 @@ public class SCBSimulatorPaymentService {
             if(statusCode.equals("1000")) {
                 payment.setChannel(ConstantUtil.QR_CODE);
                 payment.setGenerateInfo(jsonResponse.toString());
-                save(payment);
+                paymentService.save(payment);
 
                 JsonObject data = jsonResponse.getAsJsonObject("data");
                 String qrImage = data.get("qrImage").getAsString();
@@ -225,26 +224,6 @@ public class SCBSimulatorPaymentService {
             log.error(e.getMessage());
         }
         return null;
-    }
-
-    private void save(Payment payment) {
-        LocalDateTime localDateTime = LocalDateTime.now();
-        if(payment.getCreatedTimestamp() == null) payment.setCreatedTimestamp(localDateTime);
-        payment.setUpdatedTimestamp(localDateTime);
-        paymentRepository.saveAndFlush(payment);
-    }
-
-    private boolean paymentComplete(String ref1, String channel, String confirmInfo) {
-        Payment payment = paymentRepository.findByRef1(ref1);
-        if(payment != null && payment.getStatus().equalsIgnoreCase(ConstantUtil.UNPAID)) {
-            payment.setStatus(ConstantUtil.PAID);
-            payment.setChannel(channel);
-            payment.setConfirmInfo(confirmInfo);
-            save(payment);
-            paymentService.createReceipt(ref1);
-            return true;
-        }
-        return false;
     }
 
     public boolean slipVerification(String transRef) { // for QR30 Only
@@ -286,7 +265,7 @@ public class SCBSimulatorPaymentService {
                         String statusCode = status.get("code").getAsString();
 
                         if(statusCode.equals("1000")) {
-                            return paymentComplete(ref1, ConstantUtil.QR30, jsonResponse.toString());
+                            return paymentService.paymentComplete(ref1, ConstantUtil.QR30, jsonResponse.toString());
                         }
                         else {
                             throw new Exception("Status code "+statusCode+": "+status.get("description").getAsString());
@@ -363,7 +342,7 @@ public class SCBSimulatorPaymentService {
                     ref1 = data.get("ref1").getAsString();
                 }
 
-                return paymentComplete(ref1, channel, jsonResponse.toString());
+                return paymentService.paymentComplete(ref1, channel, jsonResponse.toString());
             }
             else {
                 throw new Exception("Status code "+statusCode+": "+status.get("description").getAsString());
@@ -400,5 +379,4 @@ public class SCBSimulatorPaymentService {
         JsonObject data = jsonResponse.getAsJsonObject("data");
         return data.get("deeplinkUrl").getAsString();
     }
-
 }

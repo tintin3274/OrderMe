@@ -8,10 +8,7 @@ import org.springframework.stereotype.Service;
 import th.ku.orderme.dto.*;
 import th.ku.orderme.model.*;
 import th.ku.orderme.model.Optional;
-import th.ku.orderme.repository.BillRepository;
-import th.ku.orderme.repository.ItemRepository;
-import th.ku.orderme.repository.OrderRepository;
-import th.ku.orderme.repository.SelectItemRepository;
+import th.ku.orderme.repository.*;
 import th.ku.orderme.util.ConstantUtil;
 
 import javax.transaction.Transactional;
@@ -26,6 +23,7 @@ public class OrderService {
     private final ItemRepository itemRepository;
     private final SelectItemRepository selectItemRepository;
     private final BillRepository billRepository;
+    private final TableRepository tableRepository;
     private final ItemService itemService;
     private final OptionalService optionalService;
     private final TableService tableService;
@@ -277,6 +275,13 @@ public class OrderService {
         updateOrderDTO.setBillId(order.getBill().getId());
         updateOrderDTO.setType(order.getBill().getType());
         updateOrderDTO.setOrder(convertOrderToOrderDTO(order));
+        updateOrderDTO.setTableId(0);
+        if(order.getBill().getType().equalsIgnoreCase(ConstantUtil.DINE_IN)) {
+            Table table = tableRepository.findByBill_Id(order.getBill().getId());
+            if(table != null) {
+                updateOrderDTO.setTableId(table.getId());
+            }
+        }
         return updateOrderDTO;
     }
 

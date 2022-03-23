@@ -113,4 +113,24 @@ public class PaymentService {
         }
         return null;
     }
+
+    public boolean paymentComplete(String ref1, String channel, String confirmInfo) {
+        Payment payment = paymentRepository.findByRef1(ref1);
+        if(payment != null && payment.getStatus().equalsIgnoreCase(ConstantUtil.UNPAID)) {
+            payment.setStatus(ConstantUtil.PAID);
+            payment.setChannel(channel);
+            payment.setConfirmInfo(confirmInfo);
+            save(payment);
+            createReceipt(ref1);
+            return true;
+        }
+        return false;
+    }
+
+    public void save(Payment payment) {
+        LocalDateTime localDateTime = LocalDateTime.now();
+        if(payment.getCreatedTimestamp() == null) payment.setCreatedTimestamp(localDateTime);
+        payment.setUpdatedTimestamp(localDateTime);
+        paymentRepository.saveAndFlush(payment);
+    }
 }

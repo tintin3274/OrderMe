@@ -55,12 +55,6 @@ public class PaymentControllerWeb {
         return "redirect:/";
     }
 
-    @ResponseBody
-    @GetMapping("/cash")
-    public String cash() {
-        return "Pay at Cashier";
-    }
-
     @GetMapping("/qrcode")
     public String generateQrCode(@CookieValue(name = "uid") String uid, Model model) {
         Token token = tokenService.findById(uid);
