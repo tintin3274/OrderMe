@@ -3,7 +3,6 @@ package th.ku.orderme.controller.rest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.web.bind.annotation.*;
 import th.ku.orderme.dto.TableDTO;
 import th.ku.orderme.model.Bill;
@@ -26,7 +25,6 @@ public class TableController {
     private final TokenService tokenService;
 
     @GetMapping("/all")
-    @SubscribeMapping("/table/all")
     public List<TableDTO> getAllTableDTOList() {
         return tableService.findAllTableDTO();
     }

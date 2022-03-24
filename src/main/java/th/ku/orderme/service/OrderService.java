@@ -2,6 +2,8 @@ package th.ku.orderme.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,7 @@ import th.ku.orderme.util.ConstantUtil;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -27,6 +30,7 @@ public class OrderService {
     private final ItemService itemService;
     private final OptionalService optionalService;
     private final TableService tableService;
+    @Autowired @Lazy private final BillService billService;
     private final SimpMessagingTemplate template;
 
     public List<Order> findAll() {
@@ -317,6 +321,7 @@ public class OrderService {
         orderRepository.saveAndFlush(order);
         UpdateOrderDTO updateOrderDTO = getUpdateOrderDTO(id);
         template.convertAndSend("/topic/order/update", updateOrderDTO);
+        sendUpdateBillOrderStatusMessage(order.getBill().getId());
         return updateOrderDTO;
     }
 
@@ -366,13 +371,69 @@ public class OrderService {
             if(allOrderOfBillComplete(bill.getId())) {
                 template.convertAndSend("/topic/take-out/complete", bill.getId());
             }
+            else {
+                sendUpdateBillOrderStatusMessage(bill.getId());
+            }
         }
         else if(bill.getType().equalsIgnoreCase(ConstantUtil.DINE_IN)) {
             if(bill.getStatus().equalsIgnoreCase(ConstantUtil.CLOSE)) {
                 if(allOrderOfBillComplete(bill.getId())) {
                     tableService.clearTableOfBill(bill.getId());
                 }
+                else {
+                    sendUpdateBillOrderStatusMessage(bill.getId());
+                }
+            }
+            else {
+                sendUpdateBillOrderStatusMessage(bill.getId());
             }
         }
+    }
+
+    public List<Integer> getAllBillIdTakeOutOfOrderNotCancelAndComplete() {
+        List<Integer> allBillIdTakeOut = billRepository.getAllIdByTypeEqual(ConstantUtil.TAKE_OUT);
+        List<Integer> allBillIdOfOrderProcess = orderRepository.getAllBillIdOfOrderNotCancelAndComplete();
+        Set<Integer> result = allBillIdTakeOut.stream()
+                .distinct()
+                .filter(allBillIdOfOrderProcess::contains)
+                .collect(Collectors.toSet());
+        List<Integer> resultList = new ArrayList<>(result);
+        Collections.sort(resultList);
+        return resultList;
+    }
+
+    public List<String> getAllOrderStatusOfBillId(int billId) {
+        return orderRepository.getAllOrderStatusOfBillId(billId);
+    }
+
+    public String getHighPriorityStatusOfAllOrderOfBillId(int billId) {
+        List<String> statuses = getAllOrderStatusOfBillId(billId);
+        if(statuses.isEmpty()) return ConstantUtil.COMPLETE;
+        else if(statuses.contains(ConstantUtil.SERVING)) return ConstantUtil.SERVING;
+        else if(statuses.contains(ConstantUtil.COOKING)) return ConstantUtil.COOKING;
+        else if(statuses.contains(ConstantUtil.ORDER)) return ConstantUtil.ORDER;
+        else if(statuses.contains(ConstantUtil.PENDING)) return ConstantUtil.PENDING;
+        else return ConstantUtil.COMPLETE;
+    }
+
+    public UpdateBillOrderStatusMessage getUpdateBillOrderStatusMessage(int billId) {
+        String status = getHighPriorityStatusOfAllOrderOfBillId(billId);
+        return new UpdateBillOrderStatusMessage(billId, status);
+    }
+
+    public void sendUpdateBillOrderStatusMessage(int billId) {
+        template.convertAndSend("/topic/bill/status/update", getUpdateBillOrderStatusMessage(billId));
+    }
+
+    public List<UpdateBillOrderStatusMessage> getAllCurrentBillOrderStatus() {
+        List<Integer> billIds = new ArrayList<>();
+        billIds.addAll(tableService.getAllBillId());
+        billIds.addAll(getAllBillIdTakeOutOfOrderNotCancelAndComplete());
+
+        List<UpdateBillOrderStatusMessage> updateBillOrderStatusMessageList = new ArrayList<>();
+        for(int billId : billIds) {
+            updateBillOrderStatusMessageList.add(getUpdateBillOrderStatusMessage(billId));
+        }
+        return updateBillOrderStatusMessageList;
     }
 }

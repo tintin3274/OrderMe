@@ -2,11 +2,9 @@ package th.ku.orderme.controller.rest;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.*;
 import th.ku.orderme.dto.CartDTO;
 import th.ku.orderme.dto.UpdateOrderDTO;
-import th.ku.orderme.dto.UpdateOrderMessage;
 import th.ku.orderme.model.Bill;
 import th.ku.orderme.model.Order;
 import th.ku.orderme.model.Token;
@@ -79,11 +77,6 @@ public class OrderController {
             }
         }
         return updateOrderDTO;
-    }
-
-    @MessageMapping("/order/update")
-    public void sendUpdateOrderDTO(UpdateOrderMessage updateOrderMessage) {
-        sendUpdateOrderDTO(updateOrderMessage.getId(), updateOrderMessage.getStatus());
     }
 
     @GetMapping("/doing")

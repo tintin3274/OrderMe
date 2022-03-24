@@ -13,4 +13,7 @@ public interface TableRepository extends JpaRepository<Table, Integer> {
 
     @Query("SELECT t.id FROM Table t ORDER BY t.id")
     List<Integer> getAllId();
+
+    @Query("SELECT t.bill.id FROM Table t")
+    List<Integer> getAllBillId();
 }

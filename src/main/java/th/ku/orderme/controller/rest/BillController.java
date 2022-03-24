@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonView;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import th.ku.orderme.dto.BillDTO;
+import th.ku.orderme.dto.UpdateBillOrderStatusMessage;
 import th.ku.orderme.model.Bill;
 import th.ku.orderme.model.Token;
 import th.ku.orderme.model.Views;
 import th.ku.orderme.service.BillService;
+import th.ku.orderme.service.OrderService;
 import th.ku.orderme.service.TokenService;
 
 import java.util.List;
@@ -18,6 +20,7 @@ import java.util.List;
 public class BillController {
     private final BillService billService;
     private final TokenService tokenService;
+    private final OrderService orderService;
 
     @JsonView(Views.Overall.class)
     @GetMapping("/all")
@@ -41,6 +44,11 @@ public class BillController {
 
     @GetMapping("/all-id-take-out-process")
     public List<Integer> getAllBillIdTakeOutOfOrderNotCancelAndComplete() {
-        return billService.getAllBillIdTakeOutOfOrderNotCancelAndComplete();
+        return orderService.getAllBillIdTakeOutOfOrderNotCancelAndComplete();
+    }
+
+    @GetMapping("/all-bill-order-status")
+    public List<UpdateBillOrderStatusMessage> getAllCurrentBillOrderStatus() {
+        return orderService.getAllCurrentBillOrderStatus();
     }
 }

@@ -12,6 +12,7 @@ import th.ku.orderme.repository.TableRepository;
 import th.ku.orderme.util.ConstantUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -101,5 +102,11 @@ public class TableService {
             tableDTOList.add(converterTableToTableDTO(table));
         }
         return tableDTOList;
+    }
+
+    public List<Integer> getAllBillId() {
+        List<Integer> billIds = tableRepository.getAllBillId();
+        billIds.removeAll(Collections.singleton(null));
+        return billIds;
     }
 }

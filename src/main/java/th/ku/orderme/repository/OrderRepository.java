@@ -16,4 +16,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     @Query("SELECT o.id FROM Order o WHERE o.status <> 'PENDING' AND o.status <> 'CANCEL' AND o.status <> 'COMPLETE'")
     List<Integer> getAllOrderIdNotPendingAndCancelAndComplete();
+
+    @Query("SELECT DISTINCT o.status FROM Order o WHERE o.bill.id = ?1")
+    List<String> getAllOrderStatusOfBillId(int billId);
 }
