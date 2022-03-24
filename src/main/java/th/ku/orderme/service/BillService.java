@@ -5,6 +5,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import th.ku.orderme.dto.BillDTO;
 import th.ku.orderme.dto.OrderDTO;
+import th.ku.orderme.dto.UpdateBillOrderStatusMessage;
 import th.ku.orderme.model.Bill;
 import th.ku.orderme.model.Order;
 import th.ku.orderme.repository.BillRepository;
@@ -54,6 +55,8 @@ public class BillService {
 
         tokenService.mappingTokenToBill(tokenId, bill);
         template.convertAndSend("/topic/take-out/new", bill.getId());
+        UpdateBillOrderStatusMessage updateBillOrderStatusMessage = new UpdateBillOrderStatusMessage(bill.getId(), ConstantUtil.COMPLETE);
+        template.convertAndSend("/topic/bill/status/update", updateBillOrderStatusMessage);
         return bill;
     }
 

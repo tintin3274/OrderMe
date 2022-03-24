@@ -5,12 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import th.ku.orderme.dto.TableDTO;
+import th.ku.orderme.dto.UpdateBillOrderStatusMessage;
 import th.ku.orderme.model.Bill;
 import th.ku.orderme.model.Table;
 import th.ku.orderme.model.Token;
 import th.ku.orderme.service.BillService;
 import th.ku.orderme.service.TableService;
 import th.ku.orderme.service.TokenService;
+import th.ku.orderme.util.ConstantUtil;
 
 import java.util.List;
 
@@ -48,6 +50,9 @@ public class TableController {
             tableDTO.setToken(token.getId());
             tableDTO.setPaid(false);
             template.convertAndSend("/topic/table/update", tableDTO);
+
+            UpdateBillOrderStatusMessage updateBillOrderStatusMessage = new UpdateBillOrderStatusMessage(bill.getId(), ConstantUtil.COMPLETE);
+            template.convertAndSend("/topic/bill/status/update", updateBillOrderStatusMessage);
             return tableDTO;
         }
         return null;
