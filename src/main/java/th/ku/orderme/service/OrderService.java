@@ -30,7 +30,6 @@ public class OrderService {
     private final ItemService itemService;
     private final OptionalService optionalService;
     private final TableService tableService;
-    @Autowired @Lazy private final BillService billService;
     private final SimpMessagingTemplate template;
 
     public List<Order> findAll() {
