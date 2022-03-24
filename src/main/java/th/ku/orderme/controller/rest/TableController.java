@@ -58,18 +58,12 @@ public class TableController {
         return null;
     }
 
-    @PostMapping("/update")
-    public TableDTO sendTableDTOUpdate(@RequestBody TableDTO tableDTO) {
-        template.convertAndSend("/topic/table/update", tableDTO);
-        return tableDTO;
-    }
-
     @GetMapping("/create/{id}")
     public Table createTable(@PathVariable int id) {
         return tableService.createTable(id);
     }
 
-    @GetMapping("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public String deleteTable(@PathVariable int id) {
         return tableService.deleteTable(id);
     }

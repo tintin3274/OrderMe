@@ -40,7 +40,7 @@ public class OrderService {
 
     public String order(CartDTO cartDTO, Bill bill) {
         try {
-            if(!bill.getStatus().equalsIgnoreCase(ConstantUtil.OPEN)) throw new IllegalArgumentException("Bill is not OPEN");
+            if(!bill.getStatus().equalsIgnoreCase(ConstantUtil.OPEN)) throw new IllegalArgumentException("Bill is not OPEN - "+bill.getId());
 
             if(!validateAndUpdateItemQuantity(cartDTO.getOrderRequests())) throw new IllegalArgumentException("Something wrong! Cannot order");
 
@@ -408,7 +408,15 @@ public class OrderService {
 
     public String getHighPriorityStatusOfAllOrderOfBillId(int billId) {
         List<String> statuses = getAllOrderStatusOfBillId(billId);
-        if(statuses.isEmpty()) return ConstantUtil.COMPLETE;
+        if(statuses.isEmpty()) {
+            Bill bill = billRepository.findById(billId).orElse(null);
+            if(bill != null) {
+                if(bill.getType().equalsIgnoreCase(ConstantUtil.TAKE_OUT)) {
+                    return ConstantUtil.PENDING;
+                }
+            }
+            return ConstantUtil.COMPLETE;
+        }
         else if(statuses.contains(ConstantUtil.SERVING)) return ConstantUtil.SERVING;
         else if(statuses.contains(ConstantUtil.COOKING)) return ConstantUtil.COOKING;
         else if(statuses.contains(ConstantUtil.ORDER)) return ConstantUtil.ORDER;
