@@ -7,18 +7,24 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import th.ku.orderme.dto.ReceiptDTO;
+import th.ku.orderme.model.Bill;
+import th.ku.orderme.model.Token;
 import th.ku.orderme.service.PaymentService;
+import th.ku.orderme.service.TokenService;
+import th.ku.orderme.util.ConstantUtil;
 import th.ku.orderme.util.CookieUtil;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Optional;
 
 @Controller
 @RequestMapping
 @RequiredArgsConstructor
 public class GeneralControllerWeb {
     private final PaymentService paymentService;
+    private final TokenService tokenService;
 
     @GetMapping("/")
     public String main(HttpServletRequest request, HttpServletResponse response) {
@@ -36,8 +42,29 @@ public class GeneralControllerWeb {
     }
 
     @GetMapping("/main-menu")
-    public String getPageMainMenu(@CookieValue(name = "type") String type, Model model){
-        model.addAttribute("type", type);
+    public String getPageMainMenu(HttpServletRequest request, Model model){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String roles = authentication.getAuthorities().toString();
+        if(roles.contains("ROLE_USER")) {
+            Optional<Cookie> cookieUid = CookieUtil.readCookie(request, "uid");
+            if(cookieUid.isPresent()) {
+                String uid = cookieUid.get().getValue();
+                Token token = tokenService.findById(uid);
+                if(token != null) {
+                    Bill bill = token.getBill();
+                    if(bill != null) {
+                        if(bill.getStatus().equalsIgnoreCase(ConstantUtil.PAYMENT)) {
+                            return "redirect:/payment";
+                        }
+                        else if(bill.getStatus().equalsIgnoreCase(ConstantUtil.VOID) || bill.getStatus().equalsIgnoreCase(ConstantUtil.CLOSE)) {
+                            return "redirect:/";
+                        }
+                    }
+                }
+            }
+            Optional<Cookie> cookieType = CookieUtil.readCookie(request, "type");
+            cookieType.ifPresent(value -> model.addAttribute("type", value.getValue()));
+        }
         return "main_menu";
     }
 

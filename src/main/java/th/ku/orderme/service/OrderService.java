@@ -2,8 +2,6 @@ package th.ku.orderme.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
@@ -95,6 +93,8 @@ public class OrderService {
             }
             stringBuilder.append("--------------------\n");
             stringBuilder.append("Total: "+total);
+
+            sendUpdateBillOrderStatusMessage(bill.getId());
             return stringBuilder.toString();
         } catch (IllegalArgumentException e) {
             log.error(e.getMessage());
@@ -310,6 +310,7 @@ public class OrderService {
         orderRepository.saveAndFlush(order);
         UpdateOrderDTO updateOrderDTO = getUpdateOrderDTO(id);
         template.convertAndSend("/topic/order/update", updateOrderDTO);
+        sendUpdateBillOrderStatusMessage(order.getBill().getId());
         return updateOrderDTO;
     }
 
