@@ -27,6 +27,14 @@ function getDataAllTable(){
     })
 }
 
+function getDataColourInitialize(){
+    return new Promise(function (resolve,reject){
+        $.get( '/api/bill/all-bill-order-status', function( data ) {
+            resolve(data)
+        });
+    })
+}
+
 $(document).on('click', '.number-spinner button', function () {
     var btn = $(this),
         oldValue = btn.closest('.number-spinner').find('input').val().trim()
@@ -52,6 +60,7 @@ $(document).on('click', '.number-spinner button', function () {
      initializeTable(allTable);
 
     await initializeTakeOut()
+     await initializeColour()
 
     $(' form').submit(function(e){
         openTable()
@@ -72,9 +81,18 @@ function connect() {
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         // console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/table/update', function (message) {
+        stompClient.subscribe('/topic/table/update', async function (message) {
             console.log('success')
-            updateTable(JSON.parse(message.body))
+            await updateTable(JSON.parse(message.body))
+        });
+        stompClient.subscribe('/topic/take-out/new', async function (message) {
+            addTakeOut(JSON.parse(message.body))
+        });
+        stompClient.subscribe('/topic/take-out/complete', async function (message) {
+            await updateTakeOut()
+        });
+        stompClient.subscribe('/topic/bill/status/update', function (message) {
+            updateColour(JSON.parse(message.body))
         });
     });
 }
@@ -88,7 +106,7 @@ function disconnect() {
 
 function createTableCard(numberTable,billTable){
     let template = `
-                <div class="card text-center col-4">
+                <div class="card text-center col-4" id=${billTable}>
                 <div class="card-body">
                     <h5 class="card-title">${numberTable}</h5>
                     <a class="stretched-link" data-bs-toggle="modal" data-bs-target="#DineInModal" 
@@ -121,18 +139,20 @@ async function createModalTable(billId){
         $('#tableFood').bootstrapTable('insertRow',{
             index: i,
             row: {
-                name: '<span class="badge rounded-pill '+orders[i].status+'" style="margin-right: 10px">'+ orders[i].status+'</span>'
-                    + orders[i].name,
+                name: orders[i].name,
                 id: orders[i].id,
                 option: orders[i].option,
                 comment: orders[i].comment,
                 quantity: orders[i].quantity,
-                amount: orders[i].amount
+                amount: orders[i].amount,
+                status: orders[i].status,
+                index: i
             }
         })
         if(orders[i].status == "PENDING"){
             $(' .toolbar').hide()
             $('.modal-footer').show()
+            $('#DineInModal h3').text('Take Out Bill#' + billId)
         }
     }
     $('#qrBtn').prop('disabled',true)
@@ -203,7 +223,11 @@ function orderDetailFormatter(index, row,$element){
     return text.join('')
 }
 
-function updateTable(table){
+function nameFormatter(value, row){
+     return '<span class="badge rounded-pill '+ row.status+'" style="margin-right: 10px">'+ row.status+'</span>' + value
+}
+
+async function updateTable(table){
     let i=0
 
     console.log(table)
@@ -225,27 +249,35 @@ function updateTable(table){
         let table = allTable[i]
         updatePage(table)
     }
-
+    await initializeColour()
 }
 
 async function updateStatus(status,billId){
     let selected =$('#tableFood').bootstrapTable('getSelections')
     for(let i=0; i < selected.length;i++){
-        console.log( selected[i].id)
-        // let json = {
-        //     "id": selected[i].id,
-        //     "status": status
-        // }
-        // stompClient.send('/app/order/update',{},JSON.stringify(json))
+        console.log( selected[i])
         $.ajax({
             url: '/api/order/update?id= ' + selected[i].id + '&status=' + status,
             type: 'POST',
             success: function () {
                 console.log('success')
+                $('#tableFood').bootstrapTable('updateRow', {
+                    index: selected[i].index,
+                    row: {
+                        name: selected[i].name,
+                        id: selected[i].id,
+                        option: selected[i].option,
+                        comment: selected[i].comment,
+                        quantity: selected[i].quantity,
+                        amount: selected[i].amount,
+                        status: status,
+                        index: selected[i].index,
+                        state: false
+                    }
+                })
             }
         });
     }
-    await createModalTable(billId)
 }
 
  async function updateComplete(billId){
@@ -271,14 +303,7 @@ async function initializeTakeOut(){
     let bill = await getDataAllBillTakeOut()
     console.log(bill)
     for(let i=0;i<bill.length;i++){
-        let template = `
-                    <li class="list-group-item">
-                    <h5 class="card-title">Bill ID: ${bill[i]}</h5>
-                    <a class="stretched-link" data-bs-toggle="modal" data-bs-target="#DineInModal" 
-                    onclick="openModalTakeOut(${bill[i]})"></a>
-                </li>
-    `
-        $('#takeOutList').append(template)
+       addTakeOut(bill[i])
     }
 
 }
@@ -296,8 +321,47 @@ async function openModalDineIn(billId,table){
 
 async function openModalTakeOut(billId){
     $('.modal-footer').hide()
+    $('#DineInModal h3').text('Take Out Bill#' + billId + ' [PAID]')
     await createModalTable(billId)
     $('#deleteBtn').hide()
-    $('#DineInModal h3').text('Take Out Bill#' + billId)
+}
+
+async function updateTakeOut(){
+    $('#takeOutList').empty()
+    await initializeTakeOut()
+    await initializeColour()
+}
+
+function updateColour(bill){
+     console.log(bill)
+     let classElement = document.getElementById(bill.billId).className
+     if( classElement.includes("list-group-item")){
+         document.getElementById(bill.billId).className = "list-group-item " + bill.orderStatus
+     }
+     else {
+         document.getElementById(bill.billId).className = "card text-center col-4 " + bill.orderStatus
+     }
+}
+
+async function initializeColour(){
+     let bills = await getDataColourInitialize()
+    for(let i=0;i<bills.length;i++){
+        newColour(bills[i])
+    }
+}
+
+function addTakeOut(bill){
+    let template = `
+                    <li class="list-group-item" id=${bill}>
+                    <h5 class="card-title">Bill ID: ${bill}</h5>
+                    <a class="stretched-link" data-bs-toggle="modal" data-bs-target="#DineInModal" 
+                    onclick="openModalTakeOut(${bill})"></a>
+                </li>
+    `
+    $('#takeOutList').append(template)
+}
+
+function newColour(bill){
+    document.getElementById(bill.billId).classList.add(bill.orderStatus)
 }
 

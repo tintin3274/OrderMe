@@ -15,7 +15,7 @@
 <section layout:fragment="content" class="m-3">
     <div>
         <h2>Dine In Table</h2>
-        <button class="btn btn-primary m-2" data-bs-toggle="modal" data-bs-target="#createDineInModal">New Table</button>
+        <button class="btn btn-success m-2" data-bs-toggle="modal" data-bs-target="#createDineInModal">New Table</button>
         <div class="row align-items-center m-2" id="tableContainer">
 
         </div>
@@ -89,12 +89,14 @@
                         <thead >
                         <tr>
                             <th data-field="state" data-checkbox="true"></th>
-                            <th data-field="name">Order</th>
+                            <th data-field="name" data-formatter="nameFormatter">Order</th>
                             <th data-field="id" data-visible="false"></th>
                             <th data-field="option" data-visible="false"></th>
                             <th data-field="comment" data-visible="false"></th>
                             <th data-field="quantity" data-visible="false"></th>
                             <th data-field="amount" data-visible="false"></th>
+                            <th data-field="status" data-visible="false"></th>
+                            <th data-field="index" data-visible="false"></th>
                         </tr>
                         </thead>
                         <tbody>

@@ -14,10 +14,12 @@
 .modal-dialog{
     width: 300px;
     height: 100%;
+    margin: 0;
 }
 
 .modal-content{
     height: 100%;
+    border: 10px black;
 }
 
 .modal-body{

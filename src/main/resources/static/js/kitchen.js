@@ -66,32 +66,39 @@ function createOrder(group,title){
     let cooking = []
     let serving = []
     let disable = ''
+    let colour = "COOKING"
     let time = group[0].timestamp.split('T')[1].split(':')[0] + ':' + group[0].timestamp.split('T')[1].split(':')[1]
     for(i=0;i<group.length;i++){
         if(group[i].status == "COOKING"){
             cooking.push(createOrderItem(group[i],''))
             disable = 'disabled'
         }
-        if(group[i].status == "ORDER"){
+        else if(group[i].status == "ORDER"){
             cooking.push(createOrderItem(group[i],'disabled'))
+            colour = "ORDER"
         }
-        if(group[i].status == "SERVING") {
+        else if(group[i].status == "SERVING") {
             serving.push(createOrderItem(group[i],'checked disabled'))
+
         }
     }
-    createOrderCard(cooking,serving,disable,time,title)
+    if(serving.length == group.length){
+        colour = "SERVING"
+        disable = 'disabled'
+    }
+    createOrderCard(cooking,serving,disable,time,title,colour)
 }
 
-function createOrderCard(cooking,serving,disable,time,title){
+function createOrderCard(cooking,serving,disable,time,title,colour){
     let btn = 'Start'
     if(disable != ''){
         btn = 'In Process'
     }
     let template = `
             <div class="rowModal">
-            <div class="modal-dialog m-0">
-                <div class="modal-content">
-                    <div class="modal-header name-price">
+            <div class="modal-dialog">
+                <div class="modal-content border-0">
+                    <div class="modal-header name-price ${colour}" style="color: white">
                         <h5 class="modal-title" >${title}</h5>
                         <h5 class="m-0">${time}</h5>
                     </div>

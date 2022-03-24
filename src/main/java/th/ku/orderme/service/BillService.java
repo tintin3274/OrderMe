@@ -55,7 +55,7 @@ public class BillService {
 
         tokenService.mappingTokenToBill(tokenId, bill);
         template.convertAndSend("/topic/take-out/new", bill.getId());
-        UpdateBillOrderStatusMessage updateBillOrderStatusMessage = new UpdateBillOrderStatusMessage(bill.getId(), ConstantUtil.COMPLETE);
+        UpdateBillOrderStatusMessage updateBillOrderStatusMessage = new UpdateBillOrderStatusMessage(bill.getId(), ConstantUtil.PENDING);
         template.convertAndSend("/topic/bill/status/update", updateBillOrderStatusMessage);
         return bill;
     }
