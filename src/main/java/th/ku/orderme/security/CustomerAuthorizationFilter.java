@@ -1,5 +1,6 @@
 package th.ku.orderme.security;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 
+@Slf4j
 public class CustomerAuthorizationFilter extends OncePerRequestFilter {
     private TokenService tokenService;
 
@@ -62,13 +64,18 @@ public class CustomerAuthorizationFilter extends OncePerRequestFilter {
             }
 
             else {
-                if(authentication != null) {
-                    String authorities = authentication.getAuthorities().toString();
-                    if(authorities.contains("ROLE_USER")) {
-                        Cookie c  = CookieUtil.createCookie("uid", null, 0, false, true, "/", request.getServerName());
-                        response.addCookie(c);
-                        request.getSession().invalidate();
+                try {
+                    if(authentication != null) {
+                        String authorities = authentication.getAuthorities().toString();
+                        if(authorities.contains("ROLE_USER")) {
+                            Cookie c  = CookieUtil.createCookie("uid", null, 0, false, true, "/", request.getServerName());
+                            response.addCookie(c);
+                            request.getSession().invalidate();
+                        }
                     }
+                }
+                catch (IllegalStateException e) {
+                    log.error(e.getMessage());
                 }
             }
             filterChain.doFilter(request, response);

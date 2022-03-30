@@ -44,6 +44,7 @@ public class OrderService {
 
             if(!validateAndUpdateItemQuantity(cartDTO.getOrderRequests())) throw new IllegalArgumentException("Something wrong! Cannot order");
 
+            List<UpdateOrderDTO> updateOrderDTOList = new ArrayList<>();
             StringBuilder stringBuilder = new StringBuilder();
             LocalDateTime timestamp = LocalDateTime.now();
             stringBuilder.append("Bill ID: "+bill.getId()+"\n");
@@ -89,11 +90,12 @@ public class OrderService {
                 if(order.getComment() != null) stringBuilder.append("   "+order.getComment()+"\n");
                 total += amount;
 
-                template.convertAndSend("/topic/order/update", getUpdateOrderDTO(order.getId()));
+                updateOrderDTOList.add(getUpdateOrderDTO(order.getId()));
             }
             stringBuilder.append("--------------------\n");
             stringBuilder.append("Total: "+total);
 
+            template.convertAndSend("/topic/order/new", updateOrderDTOList);
             sendUpdateBillOrderStatusMessage(bill.getId());
             return stringBuilder.toString();
         } catch (IllegalArgumentException e) {
