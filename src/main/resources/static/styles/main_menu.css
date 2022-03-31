@@ -128,3 +128,7 @@ footer, footer .btn{
     display: flex;
     justify-content: center;
 }
+
+.pic-out{
+    mix-blend-mode: overlay;
+}

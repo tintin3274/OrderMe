@@ -13,12 +13,17 @@
 </head>
 <body>
 <section layout:fragment="content" class="m-3">
-    <div>
-        <h2>Dine In Table</h2>
-        <button class="btn btn-success m-2" data-bs-toggle="modal" data-bs-target="#createDineInModal">New Table</button>
-        <div class="row align-items-center m-2" id="tableContainer">
-
+    <div >
+        <h2 class="mb-2 mx-2">Dine In Table</h2>
+        <div class="row m-2 mb-0">
+            <div class="card text-center col-sm-4" style="border-color: darkcyan">
+                <div class="card-body p-1">
+                        <i class="bi bi-plus-lg" style="font-size: 2rem;color: darkcyan"></i>
+                    <a role="button" class="stretched-link" data-bs-toggle="modal" data-bs-target="#createDineInModal"></a>
+                </div>
+            </div>
         </div>
+        <div class="row m-2 mt-0" id="tableContainer"></div>
     </div>
     <hr>
     <div>
@@ -26,7 +31,6 @@
             <ul class="list-group list-group-horizontal-md" id="takeOutList">
             </ul>
     </div>
-
     <div class="modal fade" id="createDineInModal"  tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen-md-down">
             <div class="modal-content">
@@ -108,8 +112,9 @@
                     </div>
                 </div>
                 <div class="modal-footer name-price">
-                    <button class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#qrModal" id="qrBtn" disabled>QRCode</button>
-                    <button class="btn btn-primary" id="cashBtn" disabled>Pay Cash</button>
+                    <button class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#qrModal" id="qrBtn" disabled>QR Code</button>
+                    <button class="btn btn-primary" id="cashBtn" >Pay Cash</button>
+                    <button class="btn btn-secondary" id="closeBtn" >Close Bill</button>
                 </div>
             </div>
         </div>

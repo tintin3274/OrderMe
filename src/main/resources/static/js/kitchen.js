@@ -14,9 +14,11 @@ function connect() {
     var socket = new SockJS('/orderme-websocket');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
+        stompClient.subscribe('/topic/order/new', function (message) {
+            initializeOrder(JSON.parse(message.body))
+        });
         stompClient.subscribe('/topic/order/update', function (message) {
-            console.log(JSON.parse(message.body))
-            window.location.reload(true);
+            updateOrder(JSON.parse(message.body))
         });
     });
 }
@@ -122,7 +124,7 @@ function createOrderCard(cooking,serving,disable,time,title,colour){
 
 function createOrderItem(order, check){
     let template = `
-    <div style="display: flex">
+    <div style="display: flex" id=${order.id}>
       <input class="form-check-input" type="checkbox" ${check} onchange="updateStatus(${order.id},'SERVING')" value=${order.id}>
     <div class="mb-2 columnFlex">
        <h6 class="m-0">${order.quantity}x ${order.name}</h6>
@@ -152,3 +154,38 @@ $(document).on('click', '.modal-footer button', function () {
         updateStatus(input[i].value,'COOKING')
     }
 })
+
+function updateOrder(bill){
+    console.log(bill.order.status)
+    switch (bill.order.status) {
+        case "COOKING":{
+            $( '#'+bill.order.id + ' input').prop('disabled', false)
+            $( '#'+bill.order.id).closest('.modal-content').find(' button').prop('disabled', true)
+            updateColour("COOKING", bill.order.id)
+            break
+        }
+        case "SERVING":{
+            $('#' +bill.order.id).appendTo($('#' + bill.order.id).closest('.modal-content').find(' del'))
+            $( '#'+bill.order.id + ' input').prop('disabled', true)
+            if($('#' +bill.order.id).closest('.modal-body').children(' div').children().length == 0){
+                updateColour("SERVING",bill.order.id )
+            }
+            break
+        }
+        case "COMPLETE":{
+            let elm = $( '#'+bill.order.id)
+            let card = elm.closest('.rowModal')
+            let div = elm.closest('.modal-body').children(' div').children().length
+            let del = elm.closest(' del').children().length
+            $( '#'+bill.order.id).remove()
+            if((div == 1 && del == 0) || (div == 0 && del == 1)){
+               card.remove()
+            }
+            break
+        }
+    }
+}
+
+function updateColour(colour,id){
+    $('#'+id).closest('.modal-content').children('.modal-header').attr("class","modal-header name-price " + colour)
+}

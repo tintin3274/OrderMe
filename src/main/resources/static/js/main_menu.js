@@ -48,12 +48,16 @@ $( document ).ready(async function() {
         let category = allCategory[i]
         createNavCategory(category)
         item = await getItemEachCategoryData(category)
-        // console.log(category)
-        // console.log(item)
         await createCard(category)
     }
 });
 
+async function onclickModalLink(id){
+    await createModal(id)
+    $('#nameButton').text('Get in Cart')
+    document.getElementById('closeModal').onclick = null
+    document.getElementById('goCart').onclick = function () {addCart()}
+}
 
 function createCard( category ){
 
@@ -67,71 +71,70 @@ function createCard( category ){
     let cardContainer = document.createElement('div')
     cardContainer.className = 'row'
 
+    let templates = []
+    let outStock = []
+
     for(let i=0;i<item.length;i++){
         if(item[i].display == 1){
+
             let id = item[i].id
-
-            let card = document.createElement('div');
-            card.className = 'col-md-6 card d-flex';
-
-            let detail = document.createElement('div');
-            detail.className ='row my-1'
-
-            let pictureFrame =document.createElement('div');
-            pictureFrame.className = 'columnImage col-auto'
-
-            var picture = document.createElement('img');
-            picture.className = 'picture';
-            picture.id = 'img'+ id
-            if (item[i].image != null){
-                // console.log(item[i].image)
-                picture.src = '/images/'+item[i].image
-                picture.setAttribute('onerror',"this.src=\'/images/default.png\'")
+            let image = item[i].image
+            if(image == null){
+                image = 'default.png'
             }
-            else {picture.src = '/images/default.png'}
-
-            let cardBody = document.createElement('div');
-            cardBody.className = 'col-7 card-body'
-
-            let title = document.createElement('h5');
-            title.innerText = item[i].name;
-            title.className = 'card-title menu-name';
-
-            let cardText = document.createElement('p');
-            cardText.className = 'card-text'
-
-            let text = document.createElement('small');
-            text.className = 'text-muted hide-text'
-            text.innerText = item[i].description
-
-            let prices = document.createElement('h6');
-            prices.className = 'price'
-            prices.innerText = '฿ '+item[i].price
-
-            let link = document.createElement('a');
-            link.className = 'stretched-link'
-            link.setAttribute('data-bs-toggle','modal')
-            link.setAttribute('data-bs-target',"#staticBackdrop")
-            link.id = id
-            link.onclick = async function(){
-                await createModal(id)
-                $('#nameButton').text('Get in Cart')
-                document.getElementById('closeModal').onclick = null
-                document.getElementById('goCart').onclick = function () {addCart()}
+            let template
+            let des
+            if(item[i].description == null){
+                des = ""
+            }
+            else{
+                des = item[i].description
             }
 
-            pictureFrame.appendChild(picture)
-            cardBody.appendChild(title)
-            cardText.appendChild(text)
-            cardBody.appendChild(cardText)
-            cardBody.appendChild(link)
-            cardBody.appendChild(prices)
-            detail.appendChild(pictureFrame)
-            detail.appendChild(cardBody)
-            card.appendChild(detail)
-            cardContainer.appendChild(card)
+            if(item[i].checkQuantity && item[i].quantity == 0){
+                template = `
+                <div class="col-md-6 card d-flex text-muted">
+                    <div class="row my-1">
+                        <div class="columnImage col-auto" >
+                            <div style="background-color: rgb(186,186,186);">
+                            <img src="/images/${image}" class="picture pic-out" id="img${id}"
+                             onerror="this.onerror=null;this.src='/images/default.png';">
+                             </div>
+                        </div>
+                        <div class="col-7 card-body">
+                            <h5 class="card-title menu-name">${item[i].name}</h5>
+                            <p class="card-text" ><small class="text-muted hide-text">${des}</small></p>
+                            <h6 class="price">฿ ${item[i].price}</h6>
+                        </div>
+                    </div>
+                </div>
+            `
+                outStock.push(template)
+            }
+            else {
+                template = `
+                <div class="col-md-6 card d-flex">
+                    <div class="row my-1">
+                        <div class="columnImage col-auto" >
+                            <img src="/images/${image}" class="picture" id="img${id}"
+                             onerror="this.onerror=null;this.src='/images/default.png';">
+                        </div>
+                        <div class="col-7 card-body">
+                            <h5 class="card-title menu-name">${item[i].name}</h5>
+                            <p class="card-text" ><small class="text-muted hide-text">${des}</small></p>
+                            <a class="stretched-link" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                            id=${id} onclick="onclickModalLink(${id})"></a>
+                            <h6 class="price">฿ ${item[i].price}</h6>
+                        </div>
+                    </div>
+                </div>
+            `
+                templates.push(template)
+            }
         }
     }
+    templates = templates.concat(outStock)
+    cardContainer.innerHTML = templates.join('')
     cardScroll.appendChild(cardContainer)
     $('#menu').append(categoryName)
     $('#menu').append(cardScroll)
@@ -394,8 +397,6 @@ function addCart(){
     console.log(cartText)
 }
 
-
-
 $(document).on('click', '.number-spinner button', function () {
     var btn = $(this),
         oldValue = btn.closest('.number-spinner').find('input').val().trim(),
@@ -416,80 +417,39 @@ $(document).on('click', '.number-spinner button', function () {
     calculatePrice()
 });
 
-
 function createCartItem(){
     let total = 0
 
     $('#cartModalBody').empty()
 
     if(cartText.length > 0){
-        $('#cartBtn').prop('disabled',false)
+        $('#cartModal .modal-footer  button').prop('disabled',false)
     }
     else {
-        $('#cartBtn').prop('disabled',true)
+        $('#cartModal .modal-footer  button').prop('disabled',true)
         $('footer').hide()
     }
 
     for(let i=0;i<cartText.length;i++) {
         let index = i
-
-        let container = document.createElement('div')
-        container.className = 'my-2'
-
-        let title = document.createElement('div')
-        title.className = 'name-price'
-        title.setAttribute('data-bs-toggle','modal')
-        title.setAttribute('data-bs-target',"#staticBackdrop")
-        title.onclick = async function(){await editItem(index)}
-
-        let itemName = document.createElement('h6')
-        itemName.className = 'menu-name'
-
-        let price = document.createElement('h6')
-
-        let option = document.createElement('small')
-        option.className = 'text-muted'
-
-        let comment = document.createElement('small')
-        comment.className = 'text-muted'
-
-        let linkOpContainer = document.createElement('div')
-        linkOpContainer.className = 'name-price'
-
-        let linkDelete = document.createElement('button')
-        linkDelete.className = 'btn btn-delete-cart'
-        linkDelete.setAttribute('type', 'button')
-        linkDelete.onclick = function (){deleteItem(index)}
-
-        // let editLink = document.createElement('a')
-        // editLink.className = 'stretched-link'
-
-
-        let iconTrash = document.createElement('i')
-        iconTrash.className = 'bi bi-trash-fill'
-
-        let opCommentContainer = document.createElement('div')
-        opCommentContainer.className = 'columnFlex'
-
-        itemName.innerText = orderRequests[i].quantity+'x '+cartText[i].name
-        comment.innerText = orderRequests[i].comment
-        price.innerText = '฿ '+cartText[i].price
-        option.innerText = cartText[i].opText.join(', ')
-
         total += Number(cartText[i].price)
+        let template = `
+        <div class="my-2">
+             <div class="name-price" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="editItem(index)">
+                  <h6 class="menu-name">${orderRequests[i].quantity}x ${cartText[i].name}</h6>
+                  <h6>฿ ${cartText[i].price}</h6>
+             </div>
 
-
-        linkDelete.appendChild(iconTrash)
-        title.appendChild(itemName)
-        title.appendChild(price)
-        container.appendChild(title)
-        opCommentContainer.appendChild(option)
-        opCommentContainer.appendChild(comment)
-        linkOpContainer.appendChild(opCommentContainer)
-        linkOpContainer.appendChild(linkDelete)
-        container.appendChild(linkOpContainer)
-
-        $('#cartModalBody').append(container)
+             <div class="name-price">
+                  <div class="columnFlex">
+                  <small class="text-muted">${cartText[i].opText.join(', ')}</small>
+                  <small class="text-muted">${orderRequests[i].comment}</small>
+                  </div>
+                  <button class="btn btn-delete-cart" type="button" onclick="deleteItem()"><i class="bi bi-trash-fill"></i></button>
+            </div>
+        </div>
+        `
+        $('#cartModalBody').append(template)
     }
     $('#cartBtnText').text('฿ '+total)
 }
@@ -557,26 +517,6 @@ function order(){
 
 async function createBillItem(){
     $('#BillModalBody').empty()
-
-    // let json = {
-    //     "billId": 19,
-    //     "person": 2,
-    //     "type": "DINE-IN",
-    //     "timestamp": "2022-03-17T22:57:31",
-    //     "orders": [
-    //         {
-    //             "id": 62,
-    //             "name": "ชานม",
-    //             "option": "หวาน 100%, ไข่มุกน้ำผึ้ง, ครัมเบิ้ลวานิลลา",
-    //             "quantity": 1,
-    //             "price": 75.0,
-    //             "amount": 75.0,
-    //             "comment": "venom",
-    //             "status": "ORDER"
-    //         }
-    //     ],
-    //     "subTotal": 75.0
-    // }
 
     let json = await getBillData()
 

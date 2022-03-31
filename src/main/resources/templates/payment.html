@@ -4,24 +4,23 @@
       layout:decorate="~{fragments/header.html}">
 
 <head>
-
+    <title>Payment</title>
 </head>
 
 <body class="bg">
 <section layout:fragment="content" >
-<div class="container bg-body px-4" id="layout">
-    <div class="py-2" style="display: flex;flex-direction: column;align-items: center">
-        <div class="my-1">
-            <h5>Choose Payment Method</h5>
-        </div>
-        <div class="my-1">
-            <a type="button" class="btn btn-primary" href="/payment/qrcode">QR Code</a>
-        </div>
-        <div class="my-1">
-            <a  type="button" class="btn btn-primary" href="/payment/deeplink">SCB EasySandbox</a>
-        </div>
-        <div class="my-1">
-            <button  type="button" class="btn btn-primary">Cash</button>
+<div class="container bg-body px-4" id="layout" style="height: 100vh">
+    <div style="align-items: center;display: flex;height: 70vh;justify-content: center">
+        <div class="py-2" style="display: flex;flex-direction: column;align-items: center">
+            <div class="my-1">
+                <h3>Choose Payment Method</h3>
+            </div>
+            <div class="my-1">
+                <a type="button" class="btn btn-primary btn-lg" href="/payment/qrcode">QR Code</a>
+            </div>
+            <div class="my-1">
+                <a  type="button" class="btn btn-primary btn-lg" href="/payment/deeplink">SCB EasySandbox</a>
+            </div>
         </div>
     </div>
 </div>

@@ -89,7 +89,7 @@ function connect() {
             addTakeOut(JSON.parse(message.body))
         });
         stompClient.subscribe('/topic/take-out/complete', async function (message) {
-            await updateTakeOut()
+            await updateTakeOut(JSON.parse(message.body))
         });
         stompClient.subscribe('/topic/bill/status/update', function (message) {
             updateColour(JSON.parse(message.body))
@@ -106,7 +106,7 @@ function disconnect() {
 
 function createTableCard(numberTable,billTable){
     let template = `
-                <div class="card text-center col-4" id=${billTable}>
+                <div class="card text-center col-sm-4" id=${billTable}>
                 <div class="card-body">
                     <h5 class="card-title">${numberTable}</h5>
                     <a class="stretched-link" data-bs-toggle="modal" data-bs-target="#DineInModal" 
@@ -157,15 +157,18 @@ async function createModalTable(billId){
     }
     $('#qrBtn').prop('disabled',true)
     if(orders.length > 0){
-        $('#cashBtn').prop('disabled',false)
+        $('#cashBtn').show()
+        $('#closeBtn').hide()
     }
     else {
-        $('#cashBtn').prop('disabled',true)
+        $('#cashBtn').hide()
+        $('#closeBtn').show()
     }
     document.getElementById('qrBtn').onclick = function (){loadQr(bill.billId)}
     document.getElementById('completeBtn').onclick = function (){updateComplete(bill.billId)}
     document.getElementById('deleteBtn').onclick = function (){updateCancel(bill.billId)}
     document.getElementById('cashBtn').onclick = function (){payCash(bill.billId)}
+    document.getElementById('closeBtn').onclick = function (){closeTable(bill.billId)}
     $('#total').text(bill.subTotal)
 }
 
@@ -216,10 +219,10 @@ function loadQr(billId){
 
 function orderDetailFormatter(index, row,$element){
     let text = []
-    text.push('<p>' + 'option: ' + row.option + '</p>')
-    text.push('<p>' + 'comment: '  + row.comment + '</p>')
-    text.push('<p>' + 'quantity: '  + row.quantity + '</p>')
-    text.push('<p>' + 'amount: '  + row.amount + '</p>')
+    text.push('<p>' + 'Option: ' + row.option + '</p>')
+    text.push('<p>' + 'Comment: '  + row.comment + '</p>')
+    text.push('<p>' + 'Quantity: '  + row.quantity + '</p>')
+    text.push('<p>' + 'Amount: '  + row.amount + '</p>')
     return text.join('')
 }
 
@@ -261,20 +264,28 @@ async function updateStatus(status,billId){
             type: 'POST',
             success: function () {
                 console.log('success')
-                $('#tableFood').bootstrapTable('updateRow', {
-                    index: selected[i].index,
-                    row: {
-                        name: selected[i].name,
-                        id: selected[i].id,
-                        option: selected[i].option,
-                        comment: selected[i].comment,
-                        quantity: selected[i].quantity,
-                        amount: selected[i].amount,
-                        status: status,
+                if(status == "CANCEL"){
+                    $('#tableFood').bootstrapTable('remove', {
+                        field: 'id',
+                        values: [selected[i].id]
+                    })
+                }
+                else {
+                    $('#tableFood').bootstrapTable('updateRow', {
                         index: selected[i].index,
-                        state: false
-                    }
-                })
+                        row: {
+                            name: selected[i].name,
+                            id: selected[i].id,
+                            option: selected[i].option,
+                            comment: selected[i].comment,
+                            quantity: selected[i].quantity,
+                            amount: selected[i].amount,
+                            status: status,
+                            index: selected[i].index,
+                            state: false
+                        }
+                    })
+                }
             }
         });
     }
@@ -305,7 +316,6 @@ async function initializeTakeOut(){
     for(let i=0;i<bill.length;i++){
        addTakeOut(bill[i])
     }
-
 }
 
 async function openModalDineIn(billId,table){
@@ -326,10 +336,9 @@ async function openModalTakeOut(billId){
     $('#deleteBtn').hide()
 }
 
-async function updateTakeOut(){
-    $('#takeOutList').empty()
-    await initializeTakeOut()
-    await initializeColour()
+async function updateTakeOut(billId){
+     $('#DineInModal').modal('hide')
+    $('#' + billId).remove()
 }
 
 function updateColour(bill){
@@ -339,7 +348,7 @@ function updateColour(bill){
          document.getElementById(bill.billId).className = "list-group-item " + bill.orderStatus
      }
      else {
-         document.getElementById(bill.billId).className = "card text-center col-4 " + bill.orderStatus
+         document.getElementById(bill.billId).className = "card text-center col-sm-4 " + bill.orderStatus
      }
 }
 
@@ -363,5 +372,15 @@ function addTakeOut(bill){
 
 function newColour(bill){
     document.getElementById(bill.billId).classList.add(bill.orderStatus)
+}
+
+function closeTable(id){
+    $.ajax({
+        url: '/api/table/close?id=' + id,
+        type: 'POST',
+        success: function () {
+            console.log('success')
+        }
+    });
 }
 
