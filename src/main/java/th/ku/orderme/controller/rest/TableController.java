@@ -58,6 +58,14 @@ public class TableController {
         return null;
     }
 
+    @PostMapping("/close")
+    public void closeTableDineIn(@RequestParam int id) {
+        Table table = tableService.findById(id);
+        if(table == null || table.getBill() == null) return;
+        billService.cancelBill(table.getBill().getId());
+        tableService.clearTableOfBill(table.getBill().getId());
+    }
+
     @GetMapping("/create/{id}")
     public Table createTable(@PathVariable int id) {
         return tableService.createTable(id);
