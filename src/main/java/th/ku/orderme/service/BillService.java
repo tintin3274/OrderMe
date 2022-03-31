@@ -11,6 +11,7 @@ import th.ku.orderme.model.Order;
 import th.ku.orderme.repository.BillRepository;
 import th.ku.orderme.util.ConstantUtil;
 
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -22,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class BillService {
     private static final ScheduledExecutorService ses = Executors.newScheduledThreadPool(2, new DaemonThreadFactory());
+    private static final DecimalFormat df = new DecimalFormat("0.00");
     private final BillRepository billRepository;
     private final TokenService tokenService;
     private final OrderService orderService;
@@ -80,7 +82,7 @@ public class BillService {
         billDTO.setType(bill.getType());
         billDTO.setTimestamp(bill.getTimestamp());
         billDTO.setOrders(orderDTOList);
-        billDTO.setSubTotal(subTotal);
+        billDTO.setSubTotal(Double.parseDouble(df.format(subTotal)));
         return billDTO;
     }
 

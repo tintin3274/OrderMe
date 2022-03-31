@@ -165,13 +165,13 @@ public class OrderService {
     }
 
     @Transactional
-    void cancel(int id) {
+    public boolean cancel(int id) {
         try {
             Order order = findById(id);
-            if(order == null) return;
+            if(order == null) return false;
             if(!order.getStatus().equalsIgnoreCase(ConstantUtil.COMPLETE)) {
                 order.setStatus(ConstantUtil.CANCEL);
-                orderRepository.save(order);
+                orderRepository.saveAndFlush(order);
 
                 Item item = order.getItem();
                 int quantity = order.getQuantity();
@@ -190,9 +190,11 @@ public class OrderService {
                     }
                 }
             }
+            return true;
         }
         catch (NullPointerException | ObjectOptimisticLockingFailureException e) {
             log.error(e.getMessage());
+            return false;
         }
     }
 
@@ -342,14 +344,14 @@ public class OrderService {
     }
 
     public UpdateOrderDTO changeToCancel(int id) {
-        Order order = findById(id);
-        if(order == null || !order.getStatus().equalsIgnoreCase(ConstantUtil.CANCEL)) return null;
-        cancel(id);
-        UpdateOrderDTO updateOrderDTO = getUpdateOrderDTO(id);
-        template.convertAndSend("/topic/order/update", updateOrderDTO);
-
-        checkAllOrderOfBillComplete(order.getBill().getId());
-        return getUpdateOrderDTO(id);
+        if(cancel(id)) {
+            UpdateOrderDTO updateOrderDTO = getUpdateOrderDTO(id);
+            template.convertAndSend("/topic/order/update", updateOrderDTO);
+            Order order = findById(id);
+            checkAllOrderOfBillComplete(order.getBill().getId());
+            return updateOrderDTO;
+        }
+        return null;
     }
 
     public List<UpdateOrderDTO> getDoingOrder() {
