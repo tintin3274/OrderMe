@@ -8,6 +8,7 @@ import th.ku.orderme.model.ItemOptional;
 import th.ku.orderme.model.Optional;
 import th.ku.orderme.repository.ItemOptionalRepository;
 import th.ku.orderme.repository.ItemRepository;
+import th.ku.orderme.repository.OptionalItemRepository;
 import th.ku.orderme.repository.OptionalRepository;
 import th.ku.orderme.util.ConstantUtil;
 
@@ -21,6 +22,7 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final ItemOptionalRepository itemOptionalRepository;
     private final OptionalRepository optionalRepository;
+    private final OptionalItemRepository optionalItemRepository;
 
     public Item findById(int id) {
         return itemRepository.findById(id).orElse(null);
@@ -72,7 +74,12 @@ public class ItemService {
         if(item == null) return null;
         item.setFlag(ConstantUtil.FLAG_DELETE);
         item = itemRepository.saveAndFlush(item);
-        itemOptionalRepository.deleteItemOptionalByItemOptionalId_ItemId(id);
+        if(item.getCategory().equalsIgnoreCase(ConstantUtil.OPTION)) {
+            optionalItemRepository.deleteOptionalItemByOptionalItemId_ItemId(id);
+        }
+        else {
+            itemOptionalRepository.deleteItemOptionalByItemOptionalId_ItemId(id);
+        }
         return item;
     }
 

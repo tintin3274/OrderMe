@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface OptionalItemRepository extends JpaRepository<OptionalItem, OptionalItem.OptionalItemId> {
     List<OptionalItem> deleteOptionalItemByOptionalItemId_OptionalId(int optionalId);
+    List<OptionalItem> deleteOptionalItemByOptionalItemId_ItemId(int itemId);
 }
