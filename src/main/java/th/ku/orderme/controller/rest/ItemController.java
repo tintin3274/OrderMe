@@ -14,9 +14,11 @@ import th.ku.orderme.model.Item;
 import th.ku.orderme.model.Optional;
 import th.ku.orderme.model.Views;
 import th.ku.orderme.service.ItemService;
-import th.ku.orderme.util.FileUploadUtil;
+import th.ku.orderme.util.FileUtil;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
@@ -24,6 +26,7 @@ import java.util.List;
 @RequestMapping("/api/item")
 @RequiredArgsConstructor
 public class ItemController {
+    private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
     private final ItemService itemService;
 
     @JsonView(Views.Detail.class)
@@ -87,11 +90,8 @@ public class ItemController {
             Item item = mapper.readValue(jsonString, Item.class);
 
             if(multipartFile != null) {
-                String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+                String fileName = uploadImage(multipartFile);
                 item.setImage(fileName);
-
-                String uploadDir = "images";
-                FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
             }
 
             item = itemService.addItem(item, addItemDTOObj.getOptionGroupId());
@@ -124,11 +124,12 @@ public class ItemController {
             if(item == null) return null;
 
             if(multipartFile != null) {
-                String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-                item.setImage(fileName);
+                String oldFileName = item.getImage();
+                String fileName = uploadImage(multipartFile);
 
                 String uploadDir = "images";
-                FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+                FileUtil.deleteFile(uploadDir, oldFileName);
+                item.setImage(fileName);
             }
 
             item = itemService.updateItem(item);
@@ -148,5 +149,17 @@ public class ItemController {
     @DeleteMapping("/{id}")
     public Item deleteItem(@PathVariable int id) {
         return itemService.deleteItem(id);
+    }
+
+    private String uploadImage(MultipartFile multipartFile) throws IOException {
+        LocalDateTime localDateTime = LocalDateTime.now();
+        String dt = localDateTime.format(dtf);
+
+        String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+        fileName = dt+fileName.substring(fileName.lastIndexOf('.'));
+
+        String uploadDir = "images";
+        FileUtil.saveFile(uploadDir, fileName, multipartFile);
+        return fileName;
     }
 }
