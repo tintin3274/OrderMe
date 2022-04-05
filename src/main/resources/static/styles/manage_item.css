@@ -15,7 +15,7 @@ button.btn-bar.active{
     color: black; !important;
 }
 
-img{
+.img-table{
     height: 125px;
     width: 125px;
     object-fit: cover;
@@ -30,10 +30,8 @@ img{
     justify-content: center;
 }
 
-.img-fluid{
-    height: 200px;
-    width: 200px;
+.bootstrap-table .fixed-table-container.fixed-height:not(.has-footer){
+    height: 300px !important;
+    padding-bottom: 50.5px !important;
 }
-
-
 

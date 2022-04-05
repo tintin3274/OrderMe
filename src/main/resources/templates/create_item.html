@@ -13,7 +13,7 @@
     <form class="row g-3" action="/admin/manage-item" onsubmit="create()">
 <!--        name & des-->
         <div class="col-md-12">
-            <h5 for="inputName" class="form-label">Name</h5>
+            <h5 for="inputName" class="form-label">Name<small style="color: crimson">*</small></h5>
             <input type="text" class="form-control" id="inputName" required>
         </div>
         <div class="col-12">
@@ -22,10 +22,10 @@
         </div>
 <!-----Category------->
         <div class="col-6">
-            <h5 for="inputCategory" class="form-label">Category</h5>
+            <h5 for="inputCategory" class="form-label">Category<small style="color: crimson">*</small></h5>
             <div class="input-group">
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#category">Select...</button>
-                <input type="text" class="form-control" id="inputCategory" placeholder="please select category" required onkeypress="return false;">
+                <input type="text" class="form-control" id="inputCategory" placeholder="Please select category" required onkeypress="return false;">
             </div>
         </div>
         <!-----CategoryModal------->
@@ -78,8 +78,8 @@
                 <div class="row g-0">
                     <div class="col-md-7">
                         <div class="card-body">
-                            <h5 class="card-title">Picture</h5>
-                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                            <h5 class="card-title">Image</h5>
+                            <p class="card-text">Recommend: Square Size Image <br>(Maximum size: 2 Mb)</p>
                             <div class="input-group">
                                 <input class="form-control" type="file" id="formFile" onchange="preview()" name="image" accept="image/png, image/jpeg">
                                 <button class="btn btn-outline-secondary" type="button" onclick="clearImage()">Clear</button>
@@ -93,9 +93,10 @@
             </div>
         </div>
 
+        <h5>Option Group</h5>
         <!-- Button trigger modal -->
-        <div class="col-12">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#backdropOption" onclick="checkTable()">Option Group</button>
+        <div class="col-12 mt-0">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#backdropOption" onclick="checkTable()">All Option Group</button>
 
             <!-- Modal -->
             <div class="modal fade" id="backdropOption" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -113,6 +114,7 @@
                                    data-pagination-detail-h-align="right"
                                    data-search="true"
                                    data-click-to-select="true"
+                                   data-maintain-meta-data="true"
                                    data-url="/api/optional/all"
                             >
                                 <thead >
@@ -137,7 +139,7 @@
 
 <!--table            -->
         </div>
-        <table id="selectedOption"
+        <table id="selectedOptionGroup"
                data-toggle="table"
                data-use-row-attr-func="true"
                data-reorderable-rows="true"
@@ -155,7 +157,7 @@
 
 <!-- QTY       -->
         <div class="col-md-12">
-            <label class="form-label">Quantity</label>
+            <h5 class="form-label">Quantity</h5>
             <div class="row g-2 align-items-center col-auto">
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="flexRadioDefault" id="radioNo" onclick="quantitySelect()" checked>
@@ -176,7 +178,7 @@
         </div>
 <!-- price       -->
         <div class="col-md-5">
-            <label for="inputPrice" class="form-label">Price</label>
+            <h5 for="inputPrice" class="form-label">Price<small style="color: crimson">*</small></h5>
             <input type="number" class="form-control" id="inputPrice" min="0" step="0.01" required>
         </div>
         <div class="col-8"></div>

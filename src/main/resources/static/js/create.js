@@ -13,13 +13,13 @@ function quantitySelect() {
 }
 
 function checkTable(){
-    $('#optionGroup').bootstrapTable('uncheckAll')
+    $('#option').bootstrapTable('uncheckAll')
     let selected = $('#selectedOption').bootstrapTable('getData')
     let id = []
     for (let i=0;i<selected.length;i++){
         id.push(selected[i].id)
     }
-    $('#optionGroup').bootstrapTable('checkBy', {field: 'id', values: id})
+    $('#option').bootstrapTable('checkBy', {field: 'id', values: id})
 }
 
 function preview() {

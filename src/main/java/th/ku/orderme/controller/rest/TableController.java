@@ -66,7 +66,7 @@ public class TableController {
         tableService.clearTableOfBill(table.getBill().getId());
     }
 
-    @GetMapping("/create/{id}")
+    @PostMapping("/create/{id}")
     public Table createTable(@PathVariable int id) {
         return tableService.createTable(id);
     }

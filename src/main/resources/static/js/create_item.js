@@ -34,7 +34,7 @@ function createNewCategory(){
 
 function selectedOptionGroup(){
     var selectRow=$('#optionGroup').bootstrapTable('getSelections');
-    var selectOptionTable=$('#selectedOption').bootstrapTable('getData');
+    var selectOptionTable=$('#selectedOptionGroup').bootstrapTable('getData');
 
     var selectId=[];
     var optionId=[];
@@ -49,8 +49,8 @@ function selectedOptionGroup(){
     var selectIdDiffOptionId=selectId.filter(x => !optionId.includes(x));
 
     for(let i=0;i<selectIdDiffOptionId.length;i++){
-        var rowId = $("#selectedOption >tbody >tr").length;
-        $('#selectedOption').bootstrapTable(
+        var rowId = $("#selectedOptionGroup >tbody >tr").length;
+        $('#selectedOptionGroup').bootstrapTable(
             'insertRow',{
                 index: rowId,
                 row: {
@@ -62,7 +62,7 @@ function selectedOptionGroup(){
 
     var optionIdDiffSelectId=optionId.filter(x => !selectId.includes(x));
 
-    $('#selectedOption').bootstrapTable(
+    $('#selectedOptionGroup').bootstrapTable(
         'remove', {
             field: 'id',
             values: optionIdDiffSelectId
@@ -97,7 +97,7 @@ function create() {
     }
 
     let group = []
-    var table = $('#selectedOption').bootstrapTable('getData')
+    var table = $('#selectedOptionGroup').bootstrapTable('getData')
     for(i=0;i<table.length;i++){
         group.push(table[i].id)
     }

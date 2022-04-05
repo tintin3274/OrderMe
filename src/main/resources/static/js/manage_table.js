@@ -168,7 +168,6 @@ async function createModalTable(billId){
     document.getElementById('completeBtn').onclick = function (){updateComplete(bill.billId)}
     document.getElementById('deleteBtn').onclick = function (){updateCancel(bill.billId)}
     document.getElementById('cashBtn').onclick = function (){payCash(bill.billId)}
-    document.getElementById('closeBtn').onclick = function (){closeTable(bill.billId)}
     $('#total').text(bill.subTotal)
 }
 
@@ -204,6 +203,7 @@ function openTable(){
 }
 
 function loadQr(billId){
+     $('#qrModal  h3').text('Table '+ allTable[index.indexOf(billId)].id +' Bill#' + billId)
     $('#qrPic').empty()
     if(allTable[index.indexOf(billId)].token != null){
         var qrcode = new QRCode(document.getElementById("qrPic"), {
@@ -323,6 +323,7 @@ async function openModalDineIn(billId,table){
      await createModalTable(billId)
     $('#qrBtn').prop('disabled',false)
     $('#DineInModal h3').text('Table '+table+' Bill#' + billId)
+    document.getElementById('closeBtn').onclick = function (){closeTable(table)}
     if(allTable[index.indexOf(billId)].paid){
         $('.modal-footer').hide()
         $('#DineInModal h3').text('Table '+table+' Bill#' + billId + ' [PAID]')
@@ -382,5 +383,6 @@ function closeTable(id){
             console.log('success')
         }
     });
+    $('#DineInModal').modal('hide')
 }
 

@@ -21,7 +21,7 @@ $(document).on('click', '.number-spinner button', function () {
 function insertOptionTable(){
     let i
     let selected = $('#selectedOption').bootstrapTable('getData')
-    let selectCheckbox =  $('#optionGroup').bootstrapTable('getSelections');
+    let selectCheckbox =  $('#option').bootstrapTable('getSelections');
 
     let selectedId = []
     let selectCheckboxId = []
@@ -84,7 +84,7 @@ function createOption(){
     let quantity
     if($('#radioYes').is(":checked")){
         checkQuantity = 1
-        quantity = $('#qtyNum')
+        quantity = $('#qtyNum').val()
     }
     else {
         checkQuantity = 0

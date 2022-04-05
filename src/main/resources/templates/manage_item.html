@@ -6,8 +6,8 @@
     <title>Manage Item</title>
     <script src="/js/manage_item.js" type = "text/javascript"></script>
     <script src="/js/create_option_group.js" type = "text/javascript"></script>
+    <script src="/js/create_item.js" type = "text/javascript"></script>
     <link rel="stylesheet" href="/styles/manage_item.css">
-
 </head>
 <body >
 <section layout:fragment="content">
@@ -19,7 +19,7 @@
             <button class="nav-link" id="group-tab" data-bs-toggle="tab"  href="#group" type="button" role="tab" aria-controls="group" aria-selected="true">Option Group</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="option-tab" data-bs-toggle="tab"  href="#option" type="button" role="tab" aria-controls="option" aria-selected="false">Option</button>
+            <button class="nav-link" id="option-tab" data-bs-toggle="tab"  href="#options" type="button" role="tab" aria-controls="options" aria-selected="false">Option</button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="table-tab" data-bs-toggle="tab"  href="#table" type="button" role="tab" aria-controls="option" aria-selected="false">Table</button>
@@ -86,7 +86,7 @@
             </div>
         </div>
 
-        <div class="tab-pane fade" id="option" role="tabpanel" aria-labelledby="option-tab">
+        <div class="tab-pane fade" id="options" role="tabpanel" aria-labelledby="option-tab">
             <div id="pageOption">
                 <div class="toolbar" id="toolbarOption">
                     <a class="m-md-2 btn-bar btn btn-secondary" href="/admin/create-option" type="button">Create</a>
@@ -112,24 +112,32 @@
                 </table>
             </div>
         </div>
-
+        <!-- Tab Table-->
         <div class="tab-pane fade" id="table" role="tabpanel" aria-labelledby="option-tab">
             <div>
                 <div class="toolbar" id="toolbarTable">
-                    <a class="m-md-2 btn-bar btn btn-secondary"  type="button">Create</a>
+                    <div class="name-price">
+                        <a class="m-md-2 btn-bar btn btn-secondary" type="button" data-bs-toggle="modal" data-bs-target="#modalTableCreate">Create</a>
+                        <div>
+                            <button class="btn btn-danger" value="0" id="enableDeleteTable">Delete</button>
+                            <button class="btn btn-danger d-none" id="deleteTable" onclick="deleteTable()">Delete</button>
+                        </div>
+                    </div>
                 </div>
                 <table id="tableNumber"
                        data-toggle="table"
                        data-pagination="true"
                        data-pagination-h-align="left"
                        data-pagination-detail-h-align="right"
-                       data-search="true"
                        data-toolbar="#toolbarTable"
+                       data-toolbar-align="false"
+                       data-click-to-select="true"
                        data-url="/api/table/all"
                 >
                     <thead >
                     <tr>
-                        <th data-field="id" data-sortable="true">ID</th>
+                        <th data-field="state" data-checkbox="true"></th>
+                        <th data-field="id" data-sortable="true" data-align="center">ID</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -142,7 +150,7 @@
 
     <!-- Modal Food-->
     <div class="modal fade" id="modalFood" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-fullscreen-md-down">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Information</h5>
@@ -150,7 +158,7 @@
                 </div>
                 <div class="modal-body">
                     <div id="modalImg" class="pb-3">
-                        <img class="img-fluid"  src="/images/bubae.png" style="height: 200px" id="imgModal">
+                        <img class="img-fluid"  src="/images/bubae.png" id="imgModal">
                     </div>
                     <div class="row">
                         <div class="col-3">
@@ -217,25 +225,28 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button class="btn btn-primary" type="button">Edit</button>
+                <div class="modal-footer name-price">
+                    <button type="button" class="btn btn-danger" onclick="$('#alertDeleteModal').modal('show')">Delete</button>
+                    <div>
+                        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalFoodOptionEdit">Edit Option</button>
+                        <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#modalFoodDetailEdit">Edit Detail</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     <!-- Modal OptionGroup -->
     <div class="modal fade" id="modalOptionGroup" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-fullscreen-md-down">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Infomation</h5>
+                    <h5 class="modal-title">Information</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-3">
-                            <h6 >Name:</h6>
+                            <h6 >Group Name:</h6>
                         </div>
                         <div class="col-9">
                             <h6 id="nameOptionGroup">Milk shake</h6>
@@ -279,15 +290,17 @@
                     </div>
 
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button class="btn btn-primary" type="button">Edit</button>
+                <div class="modal-footer name-price">
+                    <button class="btn btn-danger" type="button" onclick="$('#alertDeleteModal').modal('show')">Delete</button>
+                    <div>
+                        <button class="btn btn-primary" type="button"  data-bs-toggle="modal" data-bs-target="#modalOptionGroupEdit">Edit</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     <div class="modal fade" id="modalOption" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-fullscreen-md-down">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Information #<span id="idOption"></span></h5>
@@ -319,23 +332,165 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <div class="modal-footer name-price">
+                    <button class="btn btn-danger" onclick="$('#alertDeleteModal').modal('show')">Delete</button>
                     <button class="btn btn-primary" type="button" onclick="editOptionPage()" data-bs-toggle="modal" data-bs-target="#modalOptionEdit">Edit</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!--Edit Food Option Modal -->
+    <div class="modal fade" id="modalFoodOptionEdit" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-fullscreen-md-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Option</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-2">
+                        <div class="toolbar" id="toolbarEditFood">
+                            <h5>All Option Group</h5>
+                        </div>
+                        <table id="optionGroup"
+                               data-toggle="table"
+                               data-height="400"
+                               data-pagination-h-align="left"
+                               data-pagination-detail-h-align="right"
+                               data-search="true"
+                               data-click-to-select="true"
+                               data-unique-id="id"
+                               data-toolbar="#toolbarEditFood"
+                               data-url="/api/optional/all"
+                        >
+                            <thead >
+                            <tr>
+                                <th data-field="state" data-checkbox="true"></th>
+                                <th data-field="id" >ID</th>
+                                <th data-field="name" >Group Name</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <h5>Selected Option Group</h5>
+                    <table id="selectedOptionGroup"
+                           data-toggle="table"
+                           data-use-row-attr-func="true"
+                           data-reorderable-rows="true"
+                    >
+                        <thead >
+                        <tr>
+                            <th data-field="id"  data-width="20" data-width-unit="%">ID</th>
+                            <th data-field="name" >Group Name</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer name-price">
+                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalFood">Back</button>
+                    <button type="button" class="btn btn-primary" onclick="$('#alertModal').modal('show')">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Edit Food Detail Modal -->
+    <div class="modal fade" id="modalFoodDetailEdit" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-fullscreen-md-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Detail</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body mx-2">
+                    <form class="row g-3" onsubmit="$('#alertModal').modal('show');return false;">
+                    <div class="col-md-12">
+                        <h5 for="inputName" class="form-label">Name<small style="color: crimson">*</small></h5>
+                        <input type="text" class="form-control" id="inputName" required>
+                    </div>
+                    <div class="col-12">
+                        <h5 for="inputDescription" class="form-label">Description</h5>
+                        <textarea type="text" class="form-control" id="inputDescription" rows="4"></textarea>
+                    </div>
+                    <div class="col-12">
+                        <h5 for="inputCategory" class="form-label">Category</h5>
+                        <div class="input-group">
+                            <button type="button" class="btn btn-primary" onclick="$('#category').modal('show')">Select...</button>
+                            <input type="text" class="form-control" id="inputCategory" placeholder="Please select category" required onkeypress="return false;">
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="card mb-3" style="max-width: 100%;">
+                            <div class="card-body pb-0">
+                                <h5 class="card-title">Image</h5>
+                                <p class="card-text">Recommend: Square Size Image <br>(Maximum size: 2 Mb)</p>
+                                <div class="input-group">
+                                    <input class="form-control" type="file" id="formFile" onchange="preview()" name="image" accept="image/png, image/jpeg">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="clearImage()">Clear</button>
+                                </div>
+                            </div>
+                            <div class="center">
+                                <img class="rounded m-2" id="picPreview" src="/images/default.png">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- QTY       -->
+                    <div class="col-md-12">
+                        <h5 class="form-label">Quantity</h5>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="radioQty" id="radioNoManage" onclick="quantitySelectManage()" checked>
+                            <label class="form-check-label" for="radioNoManage">No</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+
+                                <input class="form-check-input" type="radio" name="radioQty" id="radioYesManage" onclick="quantitySelectManage()">
+                                <label class="form-check-label d-flex" for="radioYesManage">Yes<input type="number"  class="form-control mx-2" id="qtyNumManage" min="0" disabled ></label>
+
+
+                        </div>
+                    </div>
+                    <!-- price       -->
+                    <div class="col-md-5">
+                        <h5 for="inputPrice" class="form-label">Price<small style="color: crimson">*</small></h5>
+                        <input type="number" class="form-control" id="inputPrice" min="0" step="0.01" required>
+                    </div>
+                        <!-- Display-->
+                        <div class="col-md-12">
+                            <h5 class="form-label">Display</h5>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="display" id="displayNo" checked>
+                                <label class="form-check-label" for="displayNo">No</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="display" id="displayYes">
+                                <label class="form-check-label" for="displayYes">Yes</label>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer name-price pb-0">
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalFood">Back</button>
+                            <button type="submit" class="btn btn-primary" >Update</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="modalOptionEdit" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-fullscreen-md-down">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Edit</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body pb-0">
-                    <form class="row g-3" onsubmit="editItems()">
+                    <form class="row g-3" onsubmit="$('#alertModal').modal('show');return false">
                     <div class="row py-2">
                         <div class="col-3">
                             <h6 >Name:</h6>
@@ -376,9 +531,9 @@
                             <input type="number" class="form-control" id="priceOptionEdit" min="0" step="0.01" required>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalOption">Close</button>
-                        <button class="btn btn-primary" type="submit" data-bs-dismiss="modal">Update</button>
+                    <div class="modal-footer name-price">
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalOption">Back</button>
+                        <button class="btn btn-primary" type="submit">Update</button>
                     </div>
                 </form>
                 </div>
@@ -387,7 +542,229 @@
         </div>
     </div>
 
+    <div class="modal fade" id="modalOptionGroupEdit" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen-md-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body pb-0">
+                    <form class="row g-3"  onsubmit="$('#alertModal').modal('show');return false">
+                        <!--        name & des-->
+                        <div class="col-md-12">
+                            <h5 for="inputName" class="form-label">Group Name</h5>
+                            <input type="text" class="form-control" id="inputNameGroup" required>
+                        </div>
+                        <div class="col-12">
+                            <h5 for="inputDescription" class="form-label">Description</h5>
+                            <textarea type="text" class="form-control" id="inputDescriptionGroup" rows="4"></textarea>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#optionModal" onclick="checkTable()">Select Option</button>
+                        </div>
+
+                        <!--table-->
+                        <table id="selectedOption"
+                               data-toggle="table"
+                               data-use-row-attr-func="true"
+                               data-reorderable-rows="true"
+                        >
+                            <thead >
+                            <tr>
+                                <th data-field="id" >ID</th>
+                                <th data-field="name" >Option</th>
+                                <th data-field="price" >Price</th>
+                                <th data-field="remove" data-formatter="operateFormatter" data-events="operateEvents">Remove</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                        <!--table            -->
+                        <div class="mt-2 col-6 " >
+                            <h5>MIN</h5>
+                            <div class="input-group number-spinner">
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-primary" data-dir="dwn" value="0">-</button>
+                </span>
+                                <input type="number" class="text-center form-control" value= 0  style="width: 50%" id="minOp">
+                                <span class="input-group-btn">
+                    <button type="button" class="btn btn-primary" data-dir="up" value="0">+</button>
+                </span>
+                            </div>
+                        </div>
+                        <div class="mt-2 col-6 " >
+                            <h5>MAX</h5>
+                            <div class="input-group number-spinner col-6">
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-primary" data-dir="dwn" value="0">-</button>
+                </span>
+                                <input type="number" class="text-center form-control" value= 0 style="width: 50%" id="maxOp">
+                                <span class="input-group-btn">
+                    <button type="button" class="btn btn-primary" data-dir="up" value="0">+</button>
+                </span>
+                            </div>
+                        </div>
+                        <!--footer-->
+                        <footer  style="display: flex; justify-content: space-between">
+                            <div class="mb-3">
+                                <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalOptionGroup" type="button">Back</button>
+                            </div>
+                            <div class="mb-3">
+                                <button class="btn btn-primary" type="submit">Update</button>
+                            </div>
+                        </footer>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalTableCreate" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen-md-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create Table</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body pb-0">
+                    <form class="row g-3" onsubmit="createTable();return false">
+                        <div class="form-group">
+                            <label for="inputTable">Table number</label>
+                            <input type="number" class="form-control" id="inputTable" min="1" step="1" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" type="submit" >Create</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Option Modal -->
+    <div class="modal fade" id="optionModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Select Option</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table id="option"
+                           data-toggle="table"
+                           data-pagination="true"
+                           data-pagination-h-align="left"
+                           data-pagination-detail-h-align="right"
+                           data-search="true"
+                           data-click-to-select="true"
+                           data-maintain-meta-data="true"
+                           data-url="/api/item/category/OPTION"
+                    >
+                        <thead >
+                        <tr>
+                            <th data-field="state" data-checkbox="true"></th>
+                            <th data-field="id" >ID</th>
+                            <th data-field="name" >Option</th>
+                            <th data-field="price" >Price</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalOptionGroupEdit"
+                    >Close</button>
+                    <button type="button" class="btn btn-primary" onclick="insertOptionTable()"
+                            data-bs-toggle="modal" data-bs-target="#modalOptionGroupEdit"
+                    >Selected</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Alert Modal -->
+    <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-fullscreen-md-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Alert</h5>
+                </div>
+                <div class="modal-body">
+                    <h5>Are you sure to update?</h5>
+                </div>
+                <div class="modal-footer name-price">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Alert Delete Modal -->
+    <div class="modal fade" id="alertDeleteModal" tabindex="-1" role="dialog" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-fullscreen-md-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Alert</h5>
+                </div>
+                <div class="modal-body">
+                    <h5>Are you sure to delete?</h5>
+                </div>
+                <div class="modal-footer name-price">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-----CategoryModal------->
+    <div class="modal fade" id="category"  tabindex="-1" role="dialog" aria-labelledby="categoryLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="categoryLabel">Select Option Group</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table id="categoryTable"
+                           data-toggle="table"
+                           data-show-header="false"
+                           class="table-borderless"
+                    >
+                        <thead>
+                        <tr>
+                            <th data-field="name" data-align="center"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer" type="button">
+                    <div class="col-md-12">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                                    + new category
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <h5 for="inputNewCategory" class="form-label">Category Name</h5>
+                                    <input type="text" class="form-control" id="inputNewCategory" >
+                                    <button class="btn btn-primary" type="button" onclick="createNewCategory()">Create</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </section>
 </body>
-
 </html>

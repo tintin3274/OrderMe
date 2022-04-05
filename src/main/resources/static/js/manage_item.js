@@ -82,24 +82,25 @@ $(async function() {
     }
     $('#tableOptionGroup').bootstrapTable('hideColumn', ['id'])
 
+    $('#tableNumber').bootstrapTable('hideColumn','state')
 })
 
 function imageFormatter(value) {
     if (value != null){
-        return '<img src="/images/'+value+'" onerror="this.onerror=null;this.src=\'/images/default.png\';" />';
+        return '<img class="img-table" src="/images/'+value+'" onerror="this.onerror=null;this.src=\'/images/default.png\';" />';
     }
-    return '<img src="/images/default.png"/>';
+    return '<img class="img-table" src="/images/default.png"/>';
 }
 
 $(document).ready(() => {
     $('#tableFood').on('click-row.bs.table',function (row, $element, field) {
         showItemModal($element)
     })
-    $('#tableOptionGroup').on('click-row.bs.table',function (row, $element, field) {
-        showOptionGroupModal($element)
+    $('#tableOptionGroup').on('click-row.bs.table',async function (row, $element, field) {
+        await showOptionGroupModal($element)
     })
     $('#tableOption').on('click-row.bs.table',function (row, $element, field) {
-        showOptionGroup($element)
+        showOptionModal($element)
     })
 
     let url = location.href.replace(/\/$/, "");
@@ -125,6 +126,12 @@ $(document).ready(() => {
         newUrl += "/";
         history.replaceState(null, null, newUrl);
     });
+
+    $('#optionGroup').on('check.bs.table uncheck.bs.table ' +
+        'check-all.bs.table uncheck-all.bs.table',
+        function () {
+            selectedOptionGroup()
+        })
 });
 
 // view info with detail table
@@ -167,6 +174,13 @@ function showItemModal(item){
     }
 
     $('#modalFood').modal('show')
+    $('#tableInfo').on('load-success.bs.table', function () {
+        let food = $('#tableInfo').bootstrapTable('getData')
+        $('#modalFood .btn-outline-primary').attr('onClick','setFoodOptionEdit('+ JSON.stringify(food) +','+ item.id +')')
+    })
+    $('#modalFood .btn-primary').attr('onClick','setFoodDetailEdit('+ JSON.stringify(item) +')')
+    $('#alertDeleteModal .btn-danger').attr('onClick', 'deleteItem('+ item.id +')');
+
 }
 
 async function showOptionGroupModal(item){
@@ -186,9 +200,12 @@ async function showOptionGroupModal(item){
     }
 
     $('#modalOptionGroup').modal('show')
+    $('#modalOptionGroup .btn-primary').attr('onClick',
+        'setEditOptionGroupModal('+ JSON.stringify(optional) +')');
+    $('#alertDeleteModal .btn-danger').attr('onClick','deleteOptionGroup('+ item.id +')')
 }
 
-function showOptionGroup(item){
+function showOptionModal(item){
     $('#idOption').text(item.idItem)
     $('#nameOption').text(item.name)
     $('#priceOption').text(option[item.id].price)
@@ -198,8 +215,9 @@ function showOptionGroup(item){
     else {
         $('#quanOption').text("No")
     }
-
     $('#modalOption').modal('show')
+    $('#alertModal .btn-primary').attr('onClick', 'editOption()');
+    $('#alertDeleteModal .btn-danger').attr('onClick', 'deleteItem('+ item.idItem +')');
 }
 
 function editOptionPage(){
@@ -210,16 +228,17 @@ function editOptionPage(){
     }
     else {
         document.getElementById('radioYes').setAttribute('checked',true)
-        $('#qtyNum').text($('#quanOption').text())
+        $('#qtyNum').prop('disabled', false);
+        $('#qtyNum').val($('#quanOption').text())
     }
 }
 
-function editItems(){
+function editOption(){
     let check = false
     let qty = 0
     if($('#radioYes').is(":checked")){
         check = true
-        qty = ('#qtyNum').text()
+        qty = $('#qtyNum').val()
     }
     let json = {
         "id": $('#idOption').text(),
@@ -236,8 +255,283 @@ function editItems(){
         contentType: "application/json" ,
         type: 'POST',
         success: function () {
-            console.log('success')
+            location.reload();
         }
     });
 
+}
+
+$(document).on('click', '#enableDeleteTable', function () {
+    let btn = $(this)
+    btn.toggleClass("btn-danger btn-secondary")
+    $('#deleteTable').toggleClass("d-none")
+    if(btn.val() == 0){
+        btn.text('Cancel')
+        btn.val(1)
+        $('#tableNumber').bootstrapTable('showColumn','state')
+    }
+    else {
+        btn.text('Delete')
+        btn.val(0)
+        $('#tableNumber').bootstrapTable('hideColumn','state')
+    }
+})
+
+function createTable(){
+    let table = $('#tableNumber').bootstrapTable('getData')
+    let value = $('#inputTable').val()
+    for(let i=0;i<table.length;i++){
+        if(table[i].id == value){
+            alert('number were used')
+            return
+        }
+    }
+    console.log(value)
+    $.ajax({
+        url: '/api/table/create/' + value,
+        type: 'POST',
+        success: function () {
+            console.log('success')
+            $('#tableNumber').bootstrapTable('refresh')
+            $('#inputTable').val('')
+        }
+    });
+}
+
+function deleteTable(){
+    let tables = $('#tableNumber').bootstrapTable('getSelections')
+    for(let i=0;i<tables.length;i++){
+        console.log(tables[i].id)
+        $.ajax({
+            url: '/api/table/delete/' + tables[i].id,
+            type: 'DELETE',
+            success: function () {
+                console.log('success')
+                $('#tableNumber').bootstrapTable('refresh')
+            }
+        });
+    }
+}
+
+function deleteItem(id){
+    console.log(id)
+    $.ajax({
+        url: '/api/item/' + id,
+        type: 'DELETE',
+        success: function () {
+            location.reload();
+        }
+    });
+}
+
+function editOptionGroup(id){
+    let selects = $('#selectedOption').bootstrapTable('getData'), i, selected = []
+    for(i=0;i<selects.length;i++){
+        selected.push(selects[i].id)
+    }
+    let optionGroup = {
+        "id": id,
+        "name": $('#inputNameGroup').val(),
+        "description":$('#inputDescriptionGroup').val(),
+        "min": $('#minOp').val(),
+        "max":$('#maxOp').val()
+    }
+
+    let json = {
+        "optionGroup": optionGroup,
+        "optionId": selected
+    }
+    console.log(JSON.stringify(json))
+    $.ajax({
+        url: '/api/optional/update',
+        data: JSON.stringify(json) ,
+        contentType: "application/json" ,
+        type: 'POST',
+        success: function () {
+            location.reload();
+        }
+    });
+}
+
+function deleteOptionGroup(id){
+    console.log(id)
+    $.ajax({
+        url: '/api/optional/' + id,
+        type: 'DELETE',
+        success: function () {
+            location.reload();
+        }
+    });
+}
+
+function setEditOptionGroupModal(option){
+    $('#inputNameGroup').val(option.name)
+    $('#inputDescriptionGroup').val(option.description)
+    $('#minOp').val(option.min)
+    $('#maxOp').val(option.max)
+
+    let items = option.itemList
+    $('#selectedOption').bootstrapTable('removeAll')
+    for(i=0;i<items.length;i++){
+        let rowId = $("#selectedOption >tbody >tr").length;
+        $('#selectedOption').bootstrapTable(
+            'insertRow',{
+                index: rowId,
+                row: {
+                    id: items[i].id,
+                    name: items[i].name,
+                    price:items[i].price,
+                    remove: ''
+                }
+            });
+    }
+    editMax($("#selectedOption >tbody >tr").length)
+    $('#alertModal .btn-primary').attr('onClick', 'editOptionGroup('+ option.id +')');
+}
+
+function setFoodOptionEdit(food,idFood){
+    $('#optionGroup').bootstrapTable('uncheckAll');
+    $('#selectedOptionGroup').bootstrapTable('removeAll')
+    for(let i=0;i<food.length;i++){
+        let rowId = $("#selectedOptionGroup >tbody >tr").length;
+        $('#selectedOptionGroup').bootstrapTable(
+            'insertRow',{
+                index: rowId,
+                row: {
+                    id: food[i].id,
+                    name: food[i].name,
+                }
+            });
+        $('#optionGroup').bootstrapTable('updateCellByUniqueId', {
+            id: food[i].id,
+            field: 'state',
+            value: true
+        })
+    }
+    $('#alertModal .btn-primary').attr('onClick', 'editFoodOption('+ idFood +')');
+}
+
+function editFoodOption(id){
+    let selected = $('#selectedOptionGroup').bootstrapTable('getData')
+    let idOptionGroup = []
+    for(let i=0;i< selected.length;i++){
+        idOptionGroup.push(selected[i].id)
+    }
+
+    $.ajax({
+        url: '/api/item/update-optional?id='+ id +'&optionGroupId=' + idOptionGroup.join(','),
+        type: 'POST',
+        success: function () {
+            // location.reload();
+            $('.modal').modal('hide')
+        }
+    });
+}
+
+function setFoodDetailEdit(food){
+    console.log(food)
+    $('#inputName').val(food.name)
+    $('#inputDescription').val(food.description)
+    $('#inputCategory').val(food.category)
+    if(food.image != null){
+        document.getElementById('picPreview').src = '/images/'+food.image
+        document.getElementById('picPreview').setAttribute('onerror',"this.src=\'/images/default.png\'")
+    }
+    else {
+        document.getElementById('formFile').files= null
+        document.getElementById('picPreview').src = '/images/default.png'
+    }
+    if(food.checkQuantity){
+        document.getElementById('radioYesManage').click()
+        $('#qtyNumManage').val(food.quantity)
+    }
+    else {
+        document.getElementById('radioNoManage').click()
+    }
+    if(food.display){
+        document.getElementById('displayYes').click()
+    }
+    $('#inputPrice').val(food.price)
+
+    $('#alertModal .btn-primary').attr('onClick', 'editFoodDetail('+ food.id + ','+ JSON.stringify(food.image) +')');
+}
+
+function editFoodDetail(id, originalImg){
+    let qty = 0
+    let checkQuantity = false
+    let display = false
+
+    if($('#displayYes').is(":checked")){
+        display = true
+    }
+    if($('#radioYesManage').is(":checked")){
+        checkQuantity = true
+        qty = $('#qtyNumManage').val()
+    }
+
+    let img = document.getElementById('formFile');
+    let imgList = img.files
+
+    let json =
+    {
+        "id": id,
+        "name": $('#inputName').val(),
+        "description": $('#inputDescription').val(),
+        "category": $('#inputCategory').val(),
+        "image": originalImg,
+        "price": $('#inputPrice').val(),
+        "quantity": qty ,
+        "checkQuantity": checkQuantity,
+        "display": display
+    }
+
+    console.log(json)
+
+    $.ajax({
+        url: '/api/item/update',
+        data: JSON.stringify(json) ,
+        contentType: "application/json" ,
+        type: 'POST',
+        success: function () {
+            if(imgList != null && imgList.length > 0){
+                editFoodImage(imgList[0], id)
+            }
+            else {
+                location.reload();
+            }
+        }
+    });
+
+
+}
+
+function editFoodImage(img,id){
+    let formData = new FormData()
+    formData.append('id', id)
+    formData.append('image',img)
+    $.ajax({
+        url: '/api/item/update-image',
+        data: formData ,
+        processData: false ,
+        contentType: false ,
+        type: 'POST',
+        success: function () {
+            location.reload();
+        }
+    });
+}
+
+function quantitySelectManage(){
+    let yes = $('#radioYesManage')
+    let no = $('#radioNoManage')
+    let qty = $('#qtyNumManage')
+    if(yes.is(":checked")){
+        qty.prop('disabled', false);
+        qty.prop('required',true);
+    }
+    else {
+        qty.val('');
+        qty.prop('disabled', true);
+        qty.prop('required',false);
+    }
 }
