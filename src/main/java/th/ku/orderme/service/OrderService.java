@@ -47,8 +47,8 @@ public class OrderService {
             List<UpdateOrderDTO> updateOrderDTOList = new ArrayList<>();
             StringBuilder stringBuilder = new StringBuilder();
             LocalDateTime timestamp = LocalDateTime.now();
-            stringBuilder.append("Bill ID: "+bill.getId()+"\n");
-            stringBuilder.append("Timestamp: "+timestamp+"\n");
+            stringBuilder.append("Bill ID: ").append(bill.getId()).append("\n");
+            stringBuilder.append("Timestamp: ").append(timestamp).append("\n");
             stringBuilder.append("--------------------\n");
             double total = 0;
             String status = ConstantUtil.ORDER;
@@ -85,18 +85,19 @@ public class OrderService {
                     selectItemRepository.saveAllAndFlush(selectItemList);
                 }
 
-                stringBuilder.append(order.getQuantity()+"x "+order.getItem().getName()+" "+amount+"\n");
-                if(!optionalItemName.isEmpty()) stringBuilder.append("   "+String.join(", ", optionalItemName)+"\n");
+                stringBuilder.append(order.getQuantity()).append("x ").append(order.getItem().getName()).append(" ").append(amount).append("\n");
+                if(!optionalItemName.isEmpty()) stringBuilder.append("   ").append(String.join(", ", optionalItemName)).append("\n");
                 if(order.getComment() != null) stringBuilder.append("   "+order.getComment()+"\n");
                 total += amount;
 
                 updateOrderDTOList.add(getUpdateOrderDTO(order.getId()));
             }
             stringBuilder.append("--------------------\n");
-            stringBuilder.append("Total: "+total);
+            stringBuilder.append("Total: ").append(total);
 
             template.convertAndSend("/topic/order/new", updateOrderDTOList);
             sendUpdateBillOrderStatusMessage(bill.getId());
+            log.info(stringBuilder.toString());
             return stringBuilder.toString();
         } catch (IllegalArgumentException e) {
             log.error(e.getMessage());
@@ -149,7 +150,10 @@ public class OrderService {
             for(int itemId : itemIdAndQuantity.keySet()) {
                 Item itemCheck = itemMap.get(itemId);
                 if(itemCheck.isCheckQuantity()) {
-                    if(itemIdAndQuantity.get(itemId) > itemCheck.getQuantity()) return false;
+                    if(itemIdAndQuantity.get(itemId) > itemCheck.getQuantity()) {
+                        log.warn("Not enough Item: ID "+itemCheck.getId()+" - "+itemCheck.getName()+" | ("+itemCheck.getQuantity()+"/"+itemIdAndQuantity.get(itemId)+")");
+                        return false;
+                    }
                     itemCheck.setQuantity(itemCheck.getQuantity() - itemIdAndQuantity.get(itemId));
                     itemListUpdate.add(itemCheck);
                 }

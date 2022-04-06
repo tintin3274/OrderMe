@@ -3,6 +3,7 @@ package th.ku.orderme.controller.rest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
+import th.ku.orderme.dto.ReceiptDTO;
 import th.ku.orderme.model.Bill;
 import th.ku.orderme.model.Payment;
 import th.ku.orderme.repository.PaymentRepository;
@@ -65,5 +66,10 @@ public class PaymentController {
             redirectView.setUrl(scbSimulatorPaymentService.generateDeeplink(payment));
         }
         return redirectView;
+    }
+
+    @GetMapping("/receipt/{ref1}")
+    public ReceiptDTO getReceiptDTO(@PathVariable String ref1) {
+        return paymentService.getReceiptDTO(ref1);
     }
 }

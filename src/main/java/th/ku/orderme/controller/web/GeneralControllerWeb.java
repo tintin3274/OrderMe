@@ -35,10 +35,21 @@ public class GeneralControllerWeb {
         return "index";
     }
 
-    @ResponseBody
     @GetMapping("/receipt/{ref1}")
-    public ReceiptDTO getReceiptDTO(@PathVariable String ref1) {
-        return paymentService.getReceiptDTO(ref1);
+    public String getPageReceipt(@PathVariable String ref1, Model model) {
+        ReceiptDTO receiptDTO = paymentService.getReceiptDTO(ref1);
+        if(receiptDTO != null) {
+            model.addAttribute("billId", receiptDTO.getBill().getBillId());
+            model.addAttribute("person", receiptDTO.getBill().getPerson());
+            model.addAttribute("type", receiptDTO.getBill().getType());
+            model.addAttribute("orders", receiptDTO.getBill().getOrders());
+            model.addAttribute("ref1", receiptDTO.getPayment().getRef1());
+            model.addAttribute("channel", receiptDTO.getPayment().getChannel());
+            model.addAttribute("updatedTimestamp", receiptDTO.getPayment().getUpdatedTimestamp());
+            model.addAttribute("total", receiptDTO.getPayment().getTotal());
+            return "receipt";
+        }
+        return "redirect:/";
     }
 
     @GetMapping("/main-menu")
