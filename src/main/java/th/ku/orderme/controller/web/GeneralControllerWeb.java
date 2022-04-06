@@ -17,6 +17,7 @@ import th.ku.orderme.util.CookieUtil;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Controller
@@ -39,13 +40,16 @@ public class GeneralControllerWeb {
     public String getPageReceipt(@PathVariable String ref1, Model model) {
         ReceiptDTO receiptDTO = paymentService.getReceiptDTO(ref1);
         if(receiptDTO != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm:ss");
+            String date = formatter.format(receiptDTO.getPayment().getUpdatedTimestamp());
+
             model.addAttribute("billId", receiptDTO.getBill().getBillId());
             model.addAttribute("person", receiptDTO.getBill().getPerson());
             model.addAttribute("type", receiptDTO.getBill().getType());
             model.addAttribute("orders", receiptDTO.getBill().getOrders());
             model.addAttribute("ref1", receiptDTO.getPayment().getRef1());
             model.addAttribute("channel", receiptDTO.getPayment().getChannel());
-            model.addAttribute("updatedTimestamp", receiptDTO.getPayment().getUpdatedTimestamp());
+            model.addAttribute("date", date);
             model.addAttribute("total", receiptDTO.getPayment().getTotal());
             return "receipt";
         }

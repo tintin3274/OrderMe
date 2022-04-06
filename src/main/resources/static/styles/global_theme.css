@@ -123,3 +123,9 @@ input::-webkit-inner-spin-button {
     display: flex;
     justify-content: center;
 }
+
+ hr{
+     background-color: #fff;
+     border-top: 2px dashed ;
+     opacity: .20;
+ }
