@@ -57,8 +57,14 @@ public class ItemService {
     public Item updateItem(Item item) {
         Item oldItem = itemRepository.findById(item.getId()).orElse(null);
         if(oldItem == null || oldItem.getFlag() != ConstantUtil.FLAG_NORMAL) return null;
-        item.setVersion(oldItem.getVersion());
-        return itemRepository.saveAndFlush(item);
+        oldItem.setName(item.getName());
+        oldItem.setDescription(item.getDescription());
+        oldItem.setCategory(item.getCategory());
+        oldItem.setPrice(item.getPrice());
+        oldItem.setQuantity(item.getQuantity());
+        oldItem.setCheckQuantity(item.isCheckQuantity());
+        oldItem.setDisplay(item.isDisplay());
+        return itemRepository.saveAndFlush(oldItem);
     }
 
     @Transactional
