@@ -95,7 +95,9 @@ public class OrderService {
             stringBuilder.append("--------------------\n");
             stringBuilder.append("Total: ").append(total);
 
-            template.convertAndSend("/topic/order/new", updateOrderDTOList);
+            if(bill.getType().equals(ConstantUtil.DINE_IN)) {
+                template.convertAndSend("/topic/order/new", updateOrderDTOList);
+            }
             sendUpdateBillOrderStatusMessage(bill.getId());
             log.info(stringBuilder.toString());
             return stringBuilder.toString();
@@ -307,7 +309,7 @@ public class OrderService {
         orderList = orderRepository.saveAllAndFlush(orderList);
 
         for(Order order : orderList) {
-            template.convertAndSend("/topic/order/update", getUpdateOrderDTO(order.getId()));
+            template.convertAndSend("/topic/order/new", getUpdateOrderDTO(order.getId()));
         }
     }
 
