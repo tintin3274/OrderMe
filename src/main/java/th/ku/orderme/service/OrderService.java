@@ -308,8 +308,12 @@ public class OrderService {
         }
         orderList = orderRepository.saveAllAndFlush(orderList);
 
+        List<UpdateOrderDTO> updateOrderDTOList = new ArrayList<>();
         for(Order order : orderList) {
-            template.convertAndSend("/topic/order/new", getUpdateOrderDTO(order.getId()));
+            updateOrderDTOList.add(getUpdateOrderDTO(order.getId()));
+        }
+        if(updateOrderDTOList.size() > 0) {
+            template.convertAndSend("/topic/order/new", updateOrderDTOList);
         }
     }
 
