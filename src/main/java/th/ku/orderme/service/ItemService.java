@@ -3,13 +3,11 @@ package th.ku.orderme.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import th.ku.orderme.model.IndexCategory;
 import th.ku.orderme.model.Item;
 import th.ku.orderme.model.ItemOptional;
 import th.ku.orderme.model.Optional;
-import th.ku.orderme.repository.ItemOptionalRepository;
-import th.ku.orderme.repository.ItemRepository;
-import th.ku.orderme.repository.OptionalItemRepository;
-import th.ku.orderme.repository.OptionalRepository;
+import th.ku.orderme.repository.*;
 import th.ku.orderme.util.ConstantUtil;
 
 import javax.transaction.Transactional;
@@ -23,6 +21,7 @@ public class ItemService {
     private final ItemOptionalRepository itemOptionalRepository;
     private final OptionalRepository optionalRepository;
     private final OptionalItemRepository optionalItemRepository;
+    private final IndexCategoryRepository indexCategoryRepository;
 
     public Item findById(int id) {
         return itemRepository.findById(id).orElse(null);
@@ -50,6 +49,8 @@ public class ItemService {
             itemOptionalList.add(itemOptional);
         }
         itemOptionalRepository.saveAllAndFlush(itemOptionalList);
+
+        addCategory(item.getCategory());
         return item;
     }
 
@@ -57,14 +58,25 @@ public class ItemService {
     public Item updateItem(Item item) {
         Item oldItem = itemRepository.findById(item.getId()).orElse(null);
         if(oldItem == null || oldItem.getFlag() != ConstantUtil.FLAG_NORMAL) return null;
+
+        boolean updateCategory = false;
+
+        if(!oldItem.getCategory().equalsIgnoreCase(item.getCategory())) {
+            oldItem.setCategory(item.getCategory());
+            addCategory(item.getCategory());
+            updateCategory = true;
+        }
+
         oldItem.setName(item.getName());
         oldItem.setDescription(item.getDescription());
-        oldItem.setCategory(item.getCategory());
         oldItem.setPrice(item.getPrice());
         oldItem.setQuantity(item.getQuantity());
         oldItem.setCheckQuantity(item.isCheckQuantity());
         oldItem.setDisplay(item.isDisplay());
-        return itemRepository.saveAndFlush(oldItem);
+        item = itemRepository.saveAndFlush(oldItem);
+
+        if(updateCategory) updateCategory();
+        return item;
     }
 
     @Transactional
@@ -151,5 +163,73 @@ public class ItemService {
 
     public List<Item> findItemByCategory(String category) {
         return itemRepository.findItemByCategoryEqualsAndFlagEquals(category, ConstantUtil.FLAG_NORMAL);
+    }
+
+    public List<String> getAllCategory() {
+        return indexCategoryRepository.getAllCategory();
+    }
+
+    public void addCategory(String category) {
+        if(!category.equalsIgnoreCase(ConstantUtil.OPTION)) {
+            if(!indexCategoryRepository.existsById(category)) {
+                IndexCategory indexCategory = new IndexCategory(category, 0);
+                indexCategoryRepository.saveAndFlush(indexCategory);
+            }
+        }
+    }
+
+    @Transactional
+    public boolean changeCategory(String oldCategory, String newCategory) {
+        if(!oldCategory.equalsIgnoreCase(ConstantUtil.OPTION) && !newCategory.equalsIgnoreCase(ConstantUtil.OPTION)) {
+            IndexCategory oldIndexCategory = indexCategoryRepository.findById(oldCategory).orElse(null);
+            if(oldIndexCategory != null) {
+                IndexCategory newIndexCategory = new IndexCategory(newCategory, oldIndexCategory.getNumber());
+                indexCategoryRepository.saveAndFlush(newIndexCategory);
+                indexCategoryRepository.delete(oldIndexCategory);
+
+                List<Item> itemList = itemRepository.findItemByCategoryEqualsAndFlagEquals(oldCategory, ConstantUtil.FLAG_NORMAL);
+                for(Item item : itemList) {
+                    item.setCategory(newCategory);
+                }
+                itemRepository.saveAllAndFlush(itemList);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void updateCategory() {
+        List<String> categoryList = itemRepository.findAllFoodCategory();
+        List<IndexCategory> indexCategoryList = indexCategoryRepository.findAllById(categoryList);
+        if(categoryList.size() > indexCategoryList.size()) {
+            List<String> allCategory = getAllCategory();
+            List<IndexCategory> newIndexCategoryList = new ArrayList<>();
+            for(String category : categoryList) {
+                if(!allCategory.contains(category)) {
+                    newIndexCategoryList.add(new IndexCategory(category, 0));
+                }
+            }
+            indexCategoryRepository.deleteAll();
+            indexCategoryRepository.saveAllAndFlush(indexCategoryList);
+            indexCategoryRepository.saveAllAndFlush(newIndexCategoryList);
+        }
+        else {
+            indexCategoryRepository.deleteAll();
+            indexCategoryRepository.saveAllAndFlush(indexCategoryList);
+        }
+    }
+
+    public void addCategorySortList(List<String> categoryList) {
+        List<IndexCategory> indexCategoryList = new ArrayList<>();
+        for(int i=0; i<categoryList.size(); i++) {
+            indexCategoryList.add(new IndexCategory(categoryList.get(i), i+1));
+        }
+        indexCategoryRepository.saveAllAndFlush(indexCategoryList);
+    }
+
+    public void deleteCategory(String category) {
+        if(indexCategoryRepository.existsById(category)) {
+            indexCategoryRepository.deleteById(category);
+        }
     }
 }

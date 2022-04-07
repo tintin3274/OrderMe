@@ -56,13 +56,23 @@ public class ItemController {
 
     @GetMapping("/list-category")
     public List<String> findAllFoodCategory() {
-        return itemService.findAllFoodCategory();
+        return itemService.getAllCategory();
     }
 
     @JsonView(Views.Overall.class)
     @GetMapping("/category/{category}")
     public List<Item> findItemByCategory(@PathVariable String category) {
         return itemService.findItemByCategory(category);
+    }
+
+    @PostMapping("/category/change")
+    public boolean changeCategory(@RequestParam String oldCategory, @RequestParam String newCategory) {
+        return itemService.changeCategory(oldCategory, newCategory);
+    }
+
+    @PostMapping("/category/sort")
+    public void addCategorySortList(@RequestParam List<String> categoryList) {
+        itemService.addCategorySortList(categoryList);
     }
 
     @PostMapping("/add")

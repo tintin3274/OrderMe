@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 07, 2022 at 01:03 PM
+-- Generation Time: Apr 07, 2022 at 08:36 PM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 8.1.1
 
@@ -33,6 +33,17 @@ CREATE TABLE `bill` (
   `type` varchar(100) NOT NULL,
   `status` varchar(50) NOT NULL DEFAULT 'OPEN',
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `index_category`
+--
+
+CREATE TABLE `index_category` (
+  `category` varchar(100) NOT NULL,
+  `number` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -176,6 +187,12 @@ CREATE TABLE `token` (
 --
 ALTER TABLE `bill`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `index_category`
+--
+ALTER TABLE `index_category`
+  ADD PRIMARY KEY (`category`);
 
 --
 -- Indexes for table `item`
