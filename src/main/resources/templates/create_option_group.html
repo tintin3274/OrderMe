@@ -37,7 +37,8 @@
                 <th data-field="id" >ID</th>
                 <th data-field="name" >Option</th>
                 <th data-field="price" >Price</th>
-                <th data-field="remove" data-formatter="operateFormatter" data-events="operateEvents">Remove</th>
+                <th data-field="remove" data-formatter="operateFormatter" data-events="operateEvents"
+                    data-align="center" data-width="15" data-width-unit="%">Remove</th>
             </tr>
             </thead>
             <tbody>
@@ -50,7 +51,7 @@
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-primary" data-dir="dwn" value="0">-</button>
                 </span>
-                <input type="number" class="text-center form-control" value= 0  style="width: 50%" id="minOp">
+                <input type="number" class="text-center form-control readOnly" value= 0  style="width: 50%" id="minOp" disabled>
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-primary" data-dir="up" value="0">+</button>
                 </span>
@@ -62,7 +63,7 @@
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-primary" data-dir="dwn" value="0">-</button>
                 </span>
-                <input type="number" class="text-center form-control" value= 0 style="width: 50%" id="maxOp">
+                <input type="number" class="text-center form-control readOnly" value= 0 style="width: 50%" id="maxOp" disabled>
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-primary" data-dir="up" value="0">+</button>
                 </span>
@@ -126,7 +127,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body pb-0">
-                <form class="row g-3" onsubmit="createOption()">
+                <form class="row g-3" onsubmit="createOption();return false">
                     <div class="col-md-12">
                         <h5 for="inputNameOption" class="form-label">Name</h5>
                         <input type="text" class="form-control" id="inputNameOption" required>
@@ -153,7 +154,7 @@
                     </div>
                     <div class="col-md-12">
                         <label for="inputPrice" class="form-label">Price</label>
-                        <input type="number" class="form-control" id="inputPrice" min="0" step="0.01" required>
+                        <input type="number" class="form-control" id="inputPrice" min="0" step="0.01" value="0" required>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

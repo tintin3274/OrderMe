@@ -16,6 +16,9 @@ $(document).on('click', '.number-spinner button', function () {
         }
     }
     btn.closest('.number-spinner').find('input').val(newVal);
+    if($('#minOp').val() > $('#maxOp').val()){
+        $('#minOp').val($('#maxOp').val())
+    }
 });
 
 function insertOptionTable(){
@@ -35,7 +38,7 @@ function insertOptionTable(){
 
     let checkboxDiffSelected = selectCheckboxId.filter(x => !selectedId.includes(x))
     for(i=0;i<checkboxDiffSelected.length;i++){
-        let rowId = $("#selectedOption >tbody >tr").length;
+        let rowId = $("#selectedOption").bootstrapTable('getData').length;
         $('#selectedOption').bootstrapTable(
             'insertRow',{
                 index: rowId,
@@ -49,7 +52,7 @@ function insertOptionTable(){
     }
 
     let selectedDiffCheckbox = selectedId.filter(x => !selectCheckboxId.includes(x))
-    console.log(selectedDiffCheckbox)
+    // console.log(selectedDiffCheckbox)
 
     $('#selectedOption').bootstrapTable(
         'remove', {
@@ -57,12 +60,7 @@ function insertOptionTable(){
             values: selectedDiffCheckbox
         })
 
-    editMax($("#selectedOption >tbody >tr").length)
-}
-
-function operateFormatter() {
-    // return '<a class="remove" title="Remove" role="button" class="btn-secondary"></a>'
-    return '<button type="button" class="btn btn-primary remove" >-</button>'
+    editMax($("#selectedOption").bootstrapTable('getData').length)
 }
 
 window.operateEvents = {
@@ -71,12 +69,19 @@ window.operateEvents = {
             field: 'id',
             values: [row.id]
         })
+        editMax($("#selectedOption").bootstrapTable('getData').length)
     }
 }
 
 function editMax(max){
     let button = $('.number-spinner button')
     button.attr('value',max)
+    if($('#maxOp').val() > max){
+        $('#maxOp').val(max)
+    }
+    if($('#minOp').val() > $('#maxOp').val()){
+        $('#minOp').val($('#maxOp').val())
+    }
 }
 
 function createOption(){
@@ -105,7 +110,24 @@ function createOption(){
         "item": item,
         "optionGroupId": null
     }
-    sendApiCreateItem(json)
+
+    $('#option').on('load-success.bs.table', function() {
+        let id = $('#option').bootstrapTable('getData').length
+        checkTable()
+        $('#option').bootstrapTable('check', id-1)
+        insertOptionTable()
+        $('.modal').modal('hide')
+    });
+
+    $.ajax({
+        url: '/api/item/add',
+        data: JSON.stringify(json) ,
+        contentType: "application/json" ,
+        type: 'POST',
+        success: function () {
+            $('#option').bootstrapTable('refresh')
+        }
+    })
 }
 
 function createOptionGroup(){
@@ -126,6 +148,7 @@ function createOptionGroup(){
         "optionGroup": optionGroup,
         "optionId": selectedId
     }
+
 
     $.ajax({
         url: '/api/optional/add',

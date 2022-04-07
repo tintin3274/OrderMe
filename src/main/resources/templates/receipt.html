@@ -4,12 +4,13 @@
       layout:decorate="~{fragments/header.html}">
 <head>
     <title th:text="'OrderME - ' + ${ref1}"></title>
+    <link rel="stylesheet" href="/styles/receipt.css">
 </head>
 <body>
 <section layout:fragment="content" class="center">
-    <div class="card" style="width: 60%">
+    <div class="card">
         <div class="card-body">
-            <h2 class="card-title" style="text-align: center">OrderME</h2>
+            <h2 class="card-title">OrderME</h2>
             <div>
                 <h6 th:text="'Date: ' + ${date}">Date: 8/01/2022 01:52</h6>
                 <div class="name-price">
@@ -32,7 +33,7 @@
             <hr>
             <div class="name-price">
                 <h6 class="menu-name">Total:</h6>
-                <h6 class="m-0" th:text="${total}">฿ 300</h6>
+                <h6 class="m-0" th:text="'฿ ' + ${total}">฿ 300</h6>
             </div>
             <hr>
             <div class="name-price">
@@ -44,8 +45,8 @@
                 <h6 class="m-0" th:text="${channel}">Credit Card</h6>
             </div>
         </div>
-        <h5 class="card-title" style="text-align: center">THANK YOU</h5>
-        <h5 class="card-title" style="text-align: center">HAVE A NICE DAY</h5>
+        <h5 class="card-title">THANK YOU</h5>
+        <h5 class="card-title">HAVE A NICE DAY</h5>
     </div>
 </section>
 

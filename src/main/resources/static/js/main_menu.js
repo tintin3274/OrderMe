@@ -278,6 +278,10 @@ function createOption(optionItem){
                 input.onchange = function (){radioCheck(group)}
             }
 
+            if(optionItem[i].itemList[j].checkQuantity && optionItem[i].itemList[j].quantity == 0){
+                input.setAttribute('disabled',true)
+            }
+
             form.appendChild(input)
             form.appendChild(label)
             eachOptionContainer.appendChild(form)
@@ -437,7 +441,7 @@ function createCartItem(){
         <div class="my-2">
              <div class="name-price" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="editItem(index)">
                   <h6 class="menu-name">${orderRequests[i].quantity}x ${cartText[i].name}</h6>
-                  <h6>฿ ${cartText[i].price}</h6>
+                  <h6 class="m-0">฿ ${cartText[i].price}</h6>
              </div>
 
              <div class="name-price">
@@ -534,7 +538,7 @@ async function createBillItem(){
   <div>
     <div class="name-price">
         <h6 class="menu-name"> ${order.quantity}x ${order.name}</h6>
-        <h6>฿ ${order.amount}</h6>
+        <h6 class="m-0">฿ ${order.amount}</h6>
     </div>
     <div class="name-price-status">
         <div class="columnFlex">

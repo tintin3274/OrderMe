@@ -27,6 +27,7 @@ public class FileUtil {
 
     public static void deleteFile(String dir, String fileName) throws IOException {
         try {
+            if(fileName == null) return;
             Path path = Paths.get(dir);
             Path filePath = path.resolve(fileName);
 

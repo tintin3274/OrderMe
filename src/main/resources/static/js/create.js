@@ -22,6 +22,20 @@ function checkTable(){
     $('#option').bootstrapTable('checkBy', {field: 'id', values: id})
 }
 
+function checkTableGroup(){
+    $('#optionGroup').bootstrapTable('uncheckAll')
+    let selected = $('#selectedOptionGroup').bootstrapTable('getData')
+    let id = []
+    for (let i=0;i<selected.length;i++){
+        id.push(selected[i].id)
+    }
+    $('#optionGroup').bootstrapTable('checkBy', {field: 'id', values: id})
+}
+
+function operateFormatter() {
+    return '<button type="button" class="btn remove" ><i class="bi bi-trash-fill"></button>'
+}
+
 function preview() {
     picPreview.src = URL.createObjectURL(event.target.files[0]);
 
@@ -37,7 +51,7 @@ function sendApiCreateItem(jsons){
         storePicture()
     }
 
-    alert(JSON.stringify(json))
+    // alert(JSON.stringify(json))
     formData.append('addItemDTO',JSON.stringify(json))
 
     $.ajax({

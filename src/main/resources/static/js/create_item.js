@@ -49,7 +49,7 @@ function selectedOptionGroup(){
     var selectIdDiffOptionId=selectId.filter(x => !optionId.includes(x));
 
     for(let i=0;i<selectIdDiffOptionId.length;i++){
-        var rowId = $("#selectedOptionGroup >tbody >tr").length;
+        var rowId = $("#selectedOptionGroup").bootstrapTable('getData').length;
         $('#selectedOptionGroup').bootstrapTable(
             'insertRow',{
                 index: rowId,
@@ -67,6 +67,15 @@ function selectedOptionGroup(){
             field: 'id',
             values: optionIdDiffSelectId
         })
+}
+
+window.operateEvents = {
+    'click .remove': function (e, value, row, index) {
+        $('#selectedOptionGroup').bootstrapTable('remove', {
+            field: 'id',
+            values: [row.id]
+        })
+    }
 }
 
 function create() {

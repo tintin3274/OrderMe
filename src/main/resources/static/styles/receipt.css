@@ -1,0 +1,19 @@
+hr{
+    background-color: #fff;
+    border-top: 2px dashed ;
+    opacity: .20;
+}
+
+ h2, h5{
+     text-align: center;
+ }
+
+ .card{
+     width: 60%;
+ }
+
+@media (max-width:850px){
+    .card{
+        width: 100%;
+    }
+}

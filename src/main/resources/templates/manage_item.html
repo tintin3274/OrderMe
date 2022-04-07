@@ -45,11 +45,12 @@
                 >
                     <thead >
                     <tr>
-                        <th data-field="image" data-formatter="imageFormatter" data-halign="left" data-align="center" data-width="200">Picture</th>
+                        <th data-field="image" data-formatter="imageFormatter" data-halign="left" data-align="center"
+                            data-width="200"  >Picture</th>
                         <th data-field="name" data-sortable="true" >Name</th>
-                        <th data-field="category" data-sortable="true" >Category</th>
-                        <th data-field="price" data-sortable="true" >Price</th>
-                        <th data-field="quantity" data-sortable="true" >Quantity</th>
+                        <th data-field="category" data-sortable="true" data-width="25" data-width-unit="%" >Category</th>
+                        <th data-field="price" data-sortable="true" data-width="10" data-width-unit="%">Price</th>
+                        <th data-field="quantity" data-sortable="true" data-width="10" data-width-unit="%">Quantity</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -73,11 +74,11 @@
                 >
                     <thead >
                     <tr>
-                        <th data-field="id" >ID</th>
+                        <th data-field="id" data-width="10" data-width-unit="%">ID</th>
                         <th data-field="name" data-sortable="true" >Name</th>
-                        <th data-field="using" data-sortable="true" >Using</th>
-                        <th data-field="min" data-sortable="true" >Min</th>
-                        <th data-field="max" data-sortable="true" >Max</th>
+                        <th data-field="using" data-sortable="true" data-width="10" data-width-unit="%">Using</th>
+                        <th data-field="min" data-sortable="true" data-width="10" data-width-unit="%">Min</th>
+                        <th data-field="max" data-sortable="true" data-width="10" data-width-unit="%">Max</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -102,9 +103,11 @@
                     <thead >
                     <tr>
                         <th data-field="id">ID</th>
-                        <th data-field="idItem">ID ITEM</th>
-                        <th data-field="name" data-sortable="true" >Name</th>
-                        <th data-field="using" data-sortable="true" >Using</th>
+                        <th data-field="idItem" data-width="10" data-width-unit="%">ID</th>
+                        <th data-field="name" data-sortable="true" data-width="60" data-width-unit="%">Name</th>
+                        <th data-field="price" data-sortable="true" data-width="10" data-width-unit="%">Price</th>
+                        <th data-field="quantity" data-sortable="true" data-width="10" data-width-unit="%">Quantity</th>
+                        <th data-field="using" data-sortable="true" data-width="10" data-width-unit="%">Using</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -386,6 +389,8 @@
                         <tr>
                             <th data-field="id"  data-width="20" data-width-unit="%">ID</th>
                             <th data-field="name" >Group Name</th>
+                            <th data-field="remove" data-formatter="operateFormatter" data-events="operateEventItem"
+                                data-align="center" data-width="10" data-width-unit="%">Remove</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -576,7 +581,8 @@
                                 <th data-field="id" >ID</th>
                                 <th data-field="name" >Option</th>
                                 <th data-field="price" >Price</th>
-                                <th data-field="remove" data-formatter="operateFormatter" data-events="operateEvents">Remove</th>
+                                <th data-field="remove" data-formatter="operateFormatter" data-events="operateEvent"
+                                    data-align="center" data-width="10" data-width-unit="%">Remove</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -589,7 +595,7 @@
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-primary" data-dir="dwn" value="0">-</button>
                 </span>
-                                <input type="number" class="text-center form-control" value= 0  style="width: 50%" id="minOp">
+                                <input type="number" class="text-center form-control readOnly" value= 0  style="width: 50%" id="minOp">
                                 <span class="input-group-btn">
                     <button type="button" class="btn btn-primary" data-dir="up" value="0">+</button>
                 </span>
@@ -601,7 +607,7 @@
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-primary" data-dir="dwn" value="0">-</button>
                 </span>
-                                <input type="number" class="text-center form-control" value= 0 style="width: 50%" id="maxOp">
+                                <input type="number" class="text-center form-control readOnly" value= 0 style="width: 50%" id="maxOp">
                                 <span class="input-group-btn">
                     <button type="button" class="btn btn-primary" data-dir="up" value="0">+</button>
                 </span>

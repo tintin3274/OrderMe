@@ -21,55 +21,11 @@
             <textarea type="text" class="form-control" id="inputDescription" rows="4"></textarea>
         </div>
 <!-----Category------->
-        <div class="col-6">
+        <div class="col-12">
             <h5 for="inputCategory" class="form-label">Category<small style="color: crimson">*</small></h5>
             <div class="input-group">
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#category">Select...</button>
                 <input type="text" class="form-control" id="inputCategory" placeholder="Please select category" required onkeypress="return false;">
-            </div>
-        </div>
-        <!-----CategoryModal------->
-        <div class="modal fade" id="category"  tabindex="-1" role="dialog" aria-labelledby="categoryLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="categoryLabel">Select Option Group</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <table id="categoryTable"
-                               data-toggle="table"
-                               data-show-header="false"
-                               class="table-borderless"
-                        >
-                            <thead>
-                            <tr>
-                                <th data-field="name" data-align="center"></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="modal-footer" type="button">
-                        <div class="col-md-12">
-                            <div class="accordion-item">
-                                <h2 class="accordion-header" id="headingOne">
-                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-                                        + new category
-                                    </button>
-                                </h2>
-                                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-                                    <div class="accordion-body">
-                                        <h5 for="inputNewCategory" class="form-label">Category Name</h5>
-                                        <input type="text" class="form-control" id="inputNewCategory" >
-                                        <button class="btn btn-primary" type="button" onclick="createNewCategory()">Create</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 <!--        picture-->
@@ -96,7 +52,7 @@
         <h5>Option Group</h5>
         <!-- Button trigger modal -->
         <div class="col-12 mt-0">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#backdropOption" onclick="checkTable()">All Option Group</button>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#backdropOption" onclick="checkTableGroup()">All Option Group</button>
 
             <!-- Modal -->
             <div class="modal fade" id="backdropOption" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -148,6 +104,8 @@
             <tr>
                 <th data-field="id" >ID</th>
                 <th data-field="name" >Group Name</th>
+                <th data-field="remove" data-formatter="operateFormatter" data-events="operateEvents"
+                    data-align="center" data-width="15" data-width-unit="%">Remove</th>
             </tr>
             </thead>
             <tbody>
@@ -193,6 +151,52 @@
             </div>
         </footer>
     </form>
+        <!-----CategoryModal------->
+        <div class="modal fade" id="category"  tabindex="-1" role="dialog" aria-labelledby="categoryLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-fullscreen-md-down" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="categoryLabel">Select Option Group</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <table id="categoryTable"
+                               data-toggle="table"
+                               data-show-header="false"
+                               class="table-borderless"
+                        >
+                            <thead>
+                            <tr>
+                                <th data-field="name" data-align="center"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer" type="button" style="display: block">
+                        <div class="col-md-12">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingOne">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                                        + New Category
+                                    </button>
+                                </h2>
+                                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                    <div class="accordion-body">
+                                        <h5 for="inputNewCategory" class="form-label">Category Name</h5>
+                                        <input type="text" class="form-control" id="inputNewCategory" >
+                                        <div class="mt-1" style="display: flex;justify-content: flex-end">
+                                            <button class="btn btn-primary" type="button" onclick="createNewCategory()">Create</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </section>

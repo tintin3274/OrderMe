@@ -30,6 +30,7 @@ h3{
 .menu-name{
     font-weight: 600;
     margin: 0;
+    max-width: 75%;
 }
 
 .name-price{
@@ -124,8 +125,17 @@ input::-webkit-inner-spin-button {
     justify-content: center;
 }
 
- hr{
-     background-color: #fff;
-     border-top: 2px dashed ;
-     opacity: .20;
- }
+.bi-trash-fill{
+    color: crimson;
+}
+
+.btn-delete-cart{
+    z-index: 2;
+    position: relative;
+    padding: 0;
+    margin-left: 10px;
+}
+
+.readOnly:disabled{
+    background-color: white;
+}

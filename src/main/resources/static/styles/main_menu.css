@@ -88,17 +88,6 @@ html {
     bottom: 0;
 }
 
-.bi-trash-fill{
-    color: crimson;
-}
-
-.btn-delete-cart{
-    z-index: 2;
-    position: relative;
-    padding: 0;
-    margin-left: 10px;
-}
-
 footer, footer .btn{
     position: fixed;
     bottom: 0;

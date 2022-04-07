@@ -57,11 +57,13 @@ $(async function() {
                 id : i,
                 idItem: option[i].id,
                 name: option[i].name,
+                price: option[i].price,
+                quantity: option[i].quantity,
                 using :optionUsing[option[i].id]
             }
         })
     }
-    $('#tableOption').bootstrapTable('hideColumn', ['id','idItem'])
+    $('#tableOption').bootstrapTable('hideColumn', ['id'])
 
     optionGroup = await getDataOptionGroup()
     let optionGroupUsing = await getDataOptionGroupUsing()
@@ -269,6 +271,7 @@ $(document).on('click', '#enableDeleteTable', function () {
         btn.text('Cancel')
         btn.val(1)
         $('#tableNumber').bootstrapTable('showColumn','state')
+        $('#tableNumber').bootstrapTable('uncheckAll')
     }
     else {
         btn.text('Delete')
@@ -400,6 +403,7 @@ function setFoodOptionEdit(food,idFood){
                 row: {
                     id: food[i].id,
                     name: food[i].name,
+                    remove: ''
                 }
             });
         $('#optionGroup').bootstrapTable('updateCellByUniqueId', {
@@ -424,6 +428,7 @@ function editFoodOption(id){
         success: function () {
             // location.reload();
             $('.modal').modal('hide')
+            console.log('optionGroupId')
         }
     });
 }
@@ -485,8 +490,6 @@ function editFoodDetail(id, originalImg){
         "display": display
     }
 
-    console.log(json)
-
     $.ajax({
         url: '/api/item/update',
         data: JSON.stringify(json) ,
@@ -501,14 +504,13 @@ function editFoodDetail(id, originalImg){
             }
         }
     });
-
-
 }
 
 function editFoodImage(img,id){
     let formData = new FormData()
     formData.append('id', id)
     formData.append('image',img)
+    console.log(img)
     $.ajax({
         url: '/api/item/update-image',
         data: formData ,
@@ -533,5 +535,28 @@ function quantitySelectManage(){
         qty.val('');
         qty.prop('disabled', true);
         qty.prop('required',false);
+    }
+}
+
+window.operateEvent = {
+    'click .remove': function (e, value, row, index) {
+        $('#selectedOption').bootstrapTable('remove', {
+            field: 'id',
+            values: [row.id]
+        })
+        editMax($("#selectedOption").bootstrapTable('getData').length)
+    }
+}
+
+window.operateEventItem = {
+    'click .remove': function (e, value, row, index) {
+        $('#selectedOptionGroup').bootstrapTable('remove', {
+            field: 'id',
+            values: [row.id]
+        })
+        $('#optionGroup').bootstrapTable('uncheckBy', {
+            field: 'id',
+            values: [row.id]
+        })
     }
 }
