@@ -116,7 +116,6 @@ function createOption(){
         checkTable()
         $('#option').bootstrapTable('check', id-1)
         insertOptionTable()
-        $('.modal').modal('hide')
     });
 
     $.ajax({
@@ -126,6 +125,7 @@ function createOption(){
         type: 'POST',
         success: function () {
             $('#option').bootstrapTable('refresh')
+            document.getElementById('')
         }
     })
 }

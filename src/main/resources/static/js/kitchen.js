@@ -69,6 +69,7 @@ function createOrder(group,title){
     let serving = []
     let disable = ''
     let colour = "COOKING"
+    console.log('group:' + group[0].timestamp)
     let time = group[0].timestamp.split('T')[1].split(':')[0] + ':' + group[0].timestamp.split('T')[1].split(':')[1]
     for(i=0;i<group.length;i++){
         if(group[i].status == "COOKING"){

@@ -102,13 +102,6 @@ footer, footer .btn{
     }
 }
 
-
-.navbar-light{
-    position: sticky;
-    top: 0;
-    z-index: 2;
-}
-
 .cart-header{
     justify-content: flex-end;
 }
@@ -116,3 +109,20 @@ footer, footer .btn{
 .pic-out{
     mix-blend-mode: overlay;
 }
+
+.navbar-light{
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+#navbar-category{
+    flex-wrap: nowrap;
+    flex: 0 0 auto;
+}
+
+ h3{
+     margin-top: 20px;
+ }

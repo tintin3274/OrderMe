@@ -41,6 +41,14 @@ function getOptionOfOptionGroup(id){
     })
 }
 
+function getDataAllCategory(){
+    return new Promise(function (resolve,reject){
+        $.get( '/api/item/list-category' , function( data ) {
+            resolve(data)
+        });
+    })
+}
+
 $(async function() {
     let i
     $('#tableFood').bootstrapTable({
@@ -85,6 +93,8 @@ $(async function() {
     $('#tableOptionGroup').bootstrapTable('hideColumn', ['id'])
 
     $('#tableNumber').bootstrapTable('hideColumn','state')
+
+    createTableCategory()
 })
 
 function imageFormatter(value) {
@@ -376,7 +386,7 @@ function setEditOptionGroupModal(option){
     let items = option.itemList
     $('#selectedOption').bootstrapTable('removeAll')
     for(i=0;i<items.length;i++){
-        let rowId = $("#selectedOption >tbody >tr").length;
+        let rowId =  $('#selectedOption').bootstrapTable('getData').length;
         $('#selectedOption').bootstrapTable(
             'insertRow',{
                 index: rowId,
@@ -388,7 +398,7 @@ function setEditOptionGroupModal(option){
                 }
             });
     }
-    editMax($("#selectedOption >tbody >tr").length)
+    editMax( $('#selectedOption').bootstrapTable('getData').length)
     $('#alertModal .btn-primary').attr('onClick', 'editOptionGroup('+ option.id +')');
 }
 
@@ -396,7 +406,7 @@ function setFoodOptionEdit(food,idFood){
     $('#optionGroup').bootstrapTable('uncheckAll');
     $('#selectedOptionGroup').bootstrapTable('removeAll')
     for(let i=0;i<food.length;i++){
-        let rowId = $("#selectedOptionGroup >tbody >tr").length;
+        let rowId = $('#selectedOptionGroup').bootstrapTable('getData').length;
         $('#selectedOptionGroup').bootstrapTable(
             'insertRow',{
                 index: rowId,
@@ -560,3 +570,54 @@ window.operateEventItem = {
         })
     }
 }
+
+async function createTableCategory(){
+   let categorys = await getDataAllCategory()
+
+    for(let i=0;i<categorys.length;i++){
+        $('#tableCategory').bootstrapTable('insertRow',{
+            index: i,
+            row: {
+                state: false,
+                name: categorys[i]
+            }
+        })
+    }
+    $('#tableCategory').bootstrapTable('hideColumn', ['state'])
+}
+
+$(document).on('click', '#enableReorder', function () {
+    let btn = $(this)
+    btn.toggleClass("btn-primary btn-secondary")
+    // $('#deleteTable').toggleClass("d-none")
+    if(btn.val() == 0){
+        btn.text('Cancel')
+        btn.val(1)
+        $('#tableCategory').bootstrapTable('refreshOptions', {
+            reorderableRows: true
+        })
+        $('#enableDeleteCategory').prop('disabled',true)
+    }
+    else {
+        location.reload();
+    }
+})
+
+$(document).on('click', '#enableDeleteCategory', function () {
+    let btn = $(this)
+    btn.toggleClass("btn-danger btn-secondary")
+    $('#deleteCategory').toggleClass("d-none")
+    if(btn.val() == 0){
+        btn.text('Cancel')
+        btn.val(1)
+        $('#enableReorder').prop('disabled',true)
+        $('#tableCategory').bootstrapTable('showColumn','state')
+        $('#tableCategory').bootstrapTable('uncheckAll')
+    }
+    else {
+        $('#enableReorder').prop('disabled',false)
+        btn.text('Delete')
+        btn.val(0)
+        $('#tableCategory').bootstrapTable('hideColumn','state')
+    }
+})

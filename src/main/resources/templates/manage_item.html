@@ -22,7 +22,10 @@
             <button class="nav-link" id="option-tab" data-bs-toggle="tab"  href="#options" type="button" role="tab" aria-controls="options" aria-selected="false">Option</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="table-tab" data-bs-toggle="tab"  href="#table" type="button" role="tab" aria-controls="option" aria-selected="false">Table</button>
+            <button class="nav-link" id="table-tab" data-bs-toggle="tab"  href="#table" type="button" role="tab" aria-controls="table" aria-selected="false">Table</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="category-tab" data-bs-toggle="tab" data-bs-target="#categoryTab" href="#category" type="button" role="tab" aria-controls="category" aria-selected="false">Category</button>
         </li>
     </ul>
 
@@ -76,9 +79,9 @@
                     <tr>
                         <th data-field="id" data-width="10" data-width-unit="%">ID</th>
                         <th data-field="name" data-sortable="true" >Name</th>
-                        <th data-field="using" data-sortable="true" data-width="10" data-width-unit="%">Using</th>
                         <th data-field="min" data-sortable="true" data-width="10" data-width-unit="%">Min</th>
                         <th data-field="max" data-sortable="true" data-width="10" data-width-unit="%">Max</th>
+                        <th data-field="using" data-sortable="true" data-width="10" data-width-unit="%">Using</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -150,6 +153,42 @@
             </div>
         </div>
 
+        <!-- Tab Category-->
+        <div class="tab-pane fade" id="categoryTab" role="tabpanel" aria-labelledby="category-tab">
+            <div>
+                <div class="toolbar" id="toolbarCategory">
+                    <div class="name-price">
+                        <button class="m-md-2 btn btn-primary" id="enableReorder" value="0">Reorder</button>
+
+                        <div>
+                            <button class="btn btn-danger" value="0" id="enableDeleteCategory">Delete</button>
+                            <button class="btn btn-danger d-none" id="deleteCategory">Delete</button>
+                        </div>
+                    </div>
+                </div>
+                <table id="tableCategory"
+                       data-toggle="table"
+                       data-pagination="true"
+                       data-pagination-h-align="left"
+                       data-pagination-detail-h-align="right"
+                       data-toolbar="#toolbarCategory"
+                       data-toolbar-align="false"
+                       data-click-to-select="true"
+                       data-single-select="true"
+                       data-reorderable-rows="false"
+                >
+                    <thead >
+                    <tr>
+                        <th data-field="state" data-checkbox="true"></th>
+                        <th data-field="name" data-sortable="true" data-align="center">Category</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
     <!-- Modal Food-->
@@ -162,7 +201,7 @@
                 </div>
                 <div class="modal-body">
                     <div id="modalImg" class="pb-3">
-                        <img class="img-fluid"  src="/images/bubae.png" id="imgModal">
+                        <img class="img-fluid"  src="" id="imgModal">
                     </div>
                     <div class="row">
                         <div class="col-3">
