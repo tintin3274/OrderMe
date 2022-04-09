@@ -79,6 +79,12 @@ public class ItemController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @DeleteMapping("/category/delete")
+    public void addCategorySortList(@RequestParam String category) {
+        itemService.deleteCategory(category);
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/add")
     public Item addItem(@RequestBody AddItemDTO addItemDTO) {
         try {

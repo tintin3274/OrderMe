@@ -90,11 +90,16 @@ $(async function() {
             }
         })
     }
-    $('#tableOptionGroup').bootstrapTable('hideColumn', ['id'])
 
     $('#tableNumber').bootstrapTable('hideColumn','state')
 
-    createTableCategory()
+    await createTableCategory()
+
+    $('#tableCategory').on('check.bs.table uncheck.bs.table ' +
+        'check-all.bs.table uncheck-all.bs.table',
+        function () {
+            $('#deleteCategory').prop('disabled', !$('#tableCategory').bootstrapTable('getSelections').length)
+        })
 })
 
 function imageFormatter(value) {
@@ -578,7 +583,7 @@ async function createTableCategory(){
         $('#tableCategory').bootstrapTable('insertRow',{
             index: i,
             row: {
-                state: false,
+               id: i,
                 name: categorys[i]
             }
         })
@@ -589,14 +594,14 @@ async function createTableCategory(){
 $(document).on('click', '#enableReorder', function () {
     let btn = $(this)
     btn.toggleClass("btn-primary btn-secondary")
-    // $('#deleteTable').toggleClass("d-none")
+    $('#reorderCategory').toggleClass("d-none")
     if(btn.val() == 0){
         btn.text('Cancel')
         btn.val(1)
+        $('#enableDeleteCategory').prop('disabled',true)
         $('#tableCategory').bootstrapTable('refreshOptions', {
             reorderableRows: true
         })
-        $('#enableDeleteCategory').prop('disabled',true)
     }
     else {
         location.reload();
@@ -621,3 +626,59 @@ $(document).on('click', '#enableDeleteCategory', function () {
         $('#tableCategory').bootstrapTable('hideColumn','state')
     }
 })
+
+function getItemEachCategoryData(category){
+    return new Promise(function (resolve, reject){
+        $.get( '/api/item/category/'+ category, function( data ) {
+            resolve(data)
+        });
+    })
+}
+
+$(document).on('click', '#reorderCategory', function (){
+    $('#alertModal .btn-primary').attr('onClick', 'updateReOrderCategory()');
+    $('#alertModal').modal('show');
+})
+
+$(document).on('click', '#deleteCategory', function (){
+    $('#alertDeleteModal .btn-danger').attr('onClick', 'deleteCategory()');
+    $('#alertDeleteModal').modal('show');
+})
+
+function updateReOrderCategory(){
+    let category = $('#tableCategory').bootstrapTable('getData')
+    let categoryList = []
+
+    for(let i=0;i<category.length;i++){
+        categoryList.push(category[i].name)
+    }
+    // console.log(categoryList.join(','))
+
+    $.ajax({
+        url: '/api/item/category/sort?categoryList=' + categoryList.join(','),
+        type: 'POST',
+        success: function () {
+            location.reload();
+        }
+    });
+}
+
+async function deleteCategory(){
+    let category = $('#tableCategory').bootstrapTable('getSelections')[0].name
+    console.log(category)
+    let item = await getItemEachCategoryData(category)
+
+    if(item.length == 0){
+        $.ajax({
+            url: '/api/item/category/delete?category=' + category,
+                type: 'DELETE',
+            success: function () {
+                $('#tableCategory').bootstrapTable('remove', {
+                    field: '$index',
+                        values: [$('#tableCategory').bootstrapTable('getSelections')[0].id]
+                })
+                $('.modal').modal('hide')
+            }
+        });
+    }
+}

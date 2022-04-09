@@ -46,9 +46,11 @@ $( document ).ready(async function() {
     let allCategory = await getCategoryData()
     for(let i=0; i < allCategory.length;i++){
         let category = allCategory[i]
-        createNavCategory(category)
         item = await getItemEachCategoryData(category)
-        await createCard(category)
+        if(item.length > 0){
+            createNavCategory(category)
+            await createCard(category)
+        }
     }
 });
 
@@ -397,8 +399,8 @@ function addCart(){
     let request = createOrderRequest()
     orderRequests.push(request[0])
     cartText.push(request[1])
-    console.log(orderRequests)
-    console.log(cartText)
+    // console.log(orderRequests)
+    // console.log(cartText)
 }
 
 $(document).on('click', '.number-spinner button', function () {
@@ -439,7 +441,7 @@ function createCartItem(){
         total += Number(cartText[i].price)
         let template = `
         <div class="my-2">
-             <div class="name-price" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="editItem(index)">
+             <div class="name-price" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="editItem(${index})">
                   <h6 class="menu-name">${orderRequests[i].quantity}x ${cartText[i].name}</h6>
                   <h6 class="m-0">฿ ${cartText[i].price}</h6>
              </div>
@@ -513,7 +515,7 @@ function order(){
         contentType: "application/json" ,
         type: 'POST',
         success: function () {
-            console.log('success')
+            // console.log('success')
             location.href = '/order'
         }
     });

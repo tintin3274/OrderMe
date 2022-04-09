@@ -11,9 +11,12 @@
 </head>
 <body >
 <section layout:fragment="content">
-    <ul class="nav nav-tabs" id="manageTab" role="tablist">
+    <ul class="nav nav-tabs" id="manageTab" role="tablist" style="margin-right: 55px">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="menu-tab" data-bs-toggle="tab" data-bs-target="#menu" href="#menu" type="button" role="tab" aria-controls="menu" aria-selected="true">Menu</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="category-tab" data-bs-toggle="tab" data-bs-target="#categoryTab" href="#category" type="button" role="tab" aria-controls="category" aria-selected="false">Category</button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="group-tab" data-bs-toggle="tab"  href="#group" type="button" role="tab" aria-controls="group" aria-selected="true">Option Group</button>
@@ -24,8 +27,8 @@
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="table-tab" data-bs-toggle="tab"  href="#table" type="button" role="tab" aria-controls="table" aria-selected="false">Table</button>
         </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="category-tab" data-bs-toggle="tab" data-bs-target="#categoryTab" href="#category" type="button" role="tab" aria-controls="category" aria-selected="false">Category</button>
+        <li style="position: absolute;right: 10px;">
+            <a class="btn btn-primary" href="/staff/index">Index</a>
         </li>
     </ul>
 
@@ -158,29 +161,29 @@
             <div>
                 <div class="toolbar" id="toolbarCategory">
                     <div class="name-price">
-                        <button class="m-md-2 btn btn-primary" id="enableReorder" value="0">Reorder</button>
-
+                        <div>
+                            <button class="btn btn-primary" id="enableReorder" value="0">Reorder</button>
+                            <button class="btn btn-primary d-none" id="reorderCategory">Reorder</button>
+                        </div>
                         <div>
                             <button class="btn btn-danger" value="0" id="enableDeleteCategory">Delete</button>
-                            <button class="btn btn-danger d-none" id="deleteCategory">Delete</button>
+                            <button class="btn btn-danger d-none" id="deleteCategory" disabled>Delete</button>
                         </div>
                     </div>
                 </div>
                 <table id="tableCategory"
                        data-toggle="table"
-                       data-pagination="true"
-                       data-pagination-h-align="left"
-                       data-pagination-detail-h-align="right"
                        data-toolbar="#toolbarCategory"
                        data-toolbar-align="false"
                        data-click-to-select="true"
                        data-single-select="true"
-                       data-reorderable-rows="false"
+                       data-use-row-attr-func="true"
                 >
                     <thead >
                     <tr>
                         <th data-field="state" data-checkbox="true"></th>
-                        <th data-field="name" data-sortable="true" data-align="center">Category</th>
+                        <th data-field="id" data-align="center" data-visible="false">Order</th>
+                        <th data-field="name" data-align="center">Category</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -405,6 +408,7 @@
                                data-click-to-select="true"
                                data-unique-id="id"
                                data-toolbar="#toolbarEditFood"
+                               data-maintain-meta-data="true"
                                data-url="/api/optional/all"
                         >
                             <thead >

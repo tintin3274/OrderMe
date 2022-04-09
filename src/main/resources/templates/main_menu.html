@@ -9,8 +9,13 @@
 </head>
 <body>
 <section layout:fragment="content">
-    <nav class="navbar" style="justify-content: flex-end">
+    <nav class="navbar px-2" style="justify-content: space-between">
         <ul class="nav nav-pills">
+            <li class="nav-item">
+                <h4 class="mb-0 mx-3 mt-1 link-head">OrderME</h4>
+            </li>
+        </ul>
+        <ul class="nav nav-pills" style="justify-content: flex-end">
             <li class="nav-item">
                 <a class="nav-link link-head" data-bs-toggle="modal" data-bs-target="#cartModal" type="button" onclick="createCartItem()">Cart</a>
             </li>
@@ -54,7 +59,7 @@
                         </div>
                         <div class="modal-body" >
                             <div id="modalImg" class="pb-3">
-                                <img class="img-fluid"  src="/images/bubae.png" id="imgModal">
+                                <img class="img-fluid"  src="" id="imgModal">
                             </div>
                             <div class="pb-0">
                                 <div class="name-price">
