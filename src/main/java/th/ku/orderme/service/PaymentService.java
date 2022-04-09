@@ -133,4 +133,10 @@ public class PaymentService {
         payment.setUpdatedTimestamp(localDateTime);
         paymentRepository.saveAndFlush(payment);
     }
+
+    public String getRef1(int billId) {
+        Payment payment = paymentRepository.findByBill_Id(billId);
+        if(payment == null) return null;
+        return payment.getRef1();
+    }
 }

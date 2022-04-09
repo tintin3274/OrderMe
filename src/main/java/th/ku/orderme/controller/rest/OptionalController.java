@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import th.ku.orderme.dto.AddOptionalDTO;
 import th.ku.orderme.model.Item;
@@ -41,6 +42,7 @@ public class OptionalController {
         return optional.getItemList();
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/add")
     public Optional addOptional(@RequestBody AddOptionalDTO addOptionalDTO) {
         try {
@@ -56,6 +58,7 @@ public class OptionalController {
         return null;
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/update")
     public Optional updateOptional(@RequestBody AddOptionalDTO addOptionalDTO) {
         try {
@@ -71,6 +74,7 @@ public class OptionalController {
         return null;
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public Optional deleteItem(@PathVariable int id) {
         return optionalService.deleteOptional(id);

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -65,16 +66,19 @@ public class ItemController {
         return itemService.findItemByCategory(category);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/category/change")
     public boolean changeCategory(@RequestParam String oldCategory, @RequestParam String newCategory) {
         return itemService.changeCategory(oldCategory, newCategory);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/category/sort")
     public void addCategorySortList(@RequestParam List<String> categoryList) {
         itemService.addCategorySortList(categoryList);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/add")
     public Item addItem(@RequestBody AddItemDTO addItemDTO) {
         try {
@@ -91,6 +95,7 @@ public class ItemController {
         return null;
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/add-with-image")
     public Item addItemWithImage(@RequestParam String addItemDTO, @RequestParam(value = "image", required = false) MultipartFile multipartFile) {
         try {
@@ -112,6 +117,7 @@ public class ItemController {
         return null;
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/update")
     public Item updateItem(@RequestBody ItemDTO itemDTO) {
         try {
@@ -127,6 +133,7 @@ public class ItemController {
         return null;
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/update-image")
     public Item updateItemImage(@RequestParam int id, @RequestParam(value = "image") MultipartFile multipartFile) {
         try {
@@ -151,11 +158,13 @@ public class ItemController {
         return null;
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/update-optional")
     public Item updateItemOptional(@RequestParam int id, @RequestParam List<Integer> optionGroupId) {
         return itemService.updateItemOptional(id, optionGroupId);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public Item deleteItem(@PathVariable int id) {
         return itemService.deleteItem(id);

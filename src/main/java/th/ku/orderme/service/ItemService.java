@@ -63,8 +63,7 @@ public class ItemService {
 
         if(!oldItem.getCategory().equalsIgnoreCase(item.getCategory())) {
             oldItem.setCategory(item.getCategory());
-            addCategory(item.getCategory());
-            updateCategory = true;
+            updateCategory = addCategory(item.getCategory());
         }
 
         oldItem.setName(item.getName());
@@ -169,13 +168,15 @@ public class ItemService {
         return indexCategoryRepository.getAllCategory();
     }
 
-    public void addCategory(String category) {
+    public boolean addCategory(String category) {
         if(!category.equalsIgnoreCase(ConstantUtil.OPTION)) {
             if(!indexCategoryRepository.existsById(category)) {
                 IndexCategory indexCategory = new IndexCategory(category, 0);
                 indexCategoryRepository.saveAndFlush(indexCategory);
+                return true;
             }
         }
+        return false;
     }
 
     @Transactional
@@ -210,11 +211,13 @@ public class ItemService {
                 }
             }
             indexCategoryRepository.deleteAll();
+            indexCategoryRepository.flush();
             indexCategoryRepository.saveAllAndFlush(indexCategoryList);
             indexCategoryRepository.saveAllAndFlush(newIndexCategoryList);
         }
         else {
             indexCategoryRepository.deleteAll();
+            indexCategoryRepository.flush();
             indexCategoryRepository.saveAllAndFlush(indexCategoryList);
         }
     }

@@ -39,7 +39,7 @@ public class TableService {
     public String deleteTable(int id) {
         if(tableRepository.existsById(id)) {
             tableRepository.deleteById(id);
-            return "SUCCESS: Add new table id - " + id;
+            return "SUCCESS: Delete table id - " + id;
         }
         return "FAIL: Not found table id - " + id;
     }

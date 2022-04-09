@@ -2,6 +2,7 @@ package th.ku.orderme.controller.rest;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import th.ku.orderme.dto.CartDTO;
 import th.ku.orderme.dto.UpdateOrderDTO;
@@ -55,6 +56,7 @@ public class OrderController {
         return orderDetail;
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF')")
     @PostMapping("/update")
     public UpdateOrderDTO sendUpdateOrderDTO(@RequestParam int id, @RequestParam String status) {
         UpdateOrderDTO updateOrderDTO = null;

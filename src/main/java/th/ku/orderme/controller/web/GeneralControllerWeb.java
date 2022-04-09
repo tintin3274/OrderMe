@@ -71,7 +71,13 @@ public class GeneralControllerWeb {
                         if(bill.getStatus().equalsIgnoreCase(ConstantUtil.PAYMENT)) {
                             return "redirect:/payment";
                         }
-                        else if(bill.getStatus().equalsIgnoreCase(ConstantUtil.VOID) || bill.getStatus().equalsIgnoreCase(ConstantUtil.CLOSE)) {
+                        else if(bill.getStatus().equalsIgnoreCase(ConstantUtil.CLOSE)) {
+                            String ref1 = paymentService.getRef1(bill.getId());
+                            if(ref1 != null) {
+                                return "redirect:/receipt/"+ref1;
+                            }
+                        }
+                        else if(bill.getStatus().equalsIgnoreCase(ConstantUtil.VOID)) {
                             return "redirect:/";
                         }
                     }

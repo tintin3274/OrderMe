@@ -3,6 +3,7 @@ package th.ku.orderme.controller.rest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import th.ku.orderme.dto.TableDTO;
 import th.ku.orderme.dto.UpdateBillOrderStatusMessage;
@@ -36,6 +37,7 @@ public class TableController {
         return tableService.getAllId();
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF')")
     @PostMapping("/open")
     public TableDTO openTableDineIn(@RequestParam int id, @RequestParam int person) {
         if(tableService.tableIsAvailable(id) && person >= 1) {
@@ -58,6 +60,7 @@ public class TableController {
         return null;
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF')")
     @PostMapping("/close")
     public void closeTableDineIn(@RequestParam int id) {
         Table table = tableService.findById(id);
@@ -66,11 +69,13 @@ public class TableController {
         tableService.clearTableOfBill(table.getBill().getId());
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/create/{id}")
     public Table createTable(@PathVariable int id) {
         return tableService.createTable(id);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/delete/{id}")
     public String deleteTable(@PathVariable int id) {
         return tableService.deleteTable(id);

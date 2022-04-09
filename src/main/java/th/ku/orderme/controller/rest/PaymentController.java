@@ -1,6 +1,7 @@
 package th.ku.orderme.controller.rest;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 import th.ku.orderme.dto.ReceiptDTO;
@@ -21,6 +22,7 @@ public class PaymentController {
     private final SCBSimulatorPaymentService scbSimulatorPaymentService;
     private final BillService billService;
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF')")
     @PostMapping("/cash/{billId}")
     public String cash(@PathVariable int billId) {
         Bill bill = billService.findById(billId);
