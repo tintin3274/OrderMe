@@ -83,7 +83,8 @@ h3{
 
 .indexBg{
     background: #0c7d5b;
-    height: 100vh;background: url('/material/indexBG.jpg')no-repeat fixed center;
+    background: url('/material/indexBG.jpg')no-repeat fixed center;
+    background-size: contain;
 }
 
 @media (max-width:800px){
