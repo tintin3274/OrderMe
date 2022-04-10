@@ -116,7 +116,7 @@
                 </div>
                 <div class="modal-footer name-price">
                     <button class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#qrModal" id="qrBtn" disabled>QR Code</button>
-                    <button class="btn btn-primary" id="cashBtn" >Pay Cash</button>
+                    <button class="btn btn-primary" id="cashBtn" onclick="$('#alertPayModal').modal('show')">Pay Cash</button>
                     <button class="btn btn-secondary" id="closeBtn" >Close Bill</button>
                 </div>
             </div>
@@ -132,6 +132,7 @@
                 </div>
                 <div class="modal-body pb-1" >
                     <div id="qrPic"></div>
+                    <a href="#" class="link-primary m-1"></a>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-primary" style="width: 100%" data-bs-dismiss="modal">Close</button>
@@ -139,6 +140,26 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="alertPayModal"  tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 >Alert</h2>
+                    <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure? If go to checkout you can't order again.
+                </div>
+                <div class="modal-footer" style="justify-content: space-between">
+                    <button type="button" class="btn btn-secondary" onclick="$('#alertPayModal').modal('hide')">Cancel</button>
+                    <button class="btn btn-primary" id="cashAlertBtn" >Pay Cash</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 
 </section>
 </body>

@@ -41,6 +41,7 @@ $( document ).ready(async function() {
     if(userType == 'TAKE-OUT'){
         $('#billNav').hide()
         $('#cartBtn').text('Payment')
+        $('#cartModal .btn-primary').attr('onClick', "$('#alertTakeOutModal').modal('show')");
     }
 
     let allCategory = await getCategoryData()

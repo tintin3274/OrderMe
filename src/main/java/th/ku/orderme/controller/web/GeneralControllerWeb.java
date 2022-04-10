@@ -96,7 +96,7 @@ public class GeneralControllerWeb {
         return "staff_main_menu";
     }
 
-    @GetMapping("/admin/manage-item")
+    @GetMapping("/admin/manage-menu")
     public String getPageManageItem(){
         return "manage_item";
     }

@@ -173,7 +173,8 @@ function updateOrder(bill){
             }
             break
         }
-        case "COMPLETE":{
+        case "CANCEL" :
+        case "COMPLETE" :{
             let elm = $( '#'+bill.order.id)
             let card = elm.closest('.rowModal')
             let div = elm.closest('.modal-body').children(' div').children().length

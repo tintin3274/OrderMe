@@ -167,7 +167,7 @@ async function createModalTable(billId){
     document.getElementById('qrBtn').onclick = function (){loadQr(bill.billId)}
     document.getElementById('completeBtn').onclick = function (){updateComplete(bill.billId)}
     document.getElementById('deleteBtn').onclick = function (){updateCancel(bill.billId)}
-    document.getElementById('cashBtn').onclick = function (){payCash(bill.billId)}
+    document.getElementById('cashAlertBtn').onclick = function (){payCash(bill.billId)}
     $('#total').text(bill.subTotal)
 }
 
@@ -206,8 +206,11 @@ function loadQr(billId){
      $('#qrModal  h3').text('Table '+ allTable[index.indexOf(billId)].id +' Bill#' + billId)
     $('#qrPic').empty()
     if(allTable[index.indexOf(billId)].token != null){
+        let text = window.location.origin + "/dine-in/" + allTable[index.indexOf(billId)].token
+        $('#qrModal .link-primary').text('Go to Menu')
+        $('#qrModal .link-primary').attr('href',text)
         var qrcode = new QRCode(document.getElementById("qrPic"), {
-            text: window.location.origin + "/dine-in/" + allTable[index.indexOf(billId)].token,
+            text: text,
             width: 300,
             height: 300,
             colorDark : "#000000",
@@ -305,9 +308,10 @@ function payCash(id){
         type: 'POST',
         success: function () {
             console.log('success')
+            $('#DineInModal').modal('hide')
+            allTable[index.indexOf(id)].paid = true
         }
     });
-    $('#DineInModal').modal('hide')
 }
 
 async function initializeTakeOut(){
@@ -325,13 +329,14 @@ async function openModalDineIn(billId,table){
     $('#DineInModal h3').text('Table '+table+' Bill#' + billId)
     document.getElementById('closeBtn').onclick = function (){closeTable(table)}
     if(allTable[index.indexOf(billId)].paid){
-        $('.modal-footer').hide()
+        console.log('paid ละเฮ้ย')
+        $('#DineInModal .modal-footer').hide()
         $('#DineInModal h3').text('Table '+table+' Bill#' + billId + ' [PAID]')
     }
 }
 
 async function openModalTakeOut(billId){
-    $('.modal-footer').hide()
+    $('#DineInModal .modal-footer').hide()
     $('#DineInModal h3').text('Take Out Bill#' + billId + ' [PAID]')
     await createModalTable(billId)
     $('#deleteBtn').hide()
