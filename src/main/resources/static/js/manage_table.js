@@ -207,8 +207,8 @@ function loadQr(billId){
     $('#qrPic').empty()
     if(allTable[index.indexOf(billId)].token != null){
         let text = window.location.origin + "/dine-in/" + allTable[index.indexOf(billId)].token
-        $('#qrModal .link-primary').text('Go to Menu')
-        $('#qrModal .link-primary').attr('href',text)
+        $('#qrModal  a').text(text)
+        $('#qrModal  a').attr('href',text)
         var qrcode = new QRCode(document.getElementById("qrPic"), {
             text: text,
             width: 300,
