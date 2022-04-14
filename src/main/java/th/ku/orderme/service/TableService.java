@@ -75,6 +75,13 @@ public class TableService {
         return true;
     }
 
+    public boolean sendUpdateTablePaidOfBill(int billId) {
+        Table table = tableRepository.findByBill_Id(billId);
+        if(table == null) return false;
+        template.convertAndSend("/topic/table/update", converterTableToTableDTO(table));
+        return true;
+    }
+
     public List<TableDTO> findAllTableDTO() {
         return converterTableListToTableDTOList(findAll());
     }

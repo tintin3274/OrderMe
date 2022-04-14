@@ -100,6 +100,9 @@ public class PaymentService {
                 if(orderService.allOrderOfBillComplete(bill.getId())) {
                     tableService.clearTableOfBill(bill.getId());
                 }
+                else {
+                    tableService.sendUpdateTablePaidOfBill(bill.getId());
+                }
                 tokenService.autoDeleteToken(bill.getId(), 10);
             }
         }
