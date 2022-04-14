@@ -29,26 +29,28 @@ public class PaymentControllerWeb {
     private final BillService billService;
 
     @GetMapping
-    public String payment(@CookieValue(name = "uid") String uid, Model model) {
-        Token token = tokenService.findById(uid);
-        if(token != null) {
-            Bill bill = token.getBill();
-            if(bill == null) {
-                return "redirect:/main-menu";
-            }
-            else if(bill.getStatus().equalsIgnoreCase(ConstantUtil.OPEN)) {
-                billService.setStatusPaymentBill(bill.getId());
-                model.addAttribute("bill", billService.getBillDTO(bill.getId()));
-                return "payment";
-            }
-            else if(bill.getStatus().equalsIgnoreCase(ConstantUtil.PAYMENT)) {
-                model.addAttribute("bill", billService.getBillDTO(bill.getId()));
-                return "payment";
-            }
-            else if(bill.getStatus().equalsIgnoreCase(ConstantUtil.CLOSE)) {
-                Payment payment = paymentRepository.findByBill_Id(bill.getId());
-                if(payment.getStatus().equalsIgnoreCase(ConstantUtil.PAID)) {
-                    return "redirect:/receipt/"+payment.getRef1();
+    public String payment(@CookieValue(name = "uid", required = false) String uid, Model model) {
+        if(uid != null) {
+            Token token = tokenService.findById(uid);
+            if(token != null) {
+                Bill bill = token.getBill();
+                if(bill == null) {
+                    return "redirect:/main-menu";
+                }
+                else if(bill.getStatus().equalsIgnoreCase(ConstantUtil.OPEN)) {
+                    billService.setStatusPaymentBill(bill.getId());
+                    model.addAttribute("bill", billService.getBillDTO(bill.getId()));
+                    return "payment";
+                }
+                else if(bill.getStatus().equalsIgnoreCase(ConstantUtil.PAYMENT)) {
+                    model.addAttribute("bill", billService.getBillDTO(bill.getId()));
+                    return "payment";
+                }
+                else if(bill.getStatus().equalsIgnoreCase(ConstantUtil.CLOSE)) {
+                    Payment payment = paymentRepository.findByBill_Id(bill.getId());
+                    if(payment.getStatus().equalsIgnoreCase(ConstantUtil.PAID)) {
+                        return "redirect:/receipt/"+payment.getRef1();
+                    }
                 }
             }
         }
@@ -56,38 +58,40 @@ public class PaymentControllerWeb {
     }
 
     @GetMapping("/qrcode")
-    public String generateQrCode(@CookieValue(name = "uid") String uid, Model model) {
-        Token token = tokenService.findById(uid);
-        if(token != null) {
-            Bill bill = token.getBill();
-            if(bill == null) {
-                return "redirect:/main-menu";
-            }
-            else if(bill.getStatus().equalsIgnoreCase(ConstantUtil.PAYMENT)) {
-                Payment payment = paymentRepository.findByBill_Id(bill.getId());
-
-                if(payment == null || !payment.getChannel().equalsIgnoreCase(ConstantUtil.QR_CODE)) {
-                    payment = paymentService.payBill(bill.getId());
-                    String response = scbSimulatorPaymentService.generateQrCode(payment);
-                    String qrImage = scbSimulatorPaymentService.extractQrImageFromResponse(response);
-                    model.addAttribute("qrImage", qrImage);
+    public String generateQrCode(@CookieValue(name = "uid", required = false) String uid, Model model) {
+        if(uid != null) {
+            Token token = tokenService.findById(uid);
+            if(token != null) {
+                Bill bill = token.getBill();
+                if(bill == null) {
+                    return "redirect:/main-menu";
                 }
-                else {
-                    String qrImage = scbSimulatorPaymentService.extractQrImageFromResponse(payment.getGenerateInfo());
-                    model.addAttribute("qrImage", qrImage);
-                }
+                else if(bill.getStatus().equalsIgnoreCase(ConstantUtil.PAYMENT)) {
+                    Payment payment = paymentRepository.findByBill_Id(bill.getId());
 
-                model.addAttribute("billId", payment.getBill().getId());
-                model.addAttribute("ref1", payment.getRef1());
-                model.addAttribute("ref2", payment.getRef2());
-                model.addAttribute("ref3", payment.getRef3());
-                model.addAttribute("total", df.format(payment.getTotal()));
-                return "payment_qrcode";
-            }
-            else if(bill.getStatus().equalsIgnoreCase(ConstantUtil.CLOSE)) {
-                Payment payment = paymentRepository.findByBill_Id(bill.getId());
-                if(payment.getStatus().equalsIgnoreCase(ConstantUtil.PAID)) {
-                    return "redirect:/receipt/"+payment.getRef1();
+                    if(payment == null || !payment.getChannel().equalsIgnoreCase(ConstantUtil.QR_CODE)) {
+                        payment = paymentService.payBill(bill.getId());
+                        String response = scbSimulatorPaymentService.generateQrCode(payment);
+                        String qrImage = scbSimulatorPaymentService.extractQrImageFromResponse(response);
+                        model.addAttribute("qrImage", qrImage);
+                    }
+                    else {
+                        String qrImage = scbSimulatorPaymentService.extractQrImageFromResponse(payment.getGenerateInfo());
+                        model.addAttribute("qrImage", qrImage);
+                    }
+
+                    model.addAttribute("billId", payment.getBill().getId());
+                    model.addAttribute("ref1", payment.getRef1());
+                    model.addAttribute("ref2", payment.getRef2());
+                    model.addAttribute("ref3", payment.getRef3());
+                    model.addAttribute("total", df.format(payment.getTotal()));
+                    return "payment_qrcode";
+                }
+                else if(bill.getStatus().equalsIgnoreCase(ConstantUtil.CLOSE)) {
+                    Payment payment = paymentRepository.findByBill_Id(bill.getId());
+                    if(payment.getStatus().equalsIgnoreCase(ConstantUtil.PAID)) {
+                        return "redirect:/receipt/"+payment.getRef1();
+                    }
                 }
             }
         }
@@ -104,32 +108,34 @@ public class PaymentControllerWeb {
     }
 
     @GetMapping("/deeplink")
-    public RedirectView generateDeeplink(@CookieValue(name = "uid") String uid) {
+    public RedirectView generateDeeplink(@CookieValue(name = "uid", required = false) String uid) {
         RedirectView redirectView = new RedirectView();
-        Token token = tokenService.findById(uid);
-        if(token != null) {
-            Bill bill = token.getBill();
-            if(bill == null) {
-                redirectView.setUrl("/main-menu");
-                return redirectView;
-            }
-            else if(bill.getStatus().equalsIgnoreCase(ConstantUtil.PAYMENT)) {
-                Payment payment = paymentRepository.findByBill_Id(bill.getId());
-
-                if(payment == null || !payment.getChannel().equalsIgnoreCase(ConstantUtil.DEEP_LINK)) {
-                    payment = paymentService.payBill(bill.getId());
-                    redirectView.setUrl(scbSimulatorPaymentService.generateDeeplink(payment));
-                }
-                else {
-                    redirectView.setUrl(scbSimulatorPaymentService.extractDeepLinkFromResponse(payment.getGenerateInfo()));
-                }
-                return redirectView;
-            }
-            else if(bill.getStatus().equalsIgnoreCase(ConstantUtil.CLOSE)) {
-                Payment payment = paymentRepository.findByBill_Id(bill.getId());
-                if(payment.getStatus().equalsIgnoreCase(ConstantUtil.PAID)) {
-                    redirectView.setUrl("/receipt/"+payment.getRef1());
+        if(uid != null) {
+            Token token = tokenService.findById(uid);
+            if(token != null) {
+                Bill bill = token.getBill();
+                if(bill == null) {
+                    redirectView.setUrl("/main-menu");
                     return redirectView;
+                }
+                else if(bill.getStatus().equalsIgnoreCase(ConstantUtil.PAYMENT)) {
+                    Payment payment = paymentRepository.findByBill_Id(bill.getId());
+
+                    if(payment == null || !payment.getChannel().equalsIgnoreCase(ConstantUtil.DEEP_LINK)) {
+                        payment = paymentService.payBill(bill.getId());
+                        redirectView.setUrl(scbSimulatorPaymentService.generateDeeplink(payment));
+                    }
+                    else {
+                        redirectView.setUrl(scbSimulatorPaymentService.extractDeepLinkFromResponse(payment.getGenerateInfo()));
+                    }
+                    return redirectView;
+                }
+                else if(bill.getStatus().equalsIgnoreCase(ConstantUtil.CLOSE)) {
+                    Payment payment = paymentRepository.findByBill_Id(bill.getId());
+                    if(payment.getStatus().equalsIgnoreCase(ConstantUtil.PAID)) {
+                        redirectView.setUrl("/receipt/"+payment.getRef1());
+                        return redirectView;
+                    }
                 }
             }
         }
@@ -138,30 +144,32 @@ public class PaymentControllerWeb {
     }
 
     @GetMapping(value = {"/qrcode/success", "/deeplink/success"})
-    public String paymentSuccess(@CookieValue(name = "uid") String uid) {
-        Token token = tokenService.findById(uid);
-        if(token != null) {
-            Bill bill = token.getBill();
-            if(bill == null) {
-                return "redirect:/main-menu";
-            }
-            else if(bill.getStatus().equalsIgnoreCase(ConstantUtil.CLOSE)) {
-                Payment payment = paymentRepository.findByBill_Id(bill.getId());
-                if(payment.getStatus().equalsIgnoreCase(ConstantUtil.PAID)) {
-                    return "redirect:/receipt/"+payment.getRef1();
+    public String paymentSuccess(@CookieValue(name = "uid", required = false) String uid) {
+        if(uid != null) {
+            Token token = tokenService.findById(uid);
+            if(token != null) {
+                Bill bill = token.getBill();
+                if(bill == null) {
+                    return "redirect:/main-menu";
                 }
-            }
-            else if(bill.getStatus().equalsIgnoreCase(ConstantUtil.PAYMENT)) {
-                Payment payment = paymentRepository.findByBill_Id(bill.getId());
-                if(scbSimulatorPaymentService.inquiryTransaction(bill.getId())) {
-                    return "redirect:/receipt/"+payment.getRef1();
-                }
-                else {
-                    if(payment.getChannel().equalsIgnoreCase(ConstantUtil.QR_CODE)) {
-                        return "redirect:/payment/qrcode";
+                else if(bill.getStatus().equalsIgnoreCase(ConstantUtil.CLOSE)) {
+                    Payment payment = paymentRepository.findByBill_Id(bill.getId());
+                    if(payment.getStatus().equalsIgnoreCase(ConstantUtil.PAID)) {
+                        return "redirect:/receipt/"+payment.getRef1();
                     }
-                    else if(payment.getChannel().equalsIgnoreCase(ConstantUtil.DEEP_LINK)) {
-                        return "redirect:/payment/deeplink";
+                }
+                else if(bill.getStatus().equalsIgnoreCase(ConstantUtil.PAYMENT)) {
+                    Payment payment = paymentRepository.findByBill_Id(bill.getId());
+                    if(scbSimulatorPaymentService.inquiryTransaction(bill.getId())) {
+                        return "redirect:/receipt/"+payment.getRef1();
+                    }
+                    else {
+                        if(payment.getChannel().equalsIgnoreCase(ConstantUtil.QR_CODE)) {
+                            return "redirect:/payment/qrcode";
+                        }
+                        else if(payment.getChannel().equalsIgnoreCase(ConstantUtil.DEEP_LINK)) {
+                            return "redirect:/payment/deeplink";
+                        }
                     }
                 }
             }

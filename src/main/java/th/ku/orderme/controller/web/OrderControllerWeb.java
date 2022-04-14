@@ -15,13 +15,16 @@ public class OrderControllerWeb {
     private final TokenService tokenService;
 
     @GetMapping("/order")
-    public String order(@CookieValue(name = "uid") String uid) {
-        Token token = tokenService.findById(uid);
-        if(token == null) return "redirect:/";
-        Bill bill = token.getBill();
-        if(bill != null && bill.getStatus().equalsIgnoreCase(ConstantUtil.PAYMENT)) {
-            return "redirect:/payment";
+    public String order(@CookieValue(name = "uid", required = false) String uid) {
+        if(uid != null) {
+            Token token = tokenService.findById(uid);
+            if(token == null) return "redirect:/";
+            Bill bill = token.getBill();
+            if(bill != null && bill.getStatus().equalsIgnoreCase(ConstantUtil.PAYMENT)) {
+                return "redirect:/payment";
+            }
+            return "redirect:/main-menu";
         }
-        return "redirect:/main-menu";
+        return "redirect:/";
     }
 }
