@@ -528,6 +528,7 @@ async function createBillItem(){
     let json = await getBillData()
 
     let orders = json.orders
+    console.log(json.orders)
 
     if(json.orders != null){
     if(orders.length > 0 ){
@@ -538,7 +539,7 @@ async function createBillItem(){
     }
 
     const template = `${orders.map(order => `
-  <div>
+  <div class="my-2">
     <div class="name-price">
         <h6 class="menu-name"> ${order.quantity}x ${order.name}</h6>
         <h6 class="m-0">฿ ${order.amount}</h6>
@@ -546,7 +547,6 @@ async function createBillItem(){
     <div class="name-price-status">
         <div class="columnFlex">
             <small class="text-muted">${order.option}</small>
-            <br>
             <small class="text-muted">${order.comment}</small>
         </div>
         <span class="badge rounded-pill ${order.status}">${order.status}</span>

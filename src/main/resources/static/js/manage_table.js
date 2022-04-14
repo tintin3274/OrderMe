@@ -56,7 +56,7 @@ $(document).on('click', '.number-spinner button', function () {
  $( document ).ready(async function (){
     connect()
      allTable = await getDataAllTable()
-     console.log(allTable)
+     // console.log(allTable)
      initializeTable(allTable);
 
     await initializeTakeOut()
@@ -82,7 +82,6 @@ function connect() {
     stompClient.connect({}, function (frame) {
         // console.log('Connected: ' + frame);
         stompClient.subscribe('/topic/table/update', async function (message) {
-            console.log('success')
             await updateTable(JSON.parse(message.body))
         });
         stompClient.subscribe('/topic/take-out/new', async function (message) {
@@ -196,10 +195,12 @@ function openTable(){
         url: '/api/table/open?id= ' + table + '&person=' + person,
         type: 'POST',
         success: function () {
-            console.log('success')
+            $('#createDineInModal').modal('hide')
+            $('.form-control').val(1)
+            loadQr(allTable[table-1].billId)
+            $('#qrModal').modal('show');
         }
     });
-    $('#createDineInModal').modal('hide')
 }
 
 function loadQr(billId){
@@ -236,17 +237,13 @@ function nameFormatter(value, row){
 async function updateTable(table){
     let i=0
 
-    console.log(table)
-    console.log(index)
+    // console.log(table)
+    // console.log(index)
     let target = indexTable.indexOf(table.id)
     allTable[target] = table
     index[target] = table.billId
-    if(!table.available){
-        loadQr(table.billId)
-        $('#qrModal').modal('show');
-    }
 
-    console.log(allTable)
+    // console.log(allTable)
 
     $('#createDineInModal select').empty()
     $('#createDineInModal select').append(`<option value="">Select Table</option>`)
@@ -261,12 +258,11 @@ async function updateTable(table){
 async function updateStatus(status,billId){
     let selected =$('#tableFood').bootstrapTable('getSelections')
     for(let i=0; i < selected.length;i++){
-        console.log( selected[i])
+        // console.log( selected[i])
         $.ajax({
             url: '/api/order/update?id= ' + selected[i].id + '&status=' + status,
             type: 'POST',
             success: function () {
-                console.log('success')
                 if(status == "CANCEL"){
                     $('#tableFood').bootstrapTable('remove', {
                         field: 'id',
@@ -307,8 +303,7 @@ function payCash(id){
         url: '/api/payment/cash/' + id,
         type: 'POST',
         success: function () {
-            console.log('success')
-            $('#DineInModal').modal('hide')
+            $('.modal').modal('hide')
             allTable[index.indexOf(id)].paid = true
         }
     });
@@ -316,7 +311,7 @@ function payCash(id){
 
 async function initializeTakeOut(){
     let bill = await getDataAllBillTakeOut()
-    console.log(bill)
+    // console.log(bill)
     for(let i=0;i<bill.length;i++){
        addTakeOut(bill[i])
     }
@@ -329,7 +324,6 @@ async function openModalDineIn(billId,table){
     $('#DineInModal h3').text('Table '+table+' Bill#' + billId)
     document.getElementById('closeBtn').onclick = function (){closeTable(table)}
     if(allTable[index.indexOf(billId)].paid){
-        console.log('paid ละเฮ้ย')
         $('#DineInModal .modal-footer').hide()
         $('#DineInModal h3').text('Table '+table+' Bill#' + billId + ' [PAID]')
     }
@@ -348,7 +342,7 @@ async function updateTakeOut(billId){
 }
 
 function updateColour(bill){
-     console.log(bill)
+     // console.log(bill)
      let classElement = document.getElementById(bill.billId).className
      if( classElement.includes("list-group-item")){
          document.getElementById(bill.billId).className = "list-group-item " + bill.orderStatus
@@ -385,9 +379,8 @@ function closeTable(id){
         url: '/api/table/close?id=' + id,
         type: 'POST',
         success: function () {
-            console.log('success')
+            $('#DineInModal').modal('hide')
         }
     });
-    $('#DineInModal').modal('hide')
 }
 
