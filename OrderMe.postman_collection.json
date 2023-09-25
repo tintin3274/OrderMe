@@ -1,0 +1,964 @@
+{
+	"info": {
+		"_postman_id": "f1228b8e-19c9-4e47-ba20-3faacc2b4583",
+		"name": "OrderMe",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "15880815"
+	},
+	"item": [
+		{
+			"name": "Order /new (Cart)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"billId\": 6,\r\n  \"orderRequests\": [\r\n    {\r\n      \"itemId\": 1,\r\n      \"quantity\": 1,\r\n      \"comment\": \"ขอชานมแบบหอม ๆ\",\r\n      \"selectItems\": [\r\n        {\r\n          \"optionalId\": 1,\r\n          \"itemOptionalId\": [\r\n            2\r\n          ]\r\n        },\r\n        {\r\n          \"optionalId\": 2,\r\n          \"itemOptionalId\": [\r\n            7,\r\n            14\r\n          ]\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"itemId\": 17,\r\n      \"quantity\": 2,\r\n      \"comment\": \"ขอมัทฉะเยอะ ๆ\",\r\n      \"selectItems\": [\r\n        {\r\n          \"optionalId\": 1,\r\n          \"itemOptionalId\": [\r\n            3\r\n          ]\r\n        },\r\n        {\r\n          \"optionalId\": 2,\r\n          \"itemOptionalId\": [\r\n            9,\r\n            10\r\n          ]\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/order/new",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"order",
+						"new"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Order /all",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/order/all",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"order",
+						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Order /find",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/order/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"order",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Order /update",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/order/update?id=88&status=COMPLETE",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"order",
+						"update"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "88"
+						},
+						{
+							"key": "status",
+							"value": "COMPLETE"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Order /doing",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/order/doing",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"order",
+						"doing"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Item /find",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/item/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"item",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Item /optional-of-id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/item/optional-of-id/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"item",
+						"optional-of-id",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Item /find food",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/item/food",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"item",
+						"food"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Item /list-category",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/item/list-category",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"item",
+						"list-category"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Item /category",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/item/category/DRINK",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"item",
+						"category",
+						"DRINK"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Item /add",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"item\": {\r\n    \"name\": \"น้ำดื่มสีรุ้ง\",\r\n    \"description\": \"อร่อย\",\r\n    \"category\": \"DRINK\",\r\n    \"price\": 15,\r\n    \"quantity\": 0,\r\n    \"checkQuantity\": 0,\r\n    \"display\": 1\r\n  },\r\n  \"optionGroupId\": [\r\n    1,\r\n    2,\r\n    3,\r\n    4\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/item/add",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"item",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Item /add-with-image",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "addItemDTO",
+							"value": "{\"item\":{\"name\":\"ขนมชั้นสีรุ้ง\",\"description\":\"อร่อยกว่า\",\"category\":\"DESSERT\",\"price\":15,\"quantity\":0,\"checkQuantity\":0,\"display\":1},\"optionGroupId\":[1,2]}",
+							"contentType": "application/json",
+							"type": "text"
+						},
+						{
+							"key": "image",
+							"type": "file",
+							"src": "/D:/ดาวโหลดมานี่มา/รูป/All END CARD - Black Bullet/10468506_689891234398429_6226611742110611735_o.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8080/api/item/add-with-image",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"item",
+						"add-with-image"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Item /update",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": 27,\r\n    \"name\": \"น้ำดื่มสีรุ้ง\",\r\n    \"description\": \"อร่อย\",\r\n    \"category\": \"DRINK\",\r\n    \"image\": null,\r\n    \"price\": 25.0,\r\n    \"quantity\": 0,\r\n    \"checkQuantity\": false,\r\n    \"display\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/item/update",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"item",
+						"update"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Item /update-image",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "id",
+							"value": "1",
+							"contentType": "application/json",
+							"type": "text"
+						},
+						{
+							"key": "image",
+							"type": "file",
+							"src": []
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8080/api/item/update-image",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"item",
+						"update-image"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Item /update-optional",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/item/update-optional?id=27&optionGroupId=4,5",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"item",
+						"update-optional"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "27"
+						},
+						{
+							"key": "optionGroupId",
+							"value": "4,5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Item /category/change",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/item/category/change?oldCategory=ชานม 100 ออนซ์&newCategory=ชานม 22 ออนซ์",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"item",
+						"category",
+						"change"
+					],
+					"query": [
+						{
+							"key": "oldCategory",
+							"value": "ชานม 100 ออนซ์"
+						},
+						{
+							"key": "newCategory",
+							"value": "ชานม 22 ออนซ์"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Item /category/sort",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/item/category/sort?categoryList=ชานม 22 ออนซ์,ช็อกโกแลตวิปครีม 16 ออนซ์,บิงซูออนท็อป,มัทฉะนมสด 22 ออนซ์",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"item",
+						"category",
+						"sort"
+					],
+					"query": [
+						{
+							"key": "categoryList",
+							"value": "ชานม 22 ออนซ์,ช็อกโกแลตวิปครีม 16 ออนซ์,บิงซูออนท็อป,มัทฉะนมสด 22 ออนซ์"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Item /category/delete",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/item/category/delete?category=ชานม 22 ออนซ์",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"item",
+						"category",
+						"delete"
+					],
+					"query": [
+						{
+							"key": "category",
+							"value": "ชานม 22 ออนซ์"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Item /delete",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/item/27",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"item",
+						"27"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Optional /find",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/optional/6",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"optional",
+						"6"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Optional /find all",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/optional/all",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"optional",
+						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Optional /item-of-id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/optional/item-of-id/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"optional",
+						"item-of-id",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Optional /add",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"optionGroup\": {\r\n    \"name\": \"รวมเยลลี่\",\r\n    \"description\": \"รวมเยลลี่ทุกอย่างที่ร้านมี\",\r\n    \"min\": 0,\r\n    \"max\": 2\r\n  },\r\n  \"optionId\": [\r\n    7, 8, 9, 11, 12\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/optional/add",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"optional",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Optional /update",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"optionGroup\": {\r\n    \"id\": 6,\r\n    \"name\": \"ครัมเบิ้ล\",\r\n    \"description\": \"เบิ้ล ๆ ซ้ายที ขวาที\",\r\n    \"min\": 0,\r\n    \"max\": 2\r\n  },\r\n  \"optionId\": [15, 16]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/optional/update",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"optional",
+						"update"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Optional /delete",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/optional/6",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"optional",
+						"6"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Table /create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/table/create/7",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"table",
+						"create",
+						"7"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Table /delete",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/table/delete/7",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"table",
+						"delete",
+						"7"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Table /all",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/table/all",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"table",
+						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Table /all-id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/table/all-id",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"table",
+						"all-id"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Table /open",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/table/open?id=1&person=2",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"table",
+						"open"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						},
+						{
+							"key": "person",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Bill",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/bill/all",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"bill",
+						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Bill",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/bill/2",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"bill",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "generate-token",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/generate-token",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"generate-token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Dine-In",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/dine-in/w94a_D0CxVIGRpFwzR5tlWgQuoDn_KYk",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"dine-in",
+						"w94a_D0CxVIGRpFwzR5tlWgQuoDn_KYk"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "username",
+				"value": "admin",
+				"type": "string"
+			},
+			{
+				"key": "password",
+				"value": "password",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
